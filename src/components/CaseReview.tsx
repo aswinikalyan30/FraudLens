@@ -1,47 +1,36 @@
 import React from 'react';
-import { X, Shield, User, Mail, Activity, Send, Brain, Flag, Phone, FileAudio, MessageCircle, ArrowLeft } from 'lucide-react';
+import { X, Shield, User, Activity, Send, Brain, Flag, Phone, FileAudio, MessageCircle, ArrowLeft } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Application } from '../contexts/ApplicationContext';
-
-interface ChatMessage {
-  id: string;
-  message: string;
-  isUser: boolean;
-  timestamp: string;
-}
+import ChatAgent from './ChatAgent';
+import DecisionDocumentationModal, { DecisionData } from './DecisionDocumentationModal';
+import './CaseReviewStyles.css';
 
 interface CaseReviewProps {
   case: Application;
   onClose: () => void;
-  mode?: 'modal' | 'fullscreen';
+  mode?: 'modal' | 'fullscreen' | 'drawer';
 }
 
-const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode = 'fullscreen' }) => {
+const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode = 'drawer' }) => {
   const { isDark } = useTheme();
-  const timelineRef = React.useRef<HTMLDivElement>(null);
-  const docsRef = React.useRef<HTMLDivElement>(null);
-  const chatEndRef = React.useRef<HTMLDivElement>(null);
   
   // UI state
   const [isGenerating, setIsGenerating] = React.useState(true);
   const [transcriptAvailable, setTranscriptAvailable] = React.useState(false);
-  const [chatMessages, setChatMessages] = React.useState<ChatMessage[]>([]);
-  const [newMessage, setNewMessage] = React.useState('');
   const [showEmailModal, setShowEmailModal] = React.useState(false);
   const [emailTemplate, setEmailTemplate] = React.useState('');
-  const [selectedDocuments, setSelectedDocuments] = React.useState<string[]>([]);
   const [showChatWindow, setShowChatWindow] = React.useState(false);
+  const [showDecisionModal, setShowDecisionModal] = React.useState(false);
+  const [decisionType, setDecisionType] = React.useState<'approve' | 'reject' | 'escalate' | null>(null);
+  // Removed tab state as layout is now two columns
+  const [showMoreInfo, setShowMoreInfo] = React.useState(false);
+  const [confidenceProgress, setConfidenceProgress] = React.useState(0);
 
   React.useEffect(() => {
     const timer = setTimeout(() => setIsGenerating(false), 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  React.useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages]);
 
   // Sample application data based on the fraudCase
   const application = React.useMemo(() => ({
@@ -65,6 +54,28 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
       confidence: 85
     }
   }), [fraudCase]);
+
+  // Confidence progress animation
+  React.useEffect(() => {
+    if (!isGenerating) {
+      const timer = setTimeout(() => {
+        const target = application.aiRecommendation.confidence;
+        let current = 0;
+        const increment = target / 30; // Animation over 30 frames
+        const animation = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            setConfidenceProgress(target);
+            clearInterval(animation);
+          } else {
+            setConfidenceProgress(Math.round(current));
+          }
+        }, 16); // ~60fps
+        return () => clearInterval(animation);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isGenerating, application.aiRecommendation.confidence]);
 
   // Timeline events based on flags
   const timelineEvents = React.useMemo(() => {
@@ -108,85 +119,17 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
     return events;
   }, [application]);
 
-  const handleSendMessage = () => {
-    if (!newMessage.trim()) return;
-
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      message: newMessage,
-      isUser: true,
-      timestamp: new Date().toISOString()
-    };
-
-    setChatMessages(prev => [...prev, userMessage]);
-
-    // Simulate AI response
-    setTimeout(() => {
-      let aiResponse = '';
-      if (newMessage.toLowerCase().includes('why was this flagged')) {
-        aiResponse = 'This application was flagged due to three main factors: 1) Essay similarity of 78% with known fraudulent applications, 2) Email account created only 3 days before submission, and 3) Unusually rapid form completion time of 12 minutes.';
-      } else if (newMessage.toLowerCase().includes('request id proof')) {
-        aiResponse = 'I can help you request ID proof. Would you like me to prepare an email template for document verification?';
-      } else if (newMessage.toLowerCase().includes('risk factors')) {
-        aiResponse = 'Key risk factors: High essay similarity (78%), new email account (3 days old), rapid submission pattern, and unusual browser fingerprint. Combined risk score: 85/100.';
-      } else {
-        aiResponse = 'I can help you analyze this application. Ask me about specific flags, risk factors, or request additional documents from the applicant.';
-      }
-
-      const aiMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        message: aiResponse,
-        isUser: false,
-        timestamp: new Date().toISOString()
-      };
-
-      setChatMessages(prev => [...prev, aiMessage]);
-    }, 1000);
-
-    setNewMessage('');
-  };
-
-  const handleRequestDocuments = () => {
-    if (selectedDocuments.length === 0) {
-      alert('Please select at least one document to request.');
-      return;
-    }
-
-    const template = `Dear ${application.name},
-
-Thank you for your application to our program. As part of our standard verification process, we need to request the following additional documents:
-
-${selectedDocuments.map(doc => `• ${doc}`).join('\\n')}
-
-Please submit these documents within 5 business days to avoid any delays in processing your application.
-
-You can submit documents through our secure portal or reply directly to this email.
-
-If you have any questions, please don't hesitate to contact our admissions team.
-
-Best regards,
-Admissions Review Team
-University Fraud Detection Department
-
----
-Application ID: ${application.studentId}
-Risk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (application.riskScore || 0) >= 50 ? 'Medium' : 'Low'}
-`;
-
-    setEmailTemplate(template);
-    setShowEmailModal(true);
-  };
-
   const handleSendEmail = () => {
     alert('Email sent successfully!');
     setShowEmailModal(false);
     setEmailTemplate('');
-    setSelectedDocuments([]);
   };
 
   const containerClass = mode === 'modal' 
     ? "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 lg:p-4"
-    : `fixed inset-0 z-50 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`;
+    : mode === 'drawer'
+    ? "fixed inset-y-0 right-0 z-50 w-full max-w-4xl bg-white dark:bg-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out"
+    : `min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`;
 
   const contentClass = mode === 'modal'
     ? `border rounded-xl max-w-7xl w-full max-h-[90vh] overflow-hidden ${
@@ -194,13 +137,22 @@ Risk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (applicat
           ? 'bg-gray-800 border-gray-700' 
           : 'bg-white border-gray-200 shadow-xl'
       } lg:rounded-xl rounded-none h-full lg:h-auto`
-    : 'h-full flex flex-col';
+    : mode === 'drawer' 
+    ? 'h-full flex flex-col overflow-hidden'
+    : 'min-h-screen flex flex-col';
+
+  const handleDecisionSubmit = (decision: DecisionData) => {
+    console.log('Decision submitted:', { type: decisionType, ...decision });
+    setShowDecisionModal(false);
+    setDecisionType(null);
+    onClose(); // Close the case review after decision
+  };
 
   return (
     <div className={containerClass}>
       <div className={contentClass}>
         {/* Header */}
-        <header className={`border-b px-6 py-4 ${mode === 'modal' ? 'sticky top-0 z-10' : ''} ${
+        <header className={`border-b px-6 py-4 flex-shrink-0 ${
           isDark 
             ? 'bg-gray-800 border-gray-700' 
             : 'bg-white border-gray-200 shadow-sm'
@@ -222,14 +174,25 @@ Risk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (applicat
                   Case Review - {application.name}
                 </h1>
                 <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {application.studentId} • Risk Score: {application.riskScore}
+                  {application.studentId} • Risk Score: <span className="text-red-500 font-semibold">{application.riskScore}</span> • {application.stage}
                 </p>
               </div>
             </div>
             
             <div className="flex items-center gap-2">
-              {/* Request Call / Transcript */}
-              {transcriptAvailable ? (
+              {/* Request Call Button - Inline for quick access */}
+              <button
+                onClick={() => setTranscriptAvailable(true)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
+                  isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                <Phone className="w-4 h-4" />
+                Request Call
+              </button>
+
+              {/* View Transcript (when available) */}
+              {transcriptAvailable && (
                 <button
                   onClick={() => {/* Transcript functionality can be added later */}}
                   className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
@@ -239,390 +202,335 @@ Risk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (applicat
                   <FileAudio className="w-4 h-4" />
                   View Transcript
                 </button>
-              ) : (
-                <button
-                  onClick={() => setTranscriptAvailable(true)}
-                  className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                    isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
-                  }`}
-                >
-                  <Phone className="w-4 h-4" />
-                  Request Call
-                </button>
               )}
-
-              {/* AI Chat Button */}
-              <button
-                onClick={() => setShowChatWindow(true)}
-                className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                  isDark ? 'bg-gray-600 text-white hover:bg-gray-500' : 'bg-gray-600 text-white hover:bg-gray-700'
-                }`}
-              >
-                <MessageCircle className="w-4 h-4" />
-                AI Assistant
-              </button>
             </div>
           </div>
         </header>
 
         {/* Main Layout Container */}
-        <div className={`flex ${mode === 'modal' ? 'max-h-[calc(90vh-80px)]' : 'h-[calc(100vh-80px)]'}`}>
-          {/* Left Side - Main Content */}
-          <div className={`flex-1 overflow-y-auto ${showChatWindow ? 'pr-2' : ''}`}>
-            <div className="p-3">
+        <div className={`flex flex-1 overflow-hidden ${mode === 'drawer' ? 'min-h-0' : mode === 'modal' ? 'max-h-[calc(90vh-80px)]' : 'min-h-0'}`}>
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full p-4">
+            {/* Left Column: Student Info, Summary, Documents */}
+            <div className="space-y-6">
               {/* Student Info */}
-              <div className={`border rounded-lg p-2 mb-3 ${
+              <div className={`border rounded-lg p-4 transition-all duration-200 ${
                 isDark 
-                  ? 'bg-gray-900/50 border-gray-700' 
-                  : 'bg-gray-50 border-gray-200'
+                  ? 'bg-gray-800 divide-gray-700' 
+                  : 'bg-white divide-gray-200'
               }`}>
-                <h3 className={`text-base font-semibold mb-2 flex items-center space-x-2`}>
+                <h3 className={`text-base font-semibold mb-3 flex items-center space-x-2`}>
                   <User className="w-4 h-4" />
                   <span>Student Information</span>
                 </h3>
-                <div className="grid grid-cols-1 gap-2">
-                  <div className="flex items-center space-x-2">
-                    <img 
-                      src={fraudCase.avatar} 
-                      alt={fraudCase.name}
-                      className={`w-10 h-10 rounded-full object-cover border ${isDark ? 'border-gray-600' : 'border-gray-300'}`}
-                    />
-                    <div>
-                      <h4 className={`font-semibold text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{fraudCase.name}</h4>
-                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{fraudCase.email}</p>
-                      <p className={`font-mono text-xs ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>{fraudCase.studentId}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-1 mt-1">
-                    <div className="flex justify-between text-xs">
-                      <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Risk Score:</span>
-                      <span className="text-red-500 font-bold">{fraudCase.riskScore || 0}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Stage:</span>
-                      <span className={isDark ? 'text-white' : 'text-gray-900'}>{fraudCase.stage}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Program:</span>
-                      <span className={isDark ? 'text-white' : 'text-gray-900'}>{application.program}</span>
-                    </div>
+                {/* Main Info */}
+                <div className="flex items-center space-x-3 mb-3">
+                  <img 
+                    src={fraudCase.avatar} 
+                    alt={fraudCase.name}
+                    className={`w-12 h-12 rounded-full object-cover border-2 ${isDark ? 'border-gray-600' : 'border-gray-300'}`}
+                  />
+                  <div className="flex-1">
+                    <h4 className={`font-semibold text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>{fraudCase.name}</h4>
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{fraudCase.stage}</p>
+                    <p className={`text-xs ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>{application.program}</p>
                   </div>
                 </div>
-
-                {/* Flag Chips */}
-                <div className="mt-2">
-                  <div className={`text-xs mb-1 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Flags</div>
+                {/* High-Impact Flags Only */}
+                <div className="mb-3">
+                  <div className={`text-xs mb-2 font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Critical Flags</div>
                   <div className="flex flex-wrap gap-1">
-                    {application.flags.map((f, i) => (
-                      <span key={i} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] ${
-                        f.severity === 'high'
-                          ? (isDark ? 'bg-red-500/10 text-red-300 border-red-500/30' : 'bg-red-50 text-red-700 border-red-200')
-                          : f.severity === 'medium'
-                          ? (isDark ? 'bg-orange-500/10 text-orange-300 border-orange-500/30' : 'bg-orange-50 text-orange-700 border-orange-200')
-                          : (isDark ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30' : 'bg-yellow-50 text-yellow-700 border-yellow-200')
+                    {application.flags.filter(f => f.severity === 'high').map((f, i) => (
+                      <span key={i} className={`inline-flex items-center gap-1 px-2 py-1 rounded-full border text-xs font-medium transition-all duration-200 ${
+                        isDark ? 'bg-red-500/10 text-red-300 border-red-500/30' : 'bg-red-50 text-red-700 border-red-200'
                       }`}>
                         <Flag className="w-3 h-3" /> {f.rule}
                       </span>
                     ))}
                   </div>
                 </div>
+                {/* Collapsible More Info */}
+                <button
+                  onClick={() => setShowMoreInfo(!showMoreInfo)}
+                  className={`text-xs text-purple-600 hover:text-purple-700 font-medium transition-colors`}
+                >
+                  {showMoreInfo ? '↑ Less info' : '↓ More info'}
+                </button>
+                {showMoreInfo && (
+                  <div className={`mt-3 pt-3 border-t space-y-2 transition-all duration-300 ${
+                    isDark ? 'border-gray-700' : 'border-gray-200'
+                  }`}>
+                    <div className="flex justify-between text-xs">
+                      <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Email:</span>
+                      <span className={isDark ? 'text-white' : 'text-gray-900'}>{fraudCase.email}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Student ID:</span>
+                      <span className={isDark ? 'text-white' : 'text-gray-900'}>{fraudCase.studentId}</span>
+                    </div>
+                    {/* All Flags */}
+                    <div>
+                      <div className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>All Flags</div>
+                      <div className="flex flex-wrap gap-1">
+                        {application.flags.filter(f => f.severity !== 'high').map((f, i) => (
+                          <span key={i} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[11px] ${
+                            f.severity === 'medium'
+                              ? (isDark ? 'bg-orange-500/10 text-orange-300 border-orange-500/30' : 'bg-orange-50 text-orange-700 border-orange-200')
+                              : (isDark ? 'bg-yellow-500/10 text-yellow-300 border-yellow-500/30' : 'bg-yellow-50 text-yellow-700 border-yellow-200')
+                          }`}>
+                            <Flag className="w-3 h-3" /> {f.rule}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {/* Timeline View */}
-              <div ref={timelineRef} className={`border rounded-lg p-2 mb-3 ${
-                isDark 
-                  ? 'bg-gray-900/50 border-gray-700' 
-                  : 'bg-gray-50 border-gray-200'
-              }`}>
-                <h3 className={`text-base font-semibold mb-2 flex items-center space-x-2`}>
-                  <Activity className="w-4 h-4" />
-                  <span>Case Timeline</span>
+              {/* Summary */}
+              <div className={`border rounded-lg p-4 transition-all duration-200 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h3 className={`text-base font-semibold mb-3 flex items-center space-x-2`}>
+                  <Shield className="w-4 h-4" />
+                  <span>AI Summary</span>
                 </h3>
-                {/* Horizontal Timeline */}
-                <div className="overflow-x-auto">
-                  <div className="flex items-stretch gap-3 min-w-[400px] pb-1 relative">
-                    {/* Connecting line */}
-                    <div className="absolute top-1/2 left-0 right-0 h-0.5 z-0" style={{background: isDark ? '#4B5563' : '#E5E7EB'}} />
-                    {timelineEvents.map((e, idx) => (
-                      <div key={`${e.id}+${idx}`} className="relative z-10 flex flex-col items-center min-w-[140px]">
-                        {/* Dot */}
-                        <div className={`w-3 h-3 rounded-full border-2 mb-1 ${
-                          e.color === 'green' ? 'bg-green-500 border-green-200' :
-                          e.color === 'orange' ? 'bg-orange-500 border-orange-200' :
-                          'bg-red-500 border-red-200'
-                        }`} />
-                        {/* Card */}
-                        <div className={`p-2 rounded-md border shadow-sm w-full ${
-                          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                        }`}>
-                          <div className="flex items-center justify-between mb-0.5">
-                            <div className="font-medium text-xs">{e.title}</div>
-                            <div className={`text-[10px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{new Date(e.timestamp).toLocaleTimeString()}</div>
-                          </div>
-                          <div className="flex flex-wrap gap-0.5 mb-0.5">
+                <div className="flex items-start gap-3 mb-4">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}> <Brain className={`${isDark ? 'text-purple-400' : 'text-purple-600'} w-4 h-4`} /> </div>
+                  <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{application.aiRecommendation.summary}</p>
+                </div>
+                {/* Inline Confidence Gauge */}
+                <div className="flex items-center gap-3">
+                  <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Confidence:</span>
+                  <div className={`flex-1 h-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} overflow-hidden`}>
+                    <div 
+                      className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full confidence-bar"
+                      style={{ width: `${confidenceProgress}%` }}
+                      role="progressbar"
+                      aria-valuenow={confidenceProgress}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`Confidence level: ${confidenceProgress}%`}
+                    />
+                  </div>
+                  <span className={`text-sm font-bold min-w-[3rem] ${
+                    confidenceProgress >= 80 ? 'text-red-600' : 
+                    confidenceProgress >= 60 ? 'text-orange-600' : 'text-green-600'
+                  }`}>
+                    {confidenceProgress}%
+                  </span>
+                </div>
+              </div>
+              {/* Documents */}
+              <div className={`border rounded-lg p-4 transition-all duration-200 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h3 className={`text-base font-semibold mb-3 flex items-center space-x-2`}>
+                  <FileAudio className="w-4 h-4" />
+                  <span>Submitted Documents</span>
+                </h3>
+                <div className="space-y-2">
+                  {[
+                    { name: 'Application Form', date: '2024-03-08' },
+                    { name: 'Academic Transcript', date: '2024-03-08' },
+                    { name: 'Personal Essay', date: '2024-03-08' },
+                    { name: 'Recommendation Letter', date: '2024-03-08' },
+                    { name: 'ID Proof', date: null }
+                  ].map((doc, i) => (
+                    <div 
+                      key={i} 
+                      className={`document-item flex items-center justify-between p-3 rounded-lg border transition-all duration-200 hover:shadow-sm ${
+                        isDark ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' : 'bg-gray-50 border-gray-200 hover:bg-white'
+                      }`}
+                      style={{ animationDelay: `${i * 100}ms` }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <span className={`text-sm font-medium`}>
+                          {doc.name}
+                        </span>
+                      </div>
+                      {doc.date && (
+                        <div className={`text-xs font-mono ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{doc.date}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                {/* Request Documents Section */}
+                <div className={`border-t pt-4 mt-4 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <h4 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Request Additional Documents</h4>
+                  <p className={`text-xs mb-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Request additional documents from the applicant to verify their application.</p>
+                  <button
+                    onClick={() => {
+                      const template = `Dear ${application.name},\n\nThank you for your application to our program. As part of our standard verification process, we need to request additional documents from you.\n\nPlease submit the following documents within 5 business days to avoid any delays in processing your application:\n\n• ID Proof (Government issued photo ID)\n• Bank Statements (Last 3 months)  \n• Address Proof (Utility bill or lease agreement)\n• Income Verification (Pay stubs or tax returns)\n\nYou can submit these documents through our secure portal or reply directly to this email with the attachments.\n\nIf you have any questions or need clarification on any of these requirements, please don't hesitate to contact our admissions team.\n\nBest regards,\nAdmissions Review Team\nUniversity Fraud Detection Department\n\n---\nApplication ID: ${application.studentId}\nRisk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (application.riskScore || 0) >= 50 ? 'Medium' : 'Low'}\n`;
+                      setEmailTemplate(template);
+                      setShowEmailModal(true);
+                    }}
+                    className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      isDark
+                        ? 'bg-purple-600 text-white hover:bg-purple-700 hover:shadow-lg'
+                        : 'bg-purple-600 text-white hover:bg-purple-700 hover:shadow-lg'
+                    }`}
+                  >
+                    <Send className="w-4 h-4" />
+                    Request Documents
+                  </button>
+                </div>
+              </div>
+            </div>
+            {/* Right Column: Timeline and Action Buttons */}
+            <div className="space-y-6 flex flex-col h-full">
+              {/* Timeline */}
+              <div className={`border rounded-lg p-4 flex-1 transition-all duration-200 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}> 
+                <h3 className={`text-base font-semibold mb-3 flex items-center space-x-2`}>
+                  <Activity className="w-4 h-4" />
+                  <span>Timeline</span>
+                </h3>
+                <div className="space-y-4 relative">
+                  <div className={`absolute left-4 top-0 bottom-0 w-0.5 ${isDark ? 'bg-gray-700' : 'bg-gray-300'}`} />
+                  {timelineEvents.map((e, idx) => (
+                    <div 
+                      key={`${e.id}+${idx}`} 
+                      className={`relative flex items-start gap-4 transition-all duration-200 ${idx > 0 ? 'animate-slideInLeft' : ''}`}
+                      style={{ animationDelay: `${idx * 200}ms` }}
+                    >
+                      {/* Dot */}
+                      <div className={`relative z-10 w-8 h-8 rounded-full border-3 flex items-center justify-center transition-all duration-300 ${
+                        e.color === 'green' ? 'bg-green-500 border-green-200' :
+                        e.color === 'orange' ? 'bg-orange-500 border-orange-200' :
+                        'bg-red-500 border-red-200'
+                      }`}>
+                        {e.color === 'red' && idx > 0 && (
+                          <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                        )}
+                      </div>
+                      {/* Content */}
+                      <div className={`flex-1 p-3 rounded-lg border ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{e.title}</h4>
+                          <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{new Date(e.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                        {e.rules.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
                             {e.rules.map((r, i) => (
-                              <span key={i} className="text-[10px] text-gray-500">{r}</span>
+                              <span key={i} className={`text-xs px-2 py-1 rounded ${isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>{r}</span>
                             ))}
                           </div>
-                          {e.note && <div className={`text-[10px] mb-0.5 text-gray-500 italic`}>{e.note}</div>}
-                          <span className={`px-1 py-0.5 rounded-full border text-[10px] ${
-                            e.color === 'green' ? 'text-green-600 border-green-300' :
-                            e.color === 'orange' ? 'text-orange-600 border-orange-300' :
-                            'text-red-600 border-red-300'
-                          }`}>Risk: {e.risk}</span>
-                        </div>
+                        )}
+                        {e.note && (
+                          <p className={`text-xs mb-2 italic ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{e.note}</p>
+                        )}
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          e.color === 'green' ? 
+                            (isDark ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-green-100 text-green-700 border border-green-300') :
+                          e.color === 'orange' ? 
+                            (isDark ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 'bg-orange-100 text-orange-700 border-orange-300') :
+                            (isDark ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-red-100 text-red-700 border border-red-300')
+                        }`}>
+                          Risk: {e.risk}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* AI Reasoning */}
-              <div className={`border rounded-lg p-2 mb-3 ${
-                isDark 
-                  ? 'bg-gray-900/50 border-gray-700' 
-                  : 'bg-gray-50 border-gray-200'
-              }`}>
-                <h3 className={`text-base font-semibold mb-2 flex items-center space-x-2 `}>
-                  <Shield className="w-4 h-4" />
-                  <span>AI Reasoning Summary</span>
-                </h3>
-                <div className={`border rounded-lg p-2 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-                  <div className="relative">
-                    {isGenerating && (
-                      <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#7100EB] to-transparent animate-pulse" />
-                    )}
-                    <div className={`flex items-start gap-3 ${isGenerating ? 'animate-pulse' : ''}`}>
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center`}>
-                        <Brain className={`${isDark ? 'text-black-400' : 'text-black-600'} w-3 h-3`} />
-                      </div>
-                      <p className={`text-xs leading-snug ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                        {application.aiRecommendation.summary}
-                      </p>
                     </div>
-                    <div className="mt-2 flex items-center space-x-1">
-                      <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-600'} font-bold`}>Confidence:</span>
-                      <div className={`flex-1 rounded-full h-1.5 ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                        <div 
-                          className="bg-red-500 h-1.5 rounded-full"
-                          style={{ width: `${application.aiRecommendation.confidence}%` }}
-                        />
-                      </div>
-                      <span className="text-[11px] font-bold">{application.aiRecommendation.confidence}%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Request Documents Section */}
-              <div ref={docsRef} className={`border rounded-lg p-2 mb-3 ${
-                isDark 
-                  ? 'bg-gray-900/50 border-gray-700' 
-                  : 'bg-gray-50 border-gray-200'
-              }`}>
-                <h3 className={`text-base font-semibold mb-2 flex items-center space-x-2 `}>
-                  <Mail className="w-4 h-4" />
-                  <span>Request Documents</span>
-                </h3>
-                
-                <div className="space-y-2">
-                  {['ID Proof', 'Bank Statements', 'Address Proof', 'Income Verification'].map(doc => (
-                    <label key={doc} className="flex items-center space-x-2 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded text-[#7100EB] h-3 w-3"
-                        checked={selectedDocuments.includes(doc)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedDocuments(prev => [...prev, doc]);
-                          } else {
-                            setSelectedDocuments(prev => prev.filter(d => d !== doc));
-                          }
-                        }}
-                      />
-                      <span className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{doc}</span>
-                    </label>
                   ))}
-                  
-                    <button
-                    onClick={handleRequestDocuments}
-                    className={`w-full mt-2 flex items-center justify-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
-                      isDark
-                      ? 'bg-purple-700 text-white hover:bg-purple-600'
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
-                    }`}
-                    >
-                    <Send className="w-3 h-3" />
-                    Request Selected Documents
-                    </button>
                 </div>
               </div>
-
-              {/* Case Actions at the bottom of main content */}
-              <div className={`border rounded-lg p-2 ${isDark ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
-                <h4 className={`text-xs font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Case Actions</h4>
-                <div className="grid grid-cols-3 gap-1">
-                  <button className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
-                    isDark 
-                      ? 'bg-green-500/20 border border-green-500/30 text-green-400 hover:bg-green-500/30' 
-                      : 'bg-green-50 border border-green-200 text-green-700 hover:bg-green-100'
-                  }`}>
+              {/* Action Buttons */}
+              <div className="pt-4">
+                <div className="flex items-center justify-center gap-4">
+                  <button 
+                    onClick={() => {
+                      setDecisionType('approve');
+                      setShowDecisionModal(true);
+                    }}
+                    className={`action-button flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      isDark 
+                        ? 'bg-green-700 text-white hover:bg-green-600 focus:ring-green-500' 
+                        : 'bg-green-700 text-white hover:bg-green-800 focus:ring-green-500'
+                    }`}
+                    aria-label="Approve application"
+                  >
                     ✅ Approve
                   </button>
-                  <button className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
-                    isDark 
-                      ? 'bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500/30' 
-                      : 'bg-red-50 border border-red-200 text-red-700 hover:bg-red-100'
-                  }`}>
+                  <button 
+                    onClick={() => {
+                      setDecisionType('reject');
+                      setShowDecisionModal(true);
+                    }}
+                    className={`action-button flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      isDark 
+                        ? 'bg-red-700 text-white hover:bg-red-600 focus:ring-red-500' 
+                        : 'bg-red-700 text-white hover:bg-red-800 focus:ring-red-500'
+                    }`}
+                    aria-label="Reject application"
+                  >
                     ❌ Reject
                   </button>
-                  <button className={`px-2 py-1 rounded-md text-xs font-medium transition-all ${
-                    isDark 
-                      ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/30' 
-                      : 'bg-yellow-50 border border-yellow-200 text-yellow-700 hover:bg-yellow-100'
-                  }`}>
+                  <button 
+                    onClick={() => {
+                      setDecisionType('escalate');
+                      setShowDecisionModal(true);
+                    }}
+                    className={`action-button flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      isDark 
+                        ? 'bg-pink-700 text-white hover:bg-pink-600 focus:ring-pink-500' 
+                        : 'bg-pink-700 text-white hover:bg-pink-800 focus:ring-pink-500'
+                    }`}
+                    aria-label="Escalate application for manual review"
+                  >
                     🚨 Escalate
                   </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Right Sidebar - AI Chat Window */}
-          {showChatWindow && (
-            <div className="w-96 border-l flex flex-col">
-              <div className={`flex-1 flex flex-col ${isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'}`}>
-                {/* Chat Header */}
-                <div className={`border-b px-4 py-3 ${
-                  isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+        {/* Floating Chat Bubble */}
+        {!showChatWindow && (
+          <button
+            onClick={() => setShowChatWindow(true)}
+            className={`chat-bubble fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-110 z-40 ${
+              isDark 
+                ? 'bg-purple-600 text-white hover:bg-purple-500' 
+                : 'bg-purple-600 text-white hover:bg-purple-700'
+            }`}
+            aria-label="Open AI Assistant"
+          >
+            <MessageCircle className="w-6 h-6 mx-auto" />
+          </button>
+        )}
+
+        {/* Floating Chat Window */}
+        {showChatWindow && (
+          <div className={`chat-window fixed bottom-6 right-6 w-96 h-[500px] rounded-lg shadow-2xl border z-50 flex flex-col ${
+            isDark 
+              ? 'bg-gray-800 border-gray-700' 
+              : 'bg-white border-gray-200'
+          }`}>
+            {/* Chat Header */}
+            <div className={`border-b px-4 py-3 rounded-t-lg ${
+              isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+            }`}>
+              <div className="flex items-center justify-between">
+                <h3 className={`text-sm font-semibold flex items-center gap-2 ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  <div className="flex items-center justify-between">
-                    <h3 className={`text-sm font-semibold flex items-center gap-2 ${
-                      isDark ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      <MessageCircle className="w-4 h-4" />
-                      AI Assistant
-                    </h3>
-                    <button
-                      onClick={() => setShowChatWindow(false)}
-                      className={`p-1 rounded-md transition-colors ${
-                        isDark 
-                          ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                      }`}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Ask questions about this case
-                  </p>
-                </div>
-
-                {/* Chat Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                  {/* Initial AI message */}
-                  <div className="max-w-[85%]">
-                    <div className={`p-3 rounded-2xl text-sm border ${
-                      isDark ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-gray-50 border-gray-200 text-gray-800'
-                    }`}>
-                      <div className="flex items-center justify-between mb-1">
-                        <span className={`text-xs font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                          AI Assistant
-                        </span>
-                        <span className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
-                          {new Date().toLocaleTimeString()}
-                        </span>
-                      </div>
-                      <p className="text-xs leading-relaxed">
-                        I've analyzed the application for <strong>{application.name}</strong>. The risk score is elevated at <strong>{application.riskScore}</strong> due to inconsistencies. Would you like me to elaborate?
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Chat Messages */}
-                  {chatMessages.map((msg) => (
-                    <div key={msg.id} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[85%]`}>
-                        <div className={`p-3 rounded-2xl text-sm ${
-                          msg.isUser 
-                            ? isDark 
-                              ? 'bg-gray-600 text-white' 
-                              : 'bg-gray-600 text-white'
-                            : isDark 
-                              ? 'bg-gray-700 border-gray-600 text-gray-200 border' 
-                              : 'bg-gray-50 border-gray-200 text-gray-800 border'
-                        }`}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className={`text-xs font-medium ${
-                              msg.isUser 
-                                ? 'text-gray-300'
-                                : isDark 
-                                  ? 'text-gray-400' 
-                                  : 'text-gray-600'
-                            }`}>
-                              {msg.isUser ? 'You' : (
-                                <>
-                                  AI
-                                </>
-                              )}
-                            </span>
-                            <span className={`text-xs ${
-                              msg.isUser 
-                                ? 'text-gray-300'
-                                : isDark 
-                                  ? 'text-gray-500' 
-                                  : 'text-gray-500'
-                            }`}>
-                              {new Date(msg.timestamp).toLocaleTimeString()}
-                            </span>
-                          </div>
-                          <p className="text-xs leading-relaxed">{msg.message}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={chatEndRef} />
-                </div>
-
-                {/* Chat Input */}
-                <div className={`border-t px-4 py-3 ${
-                  isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
-                }`}>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Ask about this case..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                      className={`flex-1 px-3 py-2 border rounded-lg text-sm ${
-                        isDark 
-                          ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                      }`}
-                    />
-                    <button
-                      onClick={handleSendMessage}
-                      disabled={!newMessage.trim()}
-                      className={`px-3 py-2 rounded-lg transition-colors ${
-                        newMessage.trim()
-                          ? isDark
-                            ? 'bg-gray-600 text-white hover:bg-gray-500'
-                            : 'bg-gray-600 text-white hover:bg-gray-700'
-                          : isDark
-                            ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                  <MessageCircle className="w-4 h-4" />
+                  AI Assistant
+                </h3>
+                <button
+                  onClick={() => setShowChatWindow(false)}
+                  className={`p-1 rounded-md transition-colors ${
+                    isDark 
+                      ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
             </div>
-          )}
-        </div>
+
+            {/* Chat Content */}
+            <div className="flex-1 overflow-hidden rounded-b-lg">
+              <ChatAgent applicationId={application.studentId} />
+            </div>
+          </div>
+        )}
 
         {/* Email Modal */}
         {showEmailModal && (
@@ -668,7 +576,123 @@ Risk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (applicat
             </div>
           </div>
         )}
-      </div>
+        </div>
+        {/* Floating Chat Bubble */}
+        {!showChatWindow && (
+          <button
+            onClick={() => setShowChatWindow(true)}
+            className={`chat-bubble fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-110 z-40 ${
+              isDark 
+                ? 'bg-purple-600 text-white hover:bg-purple-500' 
+                : 'bg-purple-600 text-white hover:bg-purple-700'
+            }`}
+            aria-label="Open AI Assistant"
+          >
+            <MessageCircle className="w-6 h-6 mx-auto" />
+          </button>
+        )}
+
+        {/* Floating Chat Window */}
+        {showChatWindow && (
+          <div className={`chat-window fixed bottom-6 right-6 w-96 h-[500px] rounded-lg shadow-2xl border z-50 flex flex-col ${
+            isDark 
+              ? 'bg-gray-800 border-gray-700' 
+              : 'bg-white border-gray-200'
+          }`}>
+            {/* Chat Header */}
+            <div className={`border-b px-4 py-3 rounded-t-lg ${
+              isDark ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-white'
+            }`}>
+              <div className="flex items-center justify-between">
+                <h3 className={`text-sm font-semibold flex items-center gap-2 ${
+                  isDark ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  <MessageCircle className="w-4 h-4" />
+                  AI Assistant
+                </h3>
+                <button
+                  onClick={() => setShowChatWindow(false)}
+                  className={`p-1 rounded-md transition-colors ${
+                    isDark 
+                      ? 'text-gray-400 hover:text-white hover:bg-gray-700' 
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Chat Content */}
+            <div className="flex-1 overflow-hidden rounded-b-lg">
+              <ChatAgent applicationId={application.studentId} />
+            </div>
+          </div>
+        )}
+
+        {/* Email Modal */}
+        {showEmailModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className={`max-w-2xl w-full mx-4 rounded-lg border ${
+              isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <div className={`border-b px-6 py-4 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}> 
+                <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Document Request Email</h3>
+              </div>
+              <div className="p-6">
+                <textarea
+                  value={emailTemplate}
+                  onChange={(e) => setEmailTemplate(e.target.value)}
+                  className={`w-full h-64 p-3 border rounded-lg text-sm ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                  placeholder="Email content..."
+                />
+                <div className="flex justify-end gap-2 mt-4">
+                  <button
+                    onClick={() => setShowEmailModal(false)}
+                    className={`px-4 py-2 border rounded-lg ${
+                      isDark 
+                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSendEmail}
+                    className="px-4 py-2 bg-[#7100EB] text-white rounded-lg hover:bg-[#7100EB]/80"
+                  >
+                    Send Email
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+                {showDecisionModal && (
+          <DecisionDocumentationModal
+            case={{
+              id: fraudCase.id || '',
+              studentId: fraudCase.studentId,
+              name: fraudCase.name,
+              riskScore: fraudCase.riskScore || 0
+            }}
+            onClose={() => {
+              setShowDecisionModal(false);
+              setDecisionType(null);
+            }}
+            onSubmit={(decision) => {
+              console.log('Decision submitted:', { type: decisionType, ...decision });
+              setShowDecisionModal(false);
+              handleDecisionSubmit(decision);
+              setDecisionType(null);
+              onClose(); // Close the case review after decision
+            }}
+          />
+        )}
     </div>
   );
 };

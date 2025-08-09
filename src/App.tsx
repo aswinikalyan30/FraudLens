@@ -22,7 +22,7 @@ function AppContent() {
 
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'queue', label: 'Queue', icon: Users, count: queueApplications.length },
+    { id: 'queue', label: 'Queue', icon: Users, count: queueApplications.length>0 ? queueApplications.length : undefined },
     { id: 'processed', label: 'Processed', icon: FileText },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -60,22 +60,6 @@ function AppContent() {
         return <ApplicationQueue />;
       case 'processed':
         return <ProcessedApplications 
-          onViewCase={(caseData) => {
-            // Convert CaseData to Application
-            const applicationCase: Application = {
-              id: caseData.id,
-              studentId: caseData.studentId,
-              name: caseData.name,
-              email: caseData.email,
-              riskScore: caseData.riskScore,
-              stage: caseData.stage as 'admission' | 'financial-aid' | 'enrollment',
-              status: 'processed',
-              flags: caseData.flags,
-              avatar: caseData.avatar,
-              timestamp: caseData.timestamp
-            };
-            setSelectedCaseFromNotification(applicationCase);
-          }}
           onReviewApplication={(applicationId) => {
             setReviewingApplicationId(applicationId);
           }}
@@ -301,7 +285,7 @@ function AppContent() {
                     <span className="text-xs font-bold text-white">AI</span>
                   </div>
                   <div className="text-sm">
-                    <div className={isDark ? 'text-white' : 'text-gray-900'}>Welcome, Admin</div>
+                    <div className={isDark ? 'text-white' : 'text-gray-900'}>Admin 1</div>
                     <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       Fraud Analyst
                     </div>

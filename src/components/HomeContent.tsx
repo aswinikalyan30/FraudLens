@@ -1,14 +1,23 @@
+  // Admin name (could be dynamic in a real app)
+  const adminName = 'Admin 1';
+  const today = new Date();
+  const dateString = today.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
 import React, { useState } from 'react';
 import { 
   Users, 
   CheckCircle, 
   Target, 
   TrendingUp, 
+  ArrowRight,
+  MessageSquare,
+  X
 } from 'lucide-react';
+
 import { useApplications } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNotifications } from '../contexts/NotificationContext';
-// import FlagsChart from './FlagsChart';
+import FlagsChart from './FlagsChart';
+import ChatAgent from './ChatAgent';
 
 interface HomeContentProps {
   onNavigateToQueue: () => void;
@@ -24,6 +33,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
   const { isDark } = useTheme();
   const [selectedApplications, setSelectedApplications] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Calculate KPI values
   const totalApplications = queueApplications.length + processedApplications.length;
@@ -86,20 +96,54 @@ const HomeContent: React.FC<HomeContentProps> = ({
     }
   };
 
-  // Better chart data for risk trends
-  const chartData = [
-    { name: 'Jan', risk: 65, processed: 45 },
-    { name: 'Feb', risk: 72, processed: 52 },
-    { name: 'Mar', risk: 68, processed: 48 },
-    { name: 'Apr', risk: 75, processed: 55 },
-    { name: 'May', risk: 70, processed: 62 },
-    { name: 'Jun', risk: 82, processed: 58 },
-    { name: 'Jul', risk: 78, processed: 65 },
-    { name: 'Aug', risk: 85, processed: 71 }
-  ];
+  // Dynamic greeting subtitle as a text link
+  let greetingSubtitle: React.ReactNode = null;
+  if (queueApplications.length > 0) {
+    greetingSubtitle = (
+      <button
+        onClick={onNavigateToQueue}
+        className="hover:underline font-medium focus:outline-none"
+        type="button"
+      >
+        Start processing queued applications
+        <ArrowRight className="inline-block w-4 h-4 ml-1" />
+      </button>
+    );
+  } else if (processedApplications.length > 0) {
+    greetingSubtitle = (
+      <button
+        onClick={onNavigateToProcessed}
+        className="hover:underline font-medium focus:outline-none"
+        type="button"
+      >
+        Review processed applications
+        <ArrowRight className="inline-block w-4 h-4 ml-1" />
+      </button>
+    );
+  } else {
+    greetingSubtitle = 'Look at reports in detail';
+  }
 
   return (
     <div className="p-4 lg:p-6 space-y-6">
+      {/* Greeting Header */}
+      <div className={
+        `flex items-center justify-between mb-3 px-4 py-3` +
+        (isDark
+          ? 'bg-gray-800 border-gray-700'
+          : 'bg-white border-gray-200')
+      }>
+        <div className="space-y-0.5">
+          <h1 className="text-2xl font-bold">Hello, {adminName}👋</h1>
+          <p className="text-base text-gray-500 dark:text-gray-400 leading-snug">{greetingSubtitle}</p>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-medium">{dateString}</span>
+          <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" stroke="currentColor" fill="none"/><path d="M16 2v4M8 2v4M3 10h18" strokeWidth="2" stroke="currentColor" fill="none"/></svg>
+          </span>
+        </div>
+      </div>
       {/* KPI Cards - Compact with Icons and Text on Same Line */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className={`p-4 rounded-lg border ${
@@ -205,127 +249,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
 
       {/* Enhanced Chart Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className={`p-6 rounded-xl border ${
-          isDark 
-            ? 'bg-gray-800 border-gray-700' 
-            : 'bg-white border-gray-200 shadow-sm'
-        }`}>
-          <div className="flex items-center justify-between mb-6">
-            <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Risk Trends
-            </h3>
-            <select className={`text-sm border rounded-lg px-3 py-1 ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'bg-white border-gray-300 text-gray-900'
-            }`}>
-              <option>Last 8 months</option>
-              <option>Last 6 months</option>
-              <option>Last year</option>
-            </select>
-          </div>
-          
-          {/* Better Line Chart */}
-          <div className="relative h-64">
-            <svg className="w-full h-full" viewBox="0 0 400 200">
-              <defs>
-                <linearGradient id="riskGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.3"/>
-                  <stop offset="100%" stopColor="#F59E0B" stopOpacity="0"/>
-                </linearGradient>
-                <linearGradient id="processedGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.2"/>
-                  <stop offset="100%" stopColor="#3B82F6" stopOpacity="0"/>
-                </linearGradient>
-              </defs>
-              
-              {/* Grid lines */}
-              {[0, 50, 100, 150, 200].map((y) => (
-                <line 
-                  key={y} 
-                  x1="40" 
-                  y1={y} 
-                  x2="380" 
-                  y2={y} 
-                  stroke={isDark ? '#374151' : '#E5E7EB'} 
-                  strokeWidth="1"
-                  strokeDasharray={y === 200 ? '0' : '2,2'}
-                />
-              ))}
-              
-              {/* Risk line */}
-              <path
-                d={`M 40,${200 - (chartData[0].risk * 1.5)} ${chartData.map((point, index) => 
-                  `L ${40 + (index * 48.5)},${200 - (point.risk * 1.5)}`
-                ).join(' ')}`}
-                fill="none"
-                stroke="#F59E0B"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              
-              {/* Processed line */}
-              <path
-                d={`M 40,${200 - (chartData[0].processed * 1.5)} ${chartData.map((point, index) => 
-                  `L ${40 + (index * 48.5)},${200 - (point.processed * 1.5)}`
-                ).join(' ')}`}
-                fill="none"
-                stroke="#3B82F6"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              
-              {/* Data points */}
-              {chartData.map((point, index) => (
-                <g key={index}>
-                  <circle
-                    cx={40 + (index * 48.5)}
-                    cy={200 - (point.risk * 1.5)}
-                    r="4"
-                    fill="#F59E0B"
-                    stroke="white"
-                    strokeWidth="2"
-                  />
-                  <circle
-                    cx={40 + (index * 48.5)}
-                    cy={200 - (point.processed * 1.5)}
-                    r="4"
-                    fill="#3B82F6"
-                    stroke="white"
-                    strokeWidth="2"
-                  />
-                </g>
-              ))}
-              
-              {/* Labels */}
-              {chartData.map((point, index) => (
-                <text
-                  key={index}
-                  x={40 + (index * 48.5)}
-                  y="190"
-                  textAnchor="middle"
-                  fill={isDark ? '#9CA3AF' : '#6B7280'}
-                  fontSize="10"
-                >
-                  {point.name}
-                </text>
-              ))}
-            </svg>
-          </div>
-          
-          <div className="flex items-center justify-center gap-6 mt-4">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-              <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Risk Score</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>Processed</span>
-            </div>
-          </div>
-        </div>
+        <FlagsChart />
                 <div className={`border rounded-xl p-6 ${
           isDark 
             ? 'bg-gray-800 border-gray-700' 
@@ -512,6 +436,38 @@ const HomeContent: React.FC<HomeContentProps> = ({
           )}
         </div>
       </div>
+      
+      {/* Chat Widget Button */}
+      <div className="fixed bottom-20 right-6 md:bottom-6 md:right-6 z-10">
+        {!isChatOpen ? (
+          <button 
+            onClick={() => setIsChatOpen(true)}
+            className="w-14 h-14 rounded-full bg-purple-600 hover:bg-purple-700 text-white flex items-center justify-center shadow-lg transition-all"
+          >
+            <MessageSquare className="w-6 h-6" />
+          </button>
+        ) : null}
+      </div>
+
+      {/* Chat Widget Popup */}
+      {isChatOpen && (
+        <div className="fixed bottom-20 right-6 md:bottom-6 md:right-6 z-20 w-[350px] h-[500px] rounded-lg shadow-xl overflow-hidden">
+          <div className="w-full h-full flex flex-col">
+            <div className={`p-3 flex justify-between items-center ${isDark ? 'bg-gray-900' : 'bg-purple-600'}`}>
+              <h3 className="text-white font-medium">AI Assistant</h3>
+              <button 
+                onClick={() => setIsChatOpen(false)}
+                className="text-white/80 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <ChatAgent applicationId="home" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

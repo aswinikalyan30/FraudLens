@@ -3,6 +3,7 @@ import { X, Shield, AlertTriangle, User, Mail, FileText, Activity, Send, Brain, 
 import { useTheme } from '../contexts/ThemeContext';
 import { Application } from '../contexts/ApplicationContext';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ChatMessage {
   id: string;
   message: string;

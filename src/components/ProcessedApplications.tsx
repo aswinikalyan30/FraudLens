@@ -1,30 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Eye, History, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { useApplications } from '../contexts/ApplicationContext';
+import { useApplications, Application } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
-
-interface CaseData {
-  id: string;
-  studentId: string;
-  name: string;
-  email: string;
-  riskScore: number;
-  stage: string;
-  flags: string[];
-  summary: string;
-  avatar: string;
-  previousFlags: number;
-  timestamp: string;
-}
+import CaseReview from './CaseReview';
 
 interface ProcessedApplicationsProps {
-  onViewCase: (caseData: CaseData) => void;
   onReviewApplication?: (applicationId: string) => void;
 }
 
-const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCase, onReviewApplication }) => {
+const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewApplication }) => {
   const { processedApplications } = useApplications();
   const { isDark } = useTheme();
+  const [selectedCase, setSelectedCase] = useState<Application | null>(null);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -71,21 +58,12 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
     }
   };
 
-  const handleViewCase = (application: CaseData) => {
-    const caseData = {
-      id: application.id,
-      studentId: application.studentId,
-      name: application.name,
-      email: application.email,
-      riskScore: application.riskScore || 0,
-      stage: application.stage,
-      flags: application.flags || [],
-      summary: `AI Analysis: ${(application.riskScore ?? 0) >= 80 ? 'High-risk case detected' : 'Low-risk application approved'} by automated fraud detection system.`,
-      avatar: application.avatar,
-      previousFlags: 0,
-      timestamp: application.timestamp
-    };
-    onViewCase(caseData);
+  const handleViewCase = (application: Application) => {
+    setSelectedCase(application);
+  };
+
+  const closeDrawer = () => {
+    setSelectedCase(null);
   };
 
   const formatTimestamp = (timestamp: string) => {
@@ -145,19 +123,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
                   className={`cursor-pointer transition-colors ${
                     isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => handleViewCase({
-                    id: application.id,
-                    studentId: application.studentId,
-                    name: application.name,
-                    email: application.email,
-                    riskScore: application.riskScore || 0,
-                    stage: application.stage,
-                    flags: application.flags || [],
-                    summary: `AI Analysis: ${(application?.riskScore ?? 0) >= 80 ? 'High-risk case detected' : 'Low-risk application approved'} by automated fraud detection system.`,
-                    avatar: application.avatar,
-                    previousFlags: 0,
-                    timestamp: application.timestamp
-                  })}
+                  onClick={() => handleViewCase(application)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
@@ -204,19 +170,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
                           e.stopPropagation();
                           // Timeline functionality removed for now
                           console.log('Timeline for:', application.studentId);
-                          handleViewCase({
-                            id: application.id,
-                            studentId: application.studentId,
-                            name: application.name,
-                            email: application.email,
-                            riskScore: application.riskScore || 0,
-                            stage: application.stage,
-                            flags: application.flags || [],
-                            summary: `AI Analysis: ${(application?.riskScore ?? 0) >= 80 ? 'High-risk case detected' : 'Low-risk application approved'} by automated fraud detection system.`,
-                            avatar: application.avatar,
-                            previousFlags: 0,
-                            timestamp: application.timestamp
-                          });
+                          handleViewCase(application);
                         }}
                         className={`inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
                           isDark 
@@ -230,19 +184,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleViewCase({
-                            id: application.id,
-                            studentId: application.studentId,
-                            name: application.name,
-                            email: application.email,
-                            riskScore: application.riskScore || 0,
-                            stage: application.stage,
-                            flags: application.flags || [],
-                            summary: `AI Analysis: ${(application?.riskScore ?? 0) >= 80 ? 'High-risk case detected' : 'Low-risk application approved'} by automated fraud detection system.`,
-                            avatar: application.avatar,
-                            previousFlags: 0,
-                            timestamp: application.timestamp
-                          });
+                          handleViewCase(application);
                         }}
                         className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                           isDark 
@@ -287,19 +229,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
                 ? 'bg-gray-800 border-gray-700 hover:border-gray-600' 
                 : 'bg-white border-gray-200 hover:border-gray-300'
             }`}
-            onClick={() => handleViewCase({
-                            id: application.id,
-                            studentId: application.studentId,
-                            name: application.name,
-                            email: application.email,
-                            riskScore: application.riskScore || 0,
-                            stage: application.stage,
-                            flags: application.flags || [],
-                            summary: `AI Analysis: ${(application?.riskScore ?? 0) >= 80 ? 'High-risk case detected' : 'Low-risk application approved'} by automated fraud detection system.`,
-                            avatar: application.avatar,
-                            previousFlags: 0,
-                            timestamp: application.timestamp
-                          })}
+            onClick={() => handleViewCase(application)}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center space-x-3">
@@ -356,19 +286,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleViewCase({
-                            id: application.id,
-                            studentId: application.studentId,
-                            name: application.name,
-                            email: application.email,
-                            riskScore: application.riskScore || 0,
-                            stage: application.stage,
-                            flags: application.flags || [],
-                            summary: `AI Analysis: ${(application?.riskScore ?? 0) >= 80 ? 'High-risk case detected' : 'Low-risk application approved'} by automated fraud detection system.`,
-                            avatar: application.avatar,
-                            previousFlags: 0,
-                            timestamp: application.timestamp
-                          });
+                    handleViewCase(application);
                   }}
                   className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                     isDark 
@@ -409,6 +327,15 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onViewCas
       )}
 
       {/* Timeline Modal - Removed for now */}
+      
+      {/* Case Review Drawer */}
+      {selectedCase && (
+        <CaseReview
+          case={selectedCase}
+          onClose={closeDrawer}
+          mode="drawer"
+        />
+      )}
     </div>
   );
 };
