@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, History, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import {AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { useApplications, Application } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
 import CaseReview from './CaseReview';
@@ -123,7 +123,6 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                   className={`cursor-pointer transition-colors ${
                     isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                   }`}
-                  onClick={() => handleViewCase(application)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
@@ -165,36 +164,6 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Timeline functionality removed for now
-                          console.log('Timeline for:', application.studentId);
-                          handleViewCase(application);
-                        }}
-                        className={`inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md transition-colors ${
-                          isDark 
-                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                        }`}
-                        title="View Timeline"
-                      >
-                        <History className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewCase(application);
-                        }}
-                        className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                          isDark 
-                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                        }`}
-                      >
-                        <Eye className="w-4 h-4" />
-                        View
-                      </button>
                       {onReviewApplication && (
                         <button
                           onClick={(e) => {
@@ -269,33 +238,6 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                 {formatTimestamp(application.timestamp)}
               </span>
               <div className="flex space-x-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Timeline functionality removed for now
-                    console.log('Timeline for:', application.studentId);
-                  }}
-                  className={`px-2 py-1 text-sm font-medium rounded-md transition-colors ${
-                    isDark 
-                      ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                  }`}
-                >
-                  <History className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleViewCase(application);
-                  }}
-                  className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                    isDark 
-                      ? 'bg-gray-700 text-gray-200 hover:bg-gray-600 border border-gray-600' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
-                  }`}
-                >
-                  View
-                </button>
                 {onReviewApplication && (
                   <button
                     onClick={(e) => {
