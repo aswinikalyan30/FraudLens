@@ -1,0 +1,13 @@
+{
+  "name": "netlify-build-plugin-fraudlens",
+  "version": "1.0.0",
+  "description": "Custom Netlify build plugin for FraudLens application",
+  "main": "index.js",
+  "keywords": [
+    "netlify",
+    "netlify-plugin"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

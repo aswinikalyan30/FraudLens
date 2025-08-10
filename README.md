@@ -33,10 +33,11 @@ Configure these environment variables in the Netlify dashboard under Site Settin
 
 The build is configured in the following files:
 
-- `netlify.toml`: Main configuration file for Netlify
-- `netlify.context.toml`: Context-specific environment settings
+- `netlify.toml`: Main configuration file for Netlify including context-specific settings
 - `netlify.env.js`: JavaScript helper for Netlify-specific configurations
+- `netlify.config.js`: Additional JavaScript configuration for builds
 - `.env.production`: Production environment variables
+- `netlify/plugins/`: Directory containing the custom build plugin (with manifest.yml)
 
 ## Custom Redirects
 
@@ -51,11 +52,24 @@ The Vite build configuration includes:
 - Sourcemap generation for better debugging
 - Path aliasing for cleaner imports
 
+## Custom Build Plugin
+
+This project uses a custom Netlify build plugin located in the `netlify/plugins` directory. The plugin:
+
+- Runs pre-build and post-build optimizations
+- Provides build summaries in the Netlify deploy logs
+- Ensures redirects are properly copied to the build directory
+- Can be extended with custom functionality like asset optimization
+
 ## Troubleshooting
 
 If you encounter any deployment issues:
 
 1. Check the Netlify deploy logs
-2. Verify your node/npm versions in netlify.context.toml match your local environment
+2. Verify your node/npm versions in netlify.toml match your local environment
 3. Ensure all environment variables are set correctly
 4. Try running a local build with `npm run build` to identify any issues
+5. For plugin-related issues, check that the plugin directory structure follows Netlify conventions:
+   - `netlify/plugins/index.js`: Main plugin code
+   - `netlify/plugins/manifest.yml`: Plugin manifest file with only the supported fields (name, inputs)
+   - `netlify/plugins/package.json`: Plugin package definition

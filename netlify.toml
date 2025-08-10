@@ -1,11 +1,28 @@
+
 [build]
   # Directory to publish (relative to root of your repo)
   publish = "dist"
-  # Default build command
-  command = "npm run build"
+  # Force install devDependencies before build to ensure Vite is available
+  command = "npm install --include=dev && npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_VERSION = "10"
+  NODE_ENV = "development"
   
+# Context-specific settings
+[context.production]
+  environment = { NODE_ENV = "production", REACT_APP_ENVIRONMENT = "production" }
+
+[context.deploy-preview]
+  environment = { NODE_ENV = "production", REACT_APP_ENVIRONMENT = "preview" }
+
+[context.branch-deploy]
+  environment = { NODE_ENV = "production", REACT_APP_ENVIRONMENT = "staging" }
+  
+# Using local plugin path (relative to project root)
 [[plugins]]
-  package = "/netlify/plugins/build-plugin"
+  package = "./netlify/plugins"
 
 # Redirects and headers for Single Page Applications
 [[redirects]]
