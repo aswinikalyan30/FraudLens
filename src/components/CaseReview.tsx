@@ -6,6 +6,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Application } from '../contexts/ApplicationContext';
 import ChatAgent from './ChatAgent';
 import DecisionDocumentationModal, { DecisionData } from './DecisionDocumentationModal';
+import DocumentRequestWizard from './DocumentRequestWizard';
 import './CaseReviewStyles.css';
 import SummaryCard from './caseReview/SummaryCard';
 // import CollapsibleSection from './caseReview/CollapsibleSection';
@@ -25,8 +26,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
   // UI state
   const [isGenerating, setIsGenerating] = React.useState(true);
   const [transcriptAvailable, setTranscriptAvailable] = React.useState(false);
-  const [showEmailModal, setShowEmailModal] = React.useState(false);
-  const [emailTemplate, setEmailTemplate] = React.useState('');
+  const [showDocumentWizard, setShowDocumentWizard] = React.useState(false);
   const [showChatWindow, setShowChatWindow] = React.useState(false);
   const [showDecisionModal, setShowDecisionModal] = React.useState(false);
   const [decisionType, setDecisionType] = React.useState<'approve' | 'reject' | 'escalate' | null>(null);
@@ -126,10 +126,17 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
     return events;
   }, [application]);
 
-  const handleSendEmail = () => {
-    alert('Email sent successfully!');
-    setShowEmailModal(false);
-    setEmailTemplate('');
+  const handleSendDocumentRequest = (requestData: {
+    documents: string[];
+    message: string;
+    urgency: number;
+    dueDate: string;
+    tone: 'formal' | 'friendly' | 'urgent';
+    language: string;
+    template?: string;
+  }) => {
+    console.log('Document request sent:', requestData);
+    alert('Document request sent successfully!');
   };
 
   const containerClass = mode === 'modal' 
@@ -301,19 +308,6 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
                 setConfidenceProgress={setConfidenceProgress}
                 isGenerating={isGenerating}
               />
-              <RiskVisualization 
-                score={application.riskScore}
-                trend={[application.riskScore - 10, application.riskScore - 5, application.riskScore]}
-                similarAverage={Math.max(0, application.riskScore - 15)}
-                breakdown={[
-                  { label: 'Essay Similarity', value: 40 },
-                  { label: 'Email Age', value: 25 },
-                  { label: 'Submission Pattern', value: 20 },
-                  { label: 'Behavioral Signals', value: 10 },
-                  { label: 'Other', value: 5 }
-                ]}
-                isDark={isDark}
-              />
               {/* Documents */}
               <div className={`border rounded-lg p-4 transition-all duration-200 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
                 <h3 className={`text-base font-semibold mb-3 flex items-center space-x-2`}>
@@ -351,11 +345,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
                   <h4 className={`text-sm font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Request Additional Documents</h4>
                   <p className={`text-xs mb-3 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Request additional documents from the applicant to verify their application.</p>
                   <button
-                    onClick={() => {
-                      const template = `Dear ${application.name},\n\nThank you for your application to our program. As part of our standard verification process, we need to request additional documents from you.\n\nPlease submit the following documents within 5 business days to avoid any delays in processing your application:\n\n• ID Proof (Government issued photo ID)\n• Bank Statements (Last 3 months)  \n• Address Proof (Utility bill or lease agreement)\n• Income Verification (Pay stubs or tax returns)\n\nYou can submit these documents through our secure portal or reply directly to this email with the attachments.\n\nIf you have any questions or need clarification on any of these requirements, please don't hesitate to contact our admissions team.\n\nBest regards,\nAdmissions Review Team\nUniversity Fraud Detection Department\n\n---\nApplication ID: ${application.studentId}\nRisk Assessment Level: ${(application.riskScore || 0) >= 80 ? 'High' : (application.riskScore || 0) >= 50 ? 'Medium' : 'Low'}\n`;
-                      setEmailTemplate(template);
-                      setShowEmailModal(true);
-                    }}
+                    onClick={() => setShowDocumentWizard(true)}
                     className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       isDark
                         ? 'bg-purple-600 text-white hover:bg-purple-700 hover:shadow-lg'
@@ -372,6 +362,19 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
             <div className="space-y-6 flex flex-col h-full">
               {/* Timeline */}
               <Timeline events={timelineEvents} isDark={isDark} />
+                <RiskVisualization 
+                score={application.riskScore}
+                trend={[application.riskScore - 10, application.riskScore - 5, application.riskScore]}
+                similarAverage={Math.max(0, application.riskScore - 15)}
+                breakdown={[
+                  { label: 'Essay Similarity', value: 40 },
+                  { label: 'Email Age', value: 25 },
+                  { label: 'Submission Pattern', value: 20 },
+                  { label: 'Behavioral Signals', value: 10 },
+                  { label: 'Other', value: 5 }
+                ]}
+                isDark={isDark}
+              />
               {/* Action Buttons */}
               <ActionButtons 
                 isDark={isDark}
@@ -435,50 +438,16 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
           </div>
         )}
 
-        {/* Email Modal */}
-        {showEmailModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className={`max-w-2xl w-full mx-4 rounded-lg border ${
-              isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`border-b px-6 py-4 ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-                <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                  Document Request Email
-                </h3>
-              </div>
-              <div className="p-6">
-                <textarea
-                  value={emailTemplate}
-                  onChange={(e) => setEmailTemplate(e.target.value)}
-                  className={`w-full h-64 p-3 border rounded-lg text-sm ${
-                    isDark 
-                      ? 'bg-gray-700 border-gray-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-900'
-                  }`}
-                  placeholder="Email content..."
-                />
-                <div className="flex justify-end gap-2 mt-4">
-                  <button
-                    onClick={() => setShowEmailModal(false)}
-                    className={`px-4 py-2 border rounded-lg ${
-                      isDark 
-                        ? 'border-gray-600 text-gray-300 hover:bg-gray-700' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleSendEmail}
-                    className="px-4 py-2 bg-[#7100EB] text-white rounded-lg hover:bg-[#7100EB]/80"
-                  >
-                    Send Email
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Document Request Wizard */}
+        <DocumentRequestWizard
+          isOpen={showDocumentWizard}
+          onClose={() => setShowDocumentWizard(false)}
+          applicantName={application.name}
+          studentId={application.studentId}
+          program={application.program}
+          riskScore={application.riskScore}
+          onSend={handleSendDocumentRequest}
+        />
         {showDecisionModal && (
           <DecisionDocumentationModal
             case={{
