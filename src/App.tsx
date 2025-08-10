@@ -10,6 +10,7 @@ import ProcessedApplications from './components/ProcessedApplications';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ApplicationProvider, Application, useApplications } from './contexts/ApplicationContext';
+import { NavigationProvider } from './contexts/NavigationContext';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -325,7 +326,9 @@ function App() {
     <ThemeProvider>
       <NotificationProvider>
         <ApplicationProvider>
-          <AppContent />
+          <NavigationProvider>
+            <AppContent />
+          </NavigationProvider>
         </ApplicationProvider>
       </NotificationProvider>
     </ThemeProvider>

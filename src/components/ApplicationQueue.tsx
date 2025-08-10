@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Brain, Clock, Play, CheckCircle } from 'lucide-react';
 import { useApplications } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -6,8 +6,65 @@ import { useNotifications } from '../contexts/NotificationContext';
 
 const ApplicationQueue: React.FC = () => {
   const { queueApplications, startBulkFraudDetection, isBulkProcessing, bulkProcessingStatus } = useApplications();
-  const { isDark } = useTheme();
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  // Priority state
+  const [priorityMap, setPriorityMap] = useState<Record<string, 'Normal' | 'Urgent'>>({});
   const { addNotification } = useNotifications();
+  // Select all/none logic
+  const allSelectableIds = queueApplications.filter(app => !app.aiProcessing).map(app => app.id);
+  const isAllSelected = allSelectableIds.length > 0 && allSelectableIds.every(id => selectedIds.includes(id));
+  const isIndeterminate = selectedIds.length > 0 && !isAllSelected;
+
+  // Keyboard shortcuts
+  const handleStartBulkFraudDetectionSelected = useCallback(() => {
+    if (selectedIds.length === 0) return;
+    addNotification({
+      type: 'new-case',
+      title: 'Bulk Fraud Detection Started',
+      message: `Fraud detection initiated for ${selectedIds.length} selected applications.`,
+    });
+    // For demo: just call the original bulk function (real impl would pass selectedIds)
+    startBulkFraudDetection();
+    setSelectedIds([]);
+  }, [selectedIds, addNotification, startBulkFraudDetection]);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+      e.preventDefault();
+      setSelectedIds(isAllSelected ? [] : allSelectableIds);
+    } else if (e.key === 'Escape') {
+      setSelectedIds([]);
+    } else if (e.key === 'Enter' && selectedIds.length > 0 && !isBulkProcessing) {
+      handleStartBulkFraudDetectionSelected();
+    }
+  }, [isAllSelected, allSelectableIds, selectedIds, isBulkProcessing, handleStartBulkFraudDetectionSelected]);
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown]);
+
+  // Estimated processing time (assume 10s per application)
+  const estimatedTimeSec = selectedIds.length * 10;
+
+  // Priority change handler
+  const handlePriorityChange = (id: string, value: 'Normal' | 'Urgent') => {
+    setPriorityMap(prev => ({ ...prev, [id]: value }));
+  };
+
+  // Select all/none handler
+  const handleSelectAll = () => {
+    setSelectedIds(isAllSelected ? [] : allSelectableIds);
+  };
+
+  // Individual selection handler
+  const handleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  };
+
+  // Bulk process only selected (moved to useCallback above)
+  const { isDark } = useTheme();
 
   const getStageColor = (stage: string) => {
     switch (stage) {
@@ -67,9 +124,13 @@ const ApplicationQueue: React.FC = () => {
         </div>
       </div>
 
+
       {/* Control Panel */}
       <div className={`border rounded-lg overflow-hidden p-6
-        ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+        ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}
+        tabIndex={0}
+        aria-label="Queue Controls"
+      >
         <div className="flex items-center space-x-2 mb-2">
           <Clock className={`h-5 w-5 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
           <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Queue Controls</h2>
@@ -77,20 +138,25 @@ const ApplicationQueue: React.FC = () => {
         <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
           Manage batch processing of applications
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div className="flex items-center space-x-4">
-            <input 
-              type="checkbox" 
-              className={`rounded h-4 w-4 
-                ${isDark ? 'bg-gray-700 border-gray-600' : 'border-gray-300'}`}
+            <input
+              type="checkbox"
+              checked={isAllSelected}
+              ref={el => { if (el) el.indeterminate = isIndeterminate; }}
+              onChange={handleSelectAll}
+              className={`rounded h-4 w-4 ${isDark ? 'bg-gray-700 border-gray-600' : 'border-gray-300'}`}
+              aria-label={isAllSelected ? 'Deselect all' : 'Select all'}
             />
             <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Select applications
+              {isAllSelected ? 'Deselect All' : 'Select All'}
             </span>
+            <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>({selectedIds.length} selected)</span>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
             <button
-              disabled={true}
+              onClick={handleStartBulkFraudDetectionSelected}
+              disabled={selectedIds.length === 0 || isBulkProcessing}
               className={`flex items-center justify-center space-x-2 px-6 py-3 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border
                 ${isDark 
                   ? 'bg-gray-700 text-gray-300 border-gray-600 hover:bg-gray-600' 
@@ -124,7 +190,13 @@ const ApplicationQueue: React.FC = () => {
                 </>
               )}
             </button>
+            {selectedIds.length > 0 && (
+              <span className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>Est. time: {estimatedTimeSec}s</span>
+            )}
           </div>
+        </div>
+        <div className="text-xs mt-2 text-gray-400">
+          <span>Shortcuts: Ctrl/Cmd+A = select all, Esc = clear, Enter = process selected</span>
         </div>
       </div>
       
@@ -163,31 +235,26 @@ const ApplicationQueue: React.FC = () => {
           <table className="min-w-full">
             <thead>
               <tr>
-                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider
-                  ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  <input type="checkbox" className={`rounded ${isDark ? 'bg-gray-700 border-gray-600' : 'border-gray-300'}`} />
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    ref={el => { if (el) el.indeterminate = isIndeterminate; }}
+                    onChange={handleSelectAll}
+                    className={`rounded ${isDark ? 'bg-gray-700 border-gray-600' : 'border-gray-300'}`}
+                    aria-label={isAllSelected ? 'Deselect all' : 'Select all'}
+                  />
                 </th>
-                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider
-                  ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Applicant ID
-                </th>
-                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden sm:table-cell
-                  ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Program
-                </th>
-                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider
-                  ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Time Received
-                </th>
-                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell
-                  ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Status
-                </th>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Applicant ID</th>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden sm:table-cell ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Program</th>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Time Received</th>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider hidden md:table-cell ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Status</th>
+                <th className={`px-4 py-3 text-left text-xs font-medium uppercase tracking-wider ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Priority</th>
               </tr>
             </thead>
             <tbody className="divide-y animate-fade-in">
               {queueApplications.map((application, index) => (
-                <tr 
+                <tr
                   key={application.id}
                   className={`transition-colors animate-fade-in
                     ${isDark ? 'hover:bg-gray-700 divide-gray-700' : 'hover:bg-gray-50 divide-gray-200'}
@@ -195,63 +262,64 @@ const ApplicationQueue: React.FC = () => {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <input 
-                      type="checkbox" 
-                      className={`rounded ${isDark ? 'bg-gray-700 border-gray-600' : 'border-gray-300'}`} 
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(application.id)}
+                      onChange={() => handleSelect(application.id)}
+                      className={`rounded ${isDark ? 'bg-gray-700 border-gray-600' : 'border-gray-300'}`}
                       disabled={application.aiProcessing}
+                      aria-label={selectedIds.includes(application.id) ? 'Deselect' : 'Select'}
                     />
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
-                      <img 
-                        src={application.avatar} 
+                      <img
+                        src={application.avatar}
                         alt={application.name}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                       <div>
-                        <div className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                          {application.studentId}
-                        </div>
-                        <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                          {application.name}
-                        </div>
+                        <div className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{application.studentId}</div>
+                        <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{application.name}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap hidden sm:table-cell">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStageColor(application.stage)}`}>
-                      {application.stage.replace('-', ' ')}
-                    </span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${getStageColor(application.stage)}`}>{application.stage.replace('-', ' ')}</span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm">
-                    <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
-                      {formatTimestamp(application.timestamp)}
-                    </span>
+                    <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>{formatTimestamp(application.timestamp)}</span>
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap hidden md:table-cell">
                     {application.aiProcessing ? (
                       <div className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-2">
                           <div className="w-3 h-3 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                          <span className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>
-                            {application.processingStage || 'Processing...'}
-                          </span>
+                          <span className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{application.processingStage || 'Processing...'}</span>
                         </div>
                         {/* Progress bar */}
                         <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-purple-500 transition-all duration-500"
-                            style={{ width: `${50}%` }}
-                          ></div>
+                          <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${50}%` }}></div>
                         </div>
                       </div>
                     ) : (
-                      <span className={`px-2 py-1 rounded-full text-xs border inline-flex items-center space-x-1 
-                        ${isDark ? 'bg-gray-700 border-gray-600 text-gray-300' : 'bg-gray-100 border-gray-200 text-gray-700'}`}>
+                      <span className={`px-2 py-1 rounded-full text-xs border inline-flex items-center space-x-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-300' : 'bg-gray-100 border-gray-200 text-gray-700'}`}>
                         <Clock className="h-3 w-3 mr-1" />
                         <span>Pending</span>
                       </span>
                     )}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <select
+                      value={priorityMap[application.id] || 'Normal'}
+                      onChange={e => handlePriorityChange(application.id, e.target.value as 'Normal' | 'Urgent')}
+                      className={`rounded px-2 py-1 text-xs border ${isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                      disabled={application.aiProcessing}
+                      aria-label="Priority"
+                    >
+                      <option value="Normal">Normal</option>
+                      <option value="Urgent">Urgent</option>
+                    </select>
                   </td>
                 </tr>
               ))}

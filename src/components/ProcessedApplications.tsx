@@ -1,17 +1,87 @@
-import React, { useState } from 'react';
-import {AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import {AlertTriangle, CheckCircle, XCircle, Clock, Search, Filter, Sliders, Save, Trash, Star, X } from 'lucide-react';
 import { useApplications, Application } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useNavigation } from '../contexts/NavigationContext';
 import CaseReview from './CaseReview';
+import Breadcrumbs from './Breadcrumbs';
 
 interface ProcessedApplicationsProps {
   onReviewApplication?: (applicationId: string) => void;
 }
 
+interface FilterState {
+  search: string;
+  riskScore: [number, number];
+  statuses: string[];
+  stages: string[];
+  dateRange: [Date | null, Date | null];
+}
+
+interface SavedFilter {
+  id: string;
+  name: string;
+  filter: FilterState;
+  isPinned?: boolean;
+}
+
+const defaultFilterState: FilterState = {
+  search: '',
+  riskScore: [0, 100],
+  statuses: [],
+  stages: [],
+  dateRange: [null, null]
+};
+
 const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewApplication }) => {
   const { processedApplications } = useApplications();
   const { isDark } = useTheme();
+  const { savePageState, getPageState } = useNavigation();
   const [selectedCase, setSelectedCase] = useState<Application | null>(null);
+  
+  // Initialize state from navigation context or defaults
+  const savedState = getPageState('processed') as {
+    filters?: FilterState;
+    showFilterPanel?: boolean;
+    savedFilters?: SavedFilter[];
+  } | undefined;
+  
+  // Filter state
+  const [filters, setFilters] = useState<FilterState>(
+    savedState?.filters || defaultFilterState
+  );
+  const [showFilterPanel, setShowFilterPanel] = useState(
+    savedState?.showFilterPanel || false
+  );
+  const [savedFilters, setSavedFilters] = useState<SavedFilter[]>(() => {
+    if (savedState?.savedFilters) return savedState.savedFilters;
+    
+    const stored = localStorage.getItem('fraudLens_savedFilters');
+    return stored ? JSON.parse(stored) : [
+      {
+        id: 'high-risk',
+        name: 'High Risk (80+)',
+        filter: { ...defaultFilterState, riskScore: [80, 100] },
+        isPinned: true
+      },
+      {
+        id: 'rejected',
+        name: 'Rejected Applications',
+        filter: { ...defaultFilterState, statuses: ['rejected'] },
+        isPinned: true
+      }
+    ];
+  });
+  const [filterName, setFilterName] = useState('');
+
+  // Save state when it changes
+  useEffect(() => {
+    savePageState('processed', {
+      filters,
+      showFilterPanel,
+      savedFilters
+    });
+  }, [filters, showFilterPanel, savedFilters, savePageState]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -70,19 +140,468 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
     return new Date(timestamp).toLocaleString();
   };
 
+  // Save filters to local storage
+  useEffect(() => {
+    localStorage.setItem('fraudLens_savedFilters', JSON.stringify(savedFilters));
+  }, [savedFilters]);
+
+  // Filter applications based on criteria
+  const filteredApplications = useMemo(() => {
+    return processedApplications.filter(app => {
+      // Full-text search
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        const matchesSearch = 
+          app.name.toLowerCase().includes(searchLower) ||
+          app.studentId.toLowerCase().includes(searchLower) ||
+          app.email?.toLowerCase().includes(searchLower) ||
+          app.stage.toLowerCase().includes(searchLower) ||
+          app.status.toLowerCase().includes(searchLower);
+        
+        if (!matchesSearch) return false;
+      }
+      
+      // Risk score range
+      if (app.riskScore !== undefined && 
+         (app.riskScore < filters.riskScore[0] || app.riskScore > filters.riskScore[1])) {
+        return false;
+      }
+      
+      // Status filter
+      if (filters.statuses.length > 0 && !filters.statuses.includes(app.status)) {
+        return false;
+      }
+      
+      // Stage filter
+      if (filters.stages.length > 0 && !filters.stages.includes(app.stage)) {
+        return false;
+      }
+      
+      // Date range filter
+      if (filters.dateRange[0] || filters.dateRange[1]) {
+        const appDate = new Date(app.timestamp);
+        
+        if (filters.dateRange[0] && appDate < filters.dateRange[0]) {
+          return false;
+        }
+        
+        if (filters.dateRange[1]) {
+          // Add one day to include the end date
+          const endDate = new Date(filters.dateRange[1]);
+          endDate.setDate(endDate.getDate() + 1);
+          
+          if (appDate > endDate) {
+            return false;
+          }
+        }
+      }
+      
+      return true;
+    });
+  }, [processedApplications, filters]);
+  
+  // Get unique stages and statuses for filter options
+  const availableStages = useMemo(() => {
+    return Array.from(new Set(processedApplications.map(app => app.stage)));
+  }, [processedApplications]);
+  
+  const availableStatuses = useMemo(() => {
+    return Array.from(new Set(processedApplications.map(app => app.status)));
+  }, [processedApplications]);
+  
+  // Handle filter save
+  const handleSaveFilter = () => {
+    if (!filterName.trim()) return;
+    
+    const newFilter: SavedFilter = {
+      id: `filter-${Date.now()}`,
+      name: filterName.trim(),
+      filter: {...filters},
+    };
+    
+    setSavedFilters(prev => [...prev, newFilter]);
+    setFilterName('');
+  };
+  
+  // Handle filter delete
+  const handleDeleteFilter = (id: string) => {
+    setSavedFilters(prev => prev.filter(f => f.id !== id));
+  };
+  
+  // Apply saved filter
+  const handleApplyFilter = (filter: FilterState) => {
+    setFilters(filter);
+    setShowFilterPanel(false);
+  };
+  
+  // Toggle filter pin status
+  const handleTogglePin = (id: string) => {
+    setSavedFilters(prev => prev.map(f => 
+      f.id === id ? { ...f, isPinned: !f.isPinned } : f
+    ));
+  };
+
+  // Handle risk slider change
+  const handleRiskRangeChange = (event: React.ChangeEvent<HTMLInputElement>, index: 0 | 1) => {
+    const value = parseInt(event.target.value);
+    setFilters(prev => {
+      const newRange = [...prev.riskScore] as [number, number];
+      newRange[index] = value;
+      
+      // Ensure min <= max
+      if (index === 0 && value > newRange[1]) {
+        newRange[1] = value;
+      } else if (index === 1 && value < newRange[0]) {
+        newRange[0] = value;
+      }
+      
+      return { ...prev, riskScore: newRange };
+    });
+  };
+  
+  // Format date for inputs
+  const formatDateForInput = (date: Date | null) => {
+    if (!date) return '';
+    return date.toISOString().split('T')[0];
+  };
+  
   return (
     <div className="p-4 lg:p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Breadcrumbs */}
+      <Breadcrumbs className="mb-4" />
+      
+      {/* Header with Search & Filter */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Processed Applications ({processedApplications.length})
+            Processed Applications ({filteredApplications.length})
           </h2>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             Applications that have completed AI fraud detection
           </p>
         </div>
+        
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* Search */}
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={filters.search}
+              onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+              placeholder="Search applications..."
+              className={`w-full px-4 py-2 pl-10 rounded-lg border transition-colors ${
+                isDark 
+                  ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-purple-500' 
+                  : 'bg-white border-gray-300 text-gray-800 focus:border-purple-500'
+              }`}
+            />
+            <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
+              isDark ? 'text-gray-400' : 'text-gray-500'
+            }`} />
+            {filters.search && (
+              <button 
+                onClick={() => setFilters(prev => ({ ...prev, search: '' }))}
+                className={`absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
+                  isDark ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-600'
+                }`}
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+          
+          {/* Filter Toggle Button */}
+          <button
+            onClick={() => setShowFilterPanel(!showFilterPanel)}
+            className={`flex items-center justify-center p-2 rounded-lg border ${
+              isDark 
+                ? 'bg-gray-800 border-gray-700 hover:bg-gray-700' 
+                : 'bg-white border-gray-300 hover:bg-gray-50'
+            } ${showFilterPanel || Object.values(filters).some(v => {
+              if (Array.isArray(v) && v.length === 2) {
+                // For risk score or date range
+                if (v[0] !== defaultFilterState.riskScore[0] || 
+                    v[1] !== defaultFilterState.riskScore[1]) {
+                  return true;
+                }
+                if (v[0] !== null || v[1] !== null) {
+                  return true;
+                }
+              }
+              
+              if (Array.isArray(v) && v.length > 0) return true;
+              if (typeof v === 'string' && v) return true;
+              
+              return false;
+            }) ? 'border-purple-500 text-purple-500' : ''}`}
+          >
+            <Sliders className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+      
+      {/* Saved Filters Pills */}
+      {savedFilters.filter(f => f.isPinned).length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {savedFilters
+            .filter(f => f.isPinned)
+            .map(filter => (
+              <button
+                key={filter.id}
+                onClick={() => handleApplyFilter(filter.filter)}
+                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+                  JSON.stringify(filter.filter) === JSON.stringify(filters)
+                    ? isDark 
+                      ? 'bg-purple-600 text-white' 
+                      : 'bg-purple-600 text-white'
+                    : isDark
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Star className="w-3 h-3" fill="currentColor" />
+                {filter.name}
+              </button>
+            ))
+          }
+          
+          <button
+            onClick={() => setFilters(defaultFilterState)}
+            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all ${
+              isDark 
+                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <X className="w-3 h-3" /> Clear All
+          </button>
+        </div>
+      )}
+      
+      {/* Filter Panel */}
+      {showFilterPanel && (
+        <div className={`rounded-lg border p-4 ${
+          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Risk Score Filter */}
+            <div>
+              <h3 className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Risk Score Range</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{filters.riskScore[0]}</span>
+                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{filters.riskScore[1]}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={filters.riskScore[0]}
+                    onChange={(e) => handleRiskRangeChange(e, 0)}
+                    className="flex-1 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
+                  />
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={filters.riskScore[1]}
+                    onChange={(e) => handleRiskRangeChange(e, 1)}
+                    className="flex-1 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full appearance-none cursor-pointer"
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Status Filter */}
+            <div>
+              <h3 className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Status</h3>
+              <div className="flex flex-wrap gap-2">
+                {availableStatuses.map(status => (
+                  <button
+                    key={status}
+                    onClick={() => setFilters(prev => ({
+                      ...prev,
+                      statuses: prev.statuses.includes(status)
+                        ? prev.statuses.filter(s => s !== status)
+                        : [...prev.statuses, status]
+                    }))}
+                    className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                      filters.statuses.includes(status)
+                        ? 'bg-purple-600 text-white'
+                        : isDark
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Stage Filter */}
+            <div>
+              <h3 className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Stage</h3>
+              <div className="flex flex-wrap gap-2">
+                {availableStages.map(stage => (
+                  <button
+                    key={stage}
+                    onClick={() => setFilters(prev => ({
+                      ...prev,
+                      stages: prev.stages.includes(stage)
+                        ? prev.stages.filter(s => s !== stage)
+                        : [...prev.stages, stage]
+                    }))}
+                    className={`inline-flex items-center px-2 py-1 rounded text-xs ${
+                      filters.stages.includes(stage)
+                        ? 'bg-purple-600 text-white'
+                        : isDark
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {stage.replace('-', ' ')}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Date Range */}
+            <div>
+              <h3 className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Date Range</h3>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="date"
+                    value={formatDateForInput(filters.dateRange[0])}
+                    onChange={(e) => setFilters(prev => ({
+                      ...prev,
+                      dateRange: [e.target.value ? new Date(e.target.value) : null, prev.dateRange[1]]
+                    }))}
+                    className={`w-full px-2 py-1 rounded-lg border text-xs ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-200' 
+                        : 'bg-white border-gray-300 text-gray-800'
+                    }`}
+                  />
+                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>to</span>
+                  <input
+                    type="date"
+                    value={formatDateForInput(filters.dateRange[1])}
+                    onChange={(e) => setFilters(prev => ({
+                      ...prev, 
+                      dateRange: [prev.dateRange[0], e.target.value ? new Date(e.target.value) : null]
+                    }))}
+                    className={`w-full px-2 py-1 rounded-lg border text-xs ${
+                      isDark 
+                        ? 'bg-gray-700 border-gray-600 text-gray-200' 
+                        : 'bg-white border-gray-300 text-gray-800'
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+            {/* Save Filter */}
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={filterName}
+                onChange={(e) => setFilterName(e.target.value)}
+                placeholder="Filter name..."
+                className={`px-2 py-1 rounded-lg border text-sm ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-gray-200' 
+                    : 'bg-white border-gray-300 text-gray-800'
+                }`}
+              />
+              <button
+                onClick={handleSaveFilter}
+                disabled={!filterName.trim()}
+                className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs disabled:opacity-50 ${
+                  isDark 
+                    ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-purple-800' 
+                    : 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-purple-400'
+                }`}
+              >
+                <Save className="w-3 h-3" /> Save
+              </button>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setFilters(defaultFilterState)}
+                className={`px-3 py-1 rounded text-xs ${
+                  isDark 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Reset
+              </button>
+              <button
+                onClick={() => setShowFilterPanel(false)}
+                className={`px-3 py-1 rounded text-xs ${
+                  isDark 
+                    ? 'bg-gray-600 text-gray-200 hover:bg-gray-500' 
+                    : 'bg-gray-300 text-gray-800 hover:bg-gray-400'
+                }`}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          
+          {/* Saved Filters */}
+          {savedFilters.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h3 className={`text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Saved Filters</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                {savedFilters.map(filter => (
+                  <div
+                    key={filter.id}
+                    className={`flex items-center justify-between p-2 rounded border ${
+                      isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleTogglePin(filter.id)}
+                        className={`text-xs ${filter.isPinned ? 'text-yellow-400' : isDark ? 'text-gray-400' : 'text-gray-500'}`}
+                      >
+                        <Star className="w-4 h-4" fill={filter.isPinned ? 'currentColor' : 'none'} />
+                      </button>
+                      <span className={`text-xs truncate ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>{filter.name}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <button
+                        onClick={() => handleApplyFilter(filter.filter)}
+                        className={`p-1 rounded text-xs ${
+                          isDark ? 'hover:bg-gray-600' : 'hover:bg-gray-100'
+                        }`}
+                      >
+                        <Filter className="w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteFilter(filter.id)}
+                        className={`p-1 rounded text-xs ${
+                          isDark ? 'hover:bg-gray-600 text-red-400' : 'hover:bg-gray-100 text-red-500'
+                        }`}
+                      >
+                        <Trash className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Desktop Table */}
       <div className="hidden lg:block">
@@ -117,10 +636,11 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                 ? 'bg-gray-800 divide-gray-700' 
                 : 'bg-white divide-gray-200'
             }`}>
-              {processedApplications.map((application) => (
+              {filteredApplications.map((application) => (
                 <tr 
                   key={application.id}
-                  className={`cursor-pointer transition-colors ${
+                  onClick={() => onReviewApplication &&onReviewApplication(application.id)}
+                  className={`cursor -pointer transition-colors ${
                     isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                   }`}
                 >
@@ -190,7 +710,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
 
       {/* Mobile Cards */}
       <div className="lg:hidden space-y-4">
-        {processedApplications.map((application) => (
+        {filteredApplications.map((application) => (
           <div
             key={application.id}
             className={`border rounded-lg p-4 cursor-pointer transition-all ${
@@ -265,6 +785,25 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
           <div className="text-6xl mb-4">📊</div>
           <h3 className="text-xl font-semibold mb-2">No processed applications</h3>
           <p className="text-sm">Applications will appear here after AI fraud detection</p>
+        </div>
+      )}
+
+      {/* No Matches State */}
+      {processedApplications.length > 0 && filteredApplications.length === 0 && (
+        <div className={`text-center py-20 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className="text-6xl mb-4">🔍</div>
+          <h3 className="text-xl font-semibold mb-2">No matching applications</h3>
+          <p className="text-sm">Try adjusting your search or filter criteria</p>
+          <button
+            onClick={() => setFilters(defaultFilterState)}
+            className={`mt-4 px-4 py-2 rounded-lg text-sm font-medium ${
+              isDark 
+                ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                : 'bg-purple-600 text-white hover:bg-purple-700'
+            }`}
+          >
+            Reset Filters
+          </button>
         </div>
       )}
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Shield, AlertTriangle, User, Mail, FileText, Activity, Send, Brain, Flag, ShieldAlert, Phone, MessageSquare, FileAudio, MessageCircle, ArrowLeft } from 'lucide-react';
+import { X, Shield, AlertTriangle, User, Mail, FileText, Activity, Send, Brain, Flag, ShieldAlert, Phone, MessageSquare, FileAudio } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Application } from '../contexts/ApplicationContext';
 
