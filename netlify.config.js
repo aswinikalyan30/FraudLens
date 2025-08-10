@@ -1,0 +1,16 @@
+# Netlify Deploy Settings
+# This file helps configure different environments (production, staging, etc.)
+
+[context.production]
+  environment = { NODE_ENV = "production", REACT_APP_ENVIRONMENT = "production" }
+
+[context.deploy-preview]
+  environment = { NODE_ENV = "production", REACT_APP_ENVIRONMENT = "preview" }
+
+[context.branch-deploy]
+  environment = { NODE_ENV = "production", REACT_APP_ENVIRONMENT = "staging" }
+
+# Specify node version for Netlify build
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_VERSION = "10"

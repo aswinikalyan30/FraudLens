@@ -1,0 +1,6 @@
+<!-- This is an SVG placeholder for social media preview. Replace with a proper PNG/JPG image for production -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#8b5cf6" />
+  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="80" font-weight="bold" text-anchor="middle" fill="#ffffff">FraudLens</text>
+  <text x="50%" y="58%" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" fill="#ffffff">AI-Powered Fraud Detection</text>
+</svg>
