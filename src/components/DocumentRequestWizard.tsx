@@ -287,7 +287,7 @@ Admissions Review Committee`,
 
   const getUrgencyColor = (level: number) => {
     if (level <= 2) return 'text-green-500';
-    if (level === 3) return 'text-blue-500';
+    if (level === 3) return 'text-purple-500';
     if (level === 4) return 'text-yellow-500';
     return 'text-red-500';
   };
@@ -530,7 +530,7 @@ Admissions Review Committee`,
                           template.successRate >= 90
                             ? 'bg-green-100 text-green-700'
                             : template.successRate >= 80
-                            ? 'bg-blue-100 text-blue-700'
+                            ? 'bg-purple-100 text-purple-700'
                             : 'bg-yellow-100 text-yellow-700'
                         }`}>
                           {template.successRate}% success

@@ -69,11 +69,9 @@ const ApplicationQueue: React.FC = () => {
   const getStageColor = (stage: string) => {
     switch (stage) {
       case 'admission':
-        return isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-700';
+        return isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-50 text-purple-700';
       case 'financial-aid':
         return isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-700';
-      case 'enrollment':
-        return isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-50 text-purple-700';
       default:
         return isDark ? 'bg-gray-500/20 text-gray-400' : 'bg-gray-50 text-gray-700';
     }
@@ -112,7 +110,7 @@ const ApplicationQueue: React.FC = () => {
         </div>
         <div className="flex items-center space-x-4">
           <span className={`px-2 py-1 rounded-full text-xs border inline-flex items-center
-            ${isDark ? 'border-blue-500/30 bg-blue-500/10 text-blue-400' : 'border-blue-300 bg-blue-50 text-blue-700'}`}>
+            ${isDark ? 'border-purple-500/30 bg-purple-500/10 text-purple-400' : 'border-purple-300 bg-purple-50 text-purple-700'}`}>
             <Clock className="h-3 w-3 mr-1" />
             {queuedCount} queued
           </span>

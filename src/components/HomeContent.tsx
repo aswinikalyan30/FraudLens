@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { 
+  Calendar, 
+  TrendingUp, 
+  TrendingDown, 
   Users, 
   CheckCircle, 
-  TrendingUp,
-  TrendingDown,
-  ArrowRight,
+  AlertTriangle, 
+  Shield,
+  Clock,
+  Target,
+  ChevronDown,
+  ChevronUp,
   MessageSquare,
   X,
-  Calendar,
-  AlertTriangle,
-  Shield
+  ArrowRight
 } from 'lucide-react';
-
-import { useApplications } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useApplications } from '../contexts/ApplicationContext';
 import { useNotifications } from '../contexts/NotificationContext';
 import FlagsChart from './FlagsChart';
 import ChatAgent from './ChatAgent';
+import UserProfile from './UserProfile';
 
 interface HomeContentProps {
   onNavigateToQueue: () => void;
@@ -33,6 +37,8 @@ const HomeContent: React.FC<HomeContentProps> = ({
   const [selectedApplications, setSelectedApplications] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAnalyticsExpanded, setIsAnalyticsExpanded] = useState(false);
 
   // Admin name and date
   const adminName = 'Admin 1';
@@ -72,6 +78,37 @@ const HomeContent: React.FC<HomeContentProps> = ({
   };
 
   const riskLevel = getRiskLevel(avgRiskScore);
+
+  // Advanced Performance Metrics (Mock Data - in real app would come from API)
+  const performanceMetrics = {
+    investigatorPerformance: {
+      individualProductivity: 87.5, // percentage
+      teamAverage: 82.3,
+      casesPerDay: 12.4,
+      trend: '+5.2%'
+    },
+    accuracyMetrics: {
+      falsePositiveRate: 2.1, // percentage
+      falseNegativeRate: 1.3,
+      overallAccuracy: 96.6,
+      improvement: '+1.2%'
+    },
+    resolutionTime: {
+      avgResolutionHours: 18.7,
+      byComplexity: {
+        simple: 8.2,
+        medium: 16.5,
+        complex: 32.1
+      },
+      trend: '-12%'
+    },
+    roiMetrics: {
+      fraudPrevented: 485000, // dollars
+      operationalCost: 125000,
+      roi: 288, // percentage
+      costBenefit: 3.88 // ratio
+    }
+  };
 
   const handleSelectApplication = (applicationId: string) => {
     setSelectedApplications(prev => 
@@ -175,9 +212,9 @@ const HomeContent: React.FC<HomeContentProps> = ({
         } shadow-sm hover:shadow-md transition-shadow`}>
           <div className="flex items-center justify-between mb-3">
             <div className={`w-5 h-5 rounded-lg flex items-center justify-center ${
-              isDark ? 'bg-blue-500/10' : 'bg-blue-50'
+              isDark ? 'bg-purple-500/10' : 'bg-purple-50'
             }`}>
-              <Users className={`w-5 h-5 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+              <Users className={`w-5 h-5 ${isDark ? 'text-purple-400' : 'text-purple-500'}`} />
             </div>
             <TrendingUp className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-500'}`} />
           </div>
@@ -265,9 +302,9 @@ const HomeContent: React.FC<HomeContentProps> = ({
         } shadow-sm hover:shadow-md transition-shadow`}>
           <div className="flex items-center justify-between mb-3">
             <div className={`w-5 h-5 rounded-lg flex items-center justify-center ${
-              isDark ? 'bg-purple-500/10' : 'bg-purple-50'
+              isDark ? 'bg-green-500/10' : 'bg-green-50'
             }`}>
-              <TrendingUp className={`w-5 h-5 ${isDark ? 'text-purple-400' : 'text-purple-500'}`} />
+              <TrendingUp className={`w-5 h-5 ${isDark ? 'text-green-400' : 'text-green-500'}`} />
             </div>
             <TrendingUp className={`w-4 h-4 ${
               approvalRate >= 70 ? 'text-green-500' : 
@@ -299,64 +336,346 @@ const HomeContent: React.FC<HomeContentProps> = ({
         </div>
         
         {/* Quick Stats Summary */}
-        <div className={`p-4 rounded-lg border ${
+        <div className={`p-3 rounded-lg border ${
           isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
         } shadow-sm`}>
           <h3 className={`text-base font-semibold mb-3 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-            Quick Stats
+            Performance Insights
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Pending Queue</span>
-              </div>
-              <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {queueApplications.length} 
-                <span className={`ml-1 w-2 h-2 inline-block rounded-full ${
-                  queueApplications.length === 0 ? 'bg-green-500' : 'bg-red-500'
-                }`}></span>
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>High Risk Cases</span>
-              </div>
-              <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {processedApplications.filter(app => (app.riskScore || 0) >= 80).length} 
-                <span className={`ml-1 text-xs px-1 py-0.5 rounded ${
-                  processedApplications.filter(app => (app.riskScore || 0) >= 80).length > 4 
-                    ? 'bg-red-100 text-red-700' 
-                    : 'bg-green-100 text-green-700'
-                }`}>
-                  ▲
+          <div className="space-y-2">
+            {/* Individual Performance */}
+            <div className={`p-3 rounded-lg ${
+              isDark ? 'bg-gray-700/50' : 'bg-gray-50'
+            }`}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Your Productivity
                 </span>
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Processing Time (Avg)</span>
+                <span className={`text-xs px-2 py-1 rounded-full ${
+                  performanceMetrics.investigatorPerformance.individualProductivity > performanceMetrics.investigatorPerformance.teamAverage
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-yellow-100 text-yellow-700'
+                }`}>
+                  {performanceMetrics.investigatorPerformance.trend}
+                </span>
               </div>
-              <span className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                2.3 min
-              </span>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Success Rate</span>
+              <div className="flex items-end gap-1">
+                <div className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {performanceMetrics.investigatorPerformance.individualProductivity}%
+                </div>
+                <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  vs {performanceMetrics.investigatorPerformance.teamAverage}% team avg
+                </div>
               </div>
-              <span className={`text-sm font-semibold text-green-600`}>
-                99.2%
-              </span>
+              <div className="mt-1 flex justify-between text-xs">
+                <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                  {performanceMetrics.investigatorPerformance.casesPerDay} cases/day
+                </span>
+                <span className={performanceMetrics.investigatorPerformance.individualProductivity > performanceMetrics.investigatorPerformance.teamAverage ? 'text-green-600' : 'text-yellow-600'}>
+                  {performanceMetrics.investigatorPerformance.individualProductivity > performanceMetrics.investigatorPerformance.teamAverage ? 'Above Average' : 'On Track'}
+                </span>
+              </div>
+            </div>
+
+            {/* Accuracy Metrics */}
+            <div className={`p-1 rounded-lg ${
+              isDark ? 'bg-gray-700/50' : 'bg-gray-50'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Detection Accuracy
+                </span>
+                <span className="text-xs px-1 py-1 rounded-full bg-green-100 text-green-700">
+                  {performanceMetrics.accuracyMetrics.improvement}
+                </span>
+              </div>
+              <div className={`text-md font-bold mb-0.5 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                {performanceMetrics.accuracyMetrics.overallAccuracy}%
+              </div>
+              <div className="space-y-0.2 text-xs">
+                <div className="flex justify-between">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>False Positive</span>
+                  <span className="text-red-600">{performanceMetrics.accuracyMetrics.falsePositiveRate}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>False Negative</span>
+                  <span className="text-orange-600">{performanceMetrics.accuracyMetrics.falseNegativeRate}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* ROI Quick View */}
+            <div className={`p-1 rounded-lg border-l-4 border-green-500 ${
+              isDark ? 'bg-green-900/10' : 'bg-green-50'
+            }`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  ROI This Month
+                </span>
+                <span className="text-xs text-green-600 font-medium">
+                  {performanceMetrics.roiMetrics.roi}%
+                </span>
+              </div>
+              <div className="text-sm">
+                <span className="text-green-600 font-semibold">
+                  ${(performanceMetrics.roiMetrics.fraudPrevented / 1000).toFixed(0)}K
+                </span>
+                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {' '}prevented
+                </span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Advanced Analytics Dashboard - Collapsible */}
+      <div className={`rounded-lg border ${
+        isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+      } shadow-sm`}>
+        {/* Header - Always Visible */}
+        <div className="p-4 flex items-center justify-between border-b border-gray-300 dark:border-gray-600">
+          <div className="flex items-center gap-3">
+            <h3 className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              Advanced Performance Analytics
+            </h3>
+            <div className="flex items-center gap-4 text-sm">
+              {/* Key Performance Indicators - Always Visible */}
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-purple-500" />
+                <span className={`font-medium ${isDark ? 'text-purple-400' : 'text-purple-500'}`}>
+                  {performanceMetrics.resolutionTime.avgResolutionHours}h avg
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-green-500" />
+                <span className={`font-medium ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                  {performanceMetrics.accuracyMetrics.overallAccuracy}% accuracy
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-purple-500" />
+                <span className={`font-medium ${isDark ? 'text-purple-400' : 'text-purple-500'}`}>
+                  {performanceMetrics.roiMetrics.roi}% ROI
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setIsAnalyticsExpanded(!isAnalyticsExpanded)}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm transition-colors ${
+                isDark ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {isAnalyticsExpanded ? (
+                <>
+                  <span>Show Less</span>
+                  <ChevronUp className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  <span>View Details</span>
+                  <ChevronDown className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Expandable Content */}
+        {isAnalyticsExpanded && (
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+              {/* Resolution Time Analytics */}
+              <div className={`p-4 rounded-lg border ${
+                isDark ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="w-5 h-5 text-purple-500" />
+                  <h4 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Resolution Time
+                  </h4>
+                </div>
+                <div className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {performanceMetrics.resolutionTime.avgResolutionHours}h
+                </div>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Simple Cases</span>
+                    <span className="text-green-600">{performanceMetrics.resolutionTime.byComplexity.simple}h</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Medium Cases</span>
+                    <span className="text-yellow-600">{performanceMetrics.resolutionTime.byComplexity.medium}h</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Complex Cases</span>
+                    <span className="text-red-600">{performanceMetrics.resolutionTime.byComplexity.complex}h</span>
+                  </div>
+                </div>
+                <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Trend</span>
+                    <span className="text-green-600 font-medium">{performanceMetrics.resolutionTime.trend}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Accuracy Analysis */}
+              <div className={`p-4 rounded-lg border ${
+                isDark ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="w-5 h-5 text-purple-500" />
+                  <h4 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Accuracy Analysis
+                  </h4>
+                </div>
+                <div className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {performanceMetrics.accuracyMetrics.overallAccuracy}%
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                      <div 
+                        className="h-full bg-gradient-to-r from-green-500 to-green-600" 
+                        style={{ width: `${performanceMetrics.accuracyMetrics.overallAccuracy}%` }}
+                      />
+                    </div>
+                    <span className="text-xs text-green-600 font-medium">
+                      {performanceMetrics.accuracyMetrics.overallAccuracy}%
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="text-center p-2 rounded">
+                      <div className="text-red-600 font-medium">FP: {performanceMetrics.accuracyMetrics.falsePositiveRate}%</div>
+                    </div>
+                    <div className="text-center p-2 rounded">
+                      <div className="text-orange-600 font-medium">FN: {performanceMetrics.accuracyMetrics.falseNegativeRate}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ROI Analysis */}
+              <div className={`p-4 rounded-lg border ${
+                isDark ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="w-5 h-5 text-green-500" />
+                  <h4 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    ROI Analysis
+                  </h4>
+                </div>
+                <div className={`text-2xl font-bold mb-2 text-green-600`}>
+                  {performanceMetrics.roiMetrics.roi}%
+                </div>
+                <div className="space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Fraud Prevented</span>
+                    <span className="text-green-600 font-medium">
+                      ${(performanceMetrics.roiMetrics.fraudPrevented / 1000).toFixed(0)}K
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Operational Cost</span>
+                    <span className="text-gray-600">
+                      ${(performanceMetrics.roiMetrics.operationalCost / 1000).toFixed(0)}K
+                    </span>
+                  </div>
+                  <div className="flex justify-between pt-1 border-t border-gray-300 dark:border-gray-600">
+                    <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Cost-Benefit Ratio</span>
+                    <span className="text-green-600 font-bold">
+                      {performanceMetrics.roiMetrics.costBenefit}:1
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Team Performance Comparison */}
+              <div className={`p-4 rounded-lg border ${
+                isDark ? 'bg-gray-700/50 border-gray-600' : 'bg-gray-50 border-gray-200'
+              }`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <Users className="w-5 h-5 text-indigo-500" />
+                  <h4 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    Team Performance
+                  </h4>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>You</span>
+                      <span className="text-xs font-medium text-green-600">
+                        {performanceMetrics.investigatorPerformance.individualProductivity}%
+                      </span>
+                    </div>
+                    <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                      <div 
+                        className="h-full bg-green-500" 
+                        style={{ width: `${performanceMetrics.investigatorPerformance.individualProductivity}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Team Average</span>
+                      <span className="text-xs font-medium text-purple-600">
+                        {performanceMetrics.investigatorPerformance.teamAverage}%
+                      </span>
+                    </div>
+                    <div className={`w-full h-2 rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                      <div 
+                        className="h-full bg-purple-500" 
+                        style={{ width: `${performanceMetrics.investigatorPerformance.teamAverage}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="pt-2 border-t border-gray-300 dark:border-gray-600">
+                    <div className="flex justify-between text-xs">
+                      <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Rank</span>
+                      <span className="text-green-600 font-medium">#3 of 12</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Performance Insights and Recommendations - Only shown when expanded */}
+            <div className="mt-6 pt-6 border-t border-gray-300 dark:border-gray-600">
+              <h4 className={`font-medium mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                AI-Powered Recommendations
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`p-3 rounded-lg border-l-4 border-purple-500 ${
+                  isDark ? 'bg-purple-900/10' : 'bg-purple-50'
+                }`}>
+                  <div className="text-xs font-medium text-purple-600 mb-1">EFFICIENCY</div>
+                  <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Focus on medium complexity cases to improve resolution time by 15%
+                  </p>
+                </div>
+                <div className={`p-3 rounded-lg border-l-4 border-green-500 ${
+                  isDark ? 'bg-green-900/10' : 'bg-green-50'
+                }`}>
+                  <div className="text-xs font-medium text-green-600 mb-1">ACCURACY</div>
+                  <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Review financial aid patterns to reduce false positives
+                  </p>
+                </div>
+                <div className={`p-3 rounded-lg border-l-4 border-purple-500 ${
+                  isDark ? 'bg-purple-900/10' : 'bg-purple-50'
+                }`}>
+                  <div className="text-xs font-medium text-purple-600 mb-1">LEARNING</div>
+                  <p className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Consider advanced training on international application patterns
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Application Queues - Side by Side */}
@@ -382,7 +701,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
             </div>
             <button
               onClick={onNavigateToQueue}
-              className={`text-sm hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}
+              className={`text-sm hover:underline ${isDark ? 'text-purple-400' : 'text-purple-600'}`}
             >
               View All
             </button>
@@ -391,10 +710,10 @@ const HomeContent: React.FC<HomeContentProps> = ({
           {/* Bulk Actions */}
           {selectedApplications.length > 0 && (
             <div className={`mb-4 p-4 rounded-lg border ${
-              isDark ? 'bg-gray-700 border-gray-600' : 'bg-blue-50 border-blue-200'
+              isDark ? 'bg-gray-700 border-gray-600' : 'bg-purple-50 border-purple-200'
             }`}>
               <div className="flex items-center justify-between">
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-blue-700'}`}>
+                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-purple-700'}`}>
                   {selectedApplications.length} selected
                 </span>
                 <button
@@ -403,7 +722,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     isProcessing
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-purple-600 text-white hover:bg-purple-700'
                   }`}
                 >
                   {isProcessing ? 'Processing...' : 'Process Selected'}
@@ -419,8 +738,8 @@ const HomeContent: React.FC<HomeContentProps> = ({
                 className={`flex items-center justify-between p-4 rounded-lg border transition-all cursor-pointer ${
                   selectedApplications.includes(application.id)
                     ? isDark
-                      ? 'bg-blue-900/30 border-blue-500/50'
-                      : 'bg-blue-50 border-blue-300'
+                      ? 'bg-purple-900/30 border-purple-500/50'
+                      : 'bg-purple-50 border-purple-300'
                     : isDark
                       ? 'bg-gray-900/50 border-gray-700 hover:bg-gray-700/50'
                       : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -432,14 +751,22 @@ const HomeContent: React.FC<HomeContentProps> = ({
                     type="checkbox"
                     checked={selectedApplications.includes(application.id)}
                     onChange={() => handleSelectApplication(application.id)}
-                    className="rounded text-blue-600"
+                    className="rounded text-purple-600"
                     onClick={(e) => e.stopPropagation()}
                   />
-                  <img 
-                    src={application.avatar} 
-                    alt={application.name}
-                    className="w-5 h-5 rounded-full object-cover"
-                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsProfileOpen(true);
+                    }}
+                    className="flex-shrink-0 transition-transform hover:scale-105"
+                  >
+                    <img 
+                      src={application.avatar} 
+                      alt={application.name}
+                      className="w-5 h-5 rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                    />
+                  </button>
                   <div>
                     <div className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
                       {application.name}
@@ -452,7 +779,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
                 <div className="flex items-center space-x-2">
                   <span className={`px-2 py-1 rounded-full text-xs border font-medium ${
                     application.stage === 'financial-aid' 
-                      ? isDark ? 'bg-blue-900/20 text-blue-400 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200'
+                      ? isDark ? 'bg-purple-900/20 text-purple-400 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200'
                       : isDark ? 'bg-green-900/20 text-green-400 border-green-500/30' : 'bg-green-50 text-green-700 border-green-200'
                   }`}>
                     {application.stage.replace('-', ' ')}
@@ -487,7 +814,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
             </div>
             <button
               onClick={onNavigateToProcessed}
-              className={`text-sm hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}
+              className={`text-sm hover:underline ${isDark ? 'text-purple-400' : 'text-purple-600'}`}
             >
               View All
             </button>
@@ -504,11 +831,19 @@ const HomeContent: React.FC<HomeContentProps> = ({
                   } hover:shadow-md transition-all`}
                 >
                   <div className="flex items-center space-x-3">
-                    <img 
-                      src={application.avatar} 
-                      alt={application.name}
-                      className="w-5 h-5 rounded-full object-cover"
-                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsProfileOpen(true);
+                      }}
+                      className="flex-shrink-0 transition-transform hover:scale-105"
+                    >
+                      <img 
+                        src={application.avatar} 
+                        alt={application.name}
+                        className="w-5 h-5 rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                      />
+                    </button>
                     <div>
                       <div className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {application.name}
@@ -599,6 +934,12 @@ const HomeContent: React.FC<HomeContentProps> = ({
           </div>
         </div>
       )}
+      
+      {/* User Profile Modal */}
+      <UserProfile 
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 };

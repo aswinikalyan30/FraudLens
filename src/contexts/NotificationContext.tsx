@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 export interface Notification {
   id: string;
@@ -16,31 +16,36 @@ interface NotificationContextType {
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      type: 'high-risk',
-      title: 'High Risk Case Detected',
-      message: 'Student ST-2024-089 flagged with 95% risk score',
-      timestamp: new Date().toISOString(),
-      read: false,
-      caseId: 'ST-2024-089'
-    },
-    {
-      id: '2',
-      type: 'escalation',
-      title: 'Case Escalation Recommended',
-      message: 'AI recommends escalating case ST-2024-127',
-      timestamp: new Date(Date.now() - 300000).toISOString(),
-      read: false,
-      caseId: 'ST-2024-127'
-    }
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadNotifications = useCallback(async () => {
+    setLoading(true); setError(null);
+    try {
+      const { apiClient } = await import('../api/client');
+      const initial = await apiClient.get('/notifications', () => ([{
+        id: '1', type: 'high-risk' as const, title: 'High Risk Case Detected', message: 'Student ST-2024-089 flagged with 95% risk score', timestamp: new Date().toISOString(), read: false, caseId: 'ST-2024-089'
+      },{
+        id: '2', type: 'escalation' as const, title: 'Case Escalation Recommended', message: 'AI recommends escalating case ST-2024-127', timestamp: new Date(Date.now()-300000).toISOString(), read: false, caseId: 'ST-2024-127'
+      }]) as Notification[]);
+      setNotifications(initial);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Failed to load notifications');
+    } finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { loadNotifications(); }, [loadNotifications]);
+
+  const refresh = useCallback(async () => { await loadNotifications(); }, [loadNotifications]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -95,7 +100,10 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
       unreadCount,
       addNotification,
       markAsRead,
-      markAllAsRead
+      markAllAsRead,
+      loading,
+      error,
+      refresh
     }}>
       {children}
     </NotificationContext.Provider>

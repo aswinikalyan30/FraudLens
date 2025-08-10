@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 export interface Application {
   id: string;
   studentId: string;
   name: string;
   email: string;
-  stage: 'admission' | 'financial-aid' | 'enrollment';
+  stage: 'admission' | 'financial-aid';
   timestamp: string;
   status: 'pending' | 'processing' | 'processed' | 'approved' | 'rejected' | 'escalated';
   riskScore?: number;
@@ -30,140 +30,43 @@ interface ApplicationContextType {
   totalEscalated: number;
   totalClosed: number;
   flagsResolved: number;
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
 }
 
 const ApplicationContext = createContext<ApplicationContextType | undefined>(undefined);
 
 export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [queueApplications, setQueueApplications] = useState<Application[]>([
-    {
-      id: '1',
-      studentId: 'ST-2024-001',
-      name: 'Emma Thompson',
-      email: 'emma.thompson@email.com',
-      stage: 'admission',
-      timestamp: new Date().toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '2',
-      studentId: 'ST-2024-002',
-      name: 'Marcus Johnson',
-      email: 'marcus.johnson@email.com',
-      stage: 'financial-aid',
-      timestamp: new Date(Date.now() - 300000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '3',
-      studentId: 'ST-2024-003',
-      name: 'Sarah Chen',
-      email: 'sarah.chen@email.com',
-      stage: 'admission',
-      timestamp: new Date(Date.now() - 600000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '4',
-      studentId: 'ST-2024-004',
-      name: 'David Rodriguez',
-      email: 'david.rodriguez@email.com',
-      stage: 'enrollment',
-      timestamp: new Date(Date.now() - 900000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '5',
-      studentId: 'ST-2024-005',
-      name: 'Lisa Wang',
-      email: 'lisa.wang@email.com',
-      stage: 'financial-aid',
-      timestamp: new Date(Date.now() - 1200000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '6',
-      studentId: 'ST-2024-006',
-      name: 'James Wilson',
-      email: 'james.wilson@email.com',
-      stage: 'admission',
-      timestamp: new Date(Date.now() - 1500000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '7',
-      studentId: 'ST-2024-007',
-      name: 'Maria Garcia',
-      email: 'maria.garcia@email.com',
-      stage: 'enrollment',
-      timestamp: new Date(Date.now() - 1800000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1181424/pexels-photo-1181424.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '8',
-      studentId: 'ST-2024-008',
-      name: 'Robert Kim',
-      email: 'robert.kim@email.com',
-      stage: 'financial-aid',
-      timestamp: new Date(Date.now() - 2100000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '9',
-      studentId: 'ST-2024-009',
-      name: 'Jennifer Brown',
-      email: 'jennifer.brown@email.com',
-      stage: 'admission',
-      timestamp: new Date(Date.now() - 2400000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: '10',
-      studentId: 'ST-2024-010',
-      name: 'Michael Davis',
-      email: 'michael.davis@email.com',
-      stage: 'enrollment',
-      timestamp: new Date(Date.now() - 2700000).toISOString(),
-      status: 'pending',
-      avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    }
-  ]);
+  const [queueApplications, setQueueApplications] = useState<Application[]>([]);
+  const [processedApplications, setProcessedApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [processedApplications, setProcessedApplications] = useState<Application[]>([
-    {
-      id: 'p1',
-      studentId: 'ST-2024-089',
-      name: 'Alex Johnson',
-      email: 'alex.johnson@email.com',
-      stage: 'admission',
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
-      status: 'escalated',
-      riskScore: 95,
-      flags: ['Essay Similarity', 'Email Age', 'Rapid Submission'],
-      avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
-    },
-    {
-      id: 'p2',
-      studentId: 'ST-2024-087',
-      name: 'Sarah Chen',
-      email: 'sarah.chen@email.com',
-      stage: 'financial-aid',
-      timestamp: new Date(Date.now() - 7200000).toISOString(),
-      status: 'approved',
-      riskScore: 25,
-      flags: [],
-      avatar: 'https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop'
+  const loadData = useCallback(async () => {
+    setLoading(true); setError(null);
+    try {
+      const [{ fetchQueueApplications }, { fetchProcessedApplications }] = await Promise.all([
+        import('../api/applications'),
+        import('../api/applications')
+      ]);
+      const [queue, processed] = await Promise.all([
+        fetchQueueApplications(),
+        fetchProcessedApplications()
+      ]);
+      setQueueApplications(queue);
+      setProcessedApplications(processed);
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Failed to load applications';
+      setError(message);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  }, []);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  const refresh = useCallback(async () => { await loadData(); }, [loadData]);
 
   // Bulk processing state
   const [isBulkProcessing, setIsBulkProcessing] = useState(false);
@@ -352,7 +255,10 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
       totalApplications,
       totalEscalated,
       totalClosed,
-      flagsResolved
+      flagsResolved,
+      loading,
+      error,
+      refresh
     }}>
       {children}
     </ApplicationContext.Provider>

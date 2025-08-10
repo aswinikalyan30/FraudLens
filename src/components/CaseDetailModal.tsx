@@ -176,7 +176,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               <button
                 onClick={() => setTranscriptAvailable(true)}
                 className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                  isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
+                  isDark ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-purple-600 text-white hover:bg-purple-700'
                 }`}
                 title="Request Call"
               >
@@ -266,7 +266,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
                       f.toLowerCase().includes('essay')
                         ? (isDark ? 'bg-purple-500/10 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200')
                         : f.toLowerCase().includes('email')
-                        ? (isDark ? 'bg-blue-500/10 text-blue-300 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200')
+                        ? (isDark ? 'bg-purple-500/10 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200')
                         : (isDark ? 'bg-orange-500/10 text-orange-300 border-orange-500/30' : 'bg-orange-50 text-orange-700 border-orange-200')
                     }`}>
                       <Flag className="w-3 h-3" /> {f}

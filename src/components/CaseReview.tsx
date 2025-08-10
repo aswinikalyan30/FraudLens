@@ -87,8 +87,18 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
   // Timeline events based on flags
   const timelineEvents = React.useMemo(() => {
     const baseRisk = 45;
-    const events = [{
+    const events: {
+      id: string;
+      type: "system" | "evidence" | "review" | "investigator" | "communication" | "override";
+      title: string;
+      timestamp: string;
+      risk: number;
+      rules: string[];
+      color: string;
+      note: string;
+    }[] = [{
       id: 'submitted',
+      type: 'system',
       title: 'Application Submitted',
       timestamp: '2024-03-08T10:32:54',
       risk: baseRisk,
@@ -101,6 +111,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
       const r = Math.min(baseRisk + (i + 1) * 15, 85);
       events.push({
         id: `flag-${i}`,
+        type: 'evidence',
         title: 'Agent Flag Raised',
         timestamp: new Date(Date.now() + (i + 1) * 2 * 60_000).toISOString(),
         risk: r,
@@ -114,6 +125,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
       const r = Math.max(baseRisk, 85);
       events.push({
         id: 'escalated',
+        type: 'review',
         title: 'Escalation Decision',
         timestamp: new Date(Date.now() + 10 * 60_000).toISOString(),
         risk: r,
@@ -198,7 +210,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
               <button
                 onClick={() => setTranscriptAvailable(true)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all ${
-                  isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
+                  isDark ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-purple-600 text-white hover:bg-purple-700'
                 }`}
               >
                 <Phone className="w-4 h-4" />
@@ -314,7 +326,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
                   <FileAudio className="w-4 h-4" />
                   <span>Submitted Documents</span>
                 </h3>
-                <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
                   {[
                     { name: 'Application Form', date: '2024-03-08' },
                     { name: 'Academic Transcript', date: '2024-03-08' },
@@ -324,18 +336,27 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
                   ].map((doc, i) => (
                     <div 
                       key={i} 
-                      className={`document-item flex items-center justify-between p-3 rounded-lg border transition-all duration-200 hover:shadow-sm ${
-                        isDark ? 'bg-gray-700 border-gray-600 hover:bg-gray-650' : 'bg-gray-50 border-gray-200 hover:bg-white'
+                      className={`document-chip inline-flex items-center gap-2 px-3 py-2 rounded-full border text-sm font-medium transition-all duration-200 hover:shadow-md cursor-pointer ${
+                        doc.date 
+                          ? (isDark ? 'bg-gray-700 border-gray-600 text-gray-200 hover:bg-gray-600' : 'bg-gray-100 border-gray-300 text-gray-800 hover:bg-gray-200')
+                          : (isDark ? 'bg-red-900/20 border-red-500/30 text-red-300 hover:bg-red-900/30' : 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100')
                       }`}
                       style={{ animationDelay: `${i * 100}ms` }}
+                      title={doc.date ? `Submitted: ${doc.date}` : 'Missing document'}
                     >
-                      <div className="flex items-center space-x-3">
-                        <span className={`text-sm font-medium`}>
-                          {doc.name}
+                      <span>{doc.name}</span>
+                      {doc.date ? (
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-mono ${
+                          isDark ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-600'
+                        }`}>
+                          {doc.date}
                         </span>
-                      </div>
-                      {doc.date && (
-                        <div className={`text-xs font-mono ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{doc.date}</div>
+                      ) : (
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                          isDark ? 'bg-red-800 text-red-200' : 'bg-red-100 text-red-600'
+                        }`}>
+                          Missing
+                        </span>
                       )}
                     </div>
                   ))}

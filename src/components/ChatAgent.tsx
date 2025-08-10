@@ -113,7 +113,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
         isDark ? 'border-gray-700' : 'border-gray-200'
       }`}>
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-500 rounded-full flex items-center justify-center">
             <Bot className="w-4 h-4 text-white" />
           </div>
           <div>
@@ -223,7 +223,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
               <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
                 message.type === 'user' 
                   ? 'bg-purple-600' 
-                  : 'bg-gradient-to-br from-purple-500 to-blue-500'
+                  : 'bg-gradient-to-br from-purple-500 to-purple-500'
               }`}>
                 {message.type === 'user' ? (
                   <User className="w-3 h-3 text-white" />
@@ -250,7 +250,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
         {isTyping && (
           <div className="flex justify-start">
             <div className="flex items-start space-x-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-500 to-purple-500 flex items-center justify-center">
                 <Bot className="w-3 h-3 text-white" />
               </div>
               <div className={`px-3 py-2 rounded-lg ${

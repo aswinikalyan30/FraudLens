@@ -7,6 +7,7 @@ import CaseReview from './components/CaseReview';
 import MobileBottomNav from './components/MobileBottomNav';
 import ApplicationQueue from './components/ApplicationQueue';
 import ProcessedApplications from './components/ProcessedApplications';
+import UserProfile from './components/UserProfile';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ApplicationProvider, Application, useApplications } from './contexts/ApplicationContext';
@@ -18,6 +19,7 @@ function AppContent() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [selectedCaseFromNotification, setSelectedCaseFromNotification] = useState<Application | null>(null);
   const [reviewingApplicationId, setReviewingApplicationId] = useState<string | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const { queueApplications, processedApplications } = useApplications();
 
@@ -79,8 +81,8 @@ function AppContent() {
 
   const handleNavigateToCase = (caseId: string) => {
     // Create a mock case from the notification caseId
-    const randomStageIndex = Math.floor(Math.random() * 3);
-    const stageOptions: Array<'admission' | 'financial-aid' | 'enrollment'> = ['admission', 'financial-aid', 'enrollment'];
+    const randomStageIndex = Math.floor(Math.random() * 2); // only two stages now
+    const stageOptions: Array<'admission' | 'financial-aid'> = ['admission', 'financial-aid'];
     
     const mockCase: Application = {
       id: caseId,
@@ -282,9 +284,12 @@ function AppContent() {
                 </button>
                 
                 <div className="flex items-center space-x-2 hidden sm:flex">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <button
+                    onClick={() => setIsProfileOpen(true)}
+                    className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-500 rounded-full flex items-center justify-center transition-transform hover:scale-105 cursor-pointer"
+                  >
                     <span className="text-xs font-bold text-white">AI</span>
-                  </div>
+                  </button>
                   <div className="text-sm">
                     <div className={isDark ? 'text-white' : 'text-gray-900'}>Admin 1</div>
                     <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -317,6 +322,12 @@ function AppContent() {
           onClose={() => setSelectedCaseFromNotification(null)}
         />
       )}
+      
+      {/* User Profile Modal */}
+      <UserProfile 
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 }

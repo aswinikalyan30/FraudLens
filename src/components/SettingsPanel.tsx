@@ -8,7 +8,7 @@ interface Rule {
   description: string;
   enabled: boolean;
   threshold?: number;
-  category: 'admission' | 'financial' | 'enrollment';
+  category: 'admission' | 'financial';
 }
 
 const SettingsPanel: React.FC = () => {
@@ -60,15 +60,15 @@ const SettingsPanel: React.FC = () => {
       description: 'Identifies students with no actual activity',
       enabled: true,
       threshold: 90,
-      category: 'enrollment'
+      category: 'financial'
     },
     {
       id: 'lms-activity',
       name: 'LMS Activity Monitoring',
       description: 'Tracks student learning management system usage',
       enabled: true,
-      threshold: 10,
-      category: 'enrollment'
+      threshold: 100,
+      category: 'financial'
     }
   ]);
 
@@ -99,9 +99,8 @@ const SettingsPanel: React.FC = () => {
   };
 
   const categories = [
-    { id: 'admission', name: 'Admission', color: 'blue' },
-    { id: 'financial', name: 'Financial Aid', color: 'yellow' },
-    { id: 'enrollment', name: 'Enrollment', color: 'purple' }
+    { id: 'admission', name: 'Admission', color: 'purple' },
+    { id: 'financial', name: 'Financial Aid', color: 'yellow' }
   ];
 
   const ToggleSwitch: React.FC<{ enabled: boolean; onChange: () => void; disabled?: boolean }> = ({ 
@@ -186,7 +185,7 @@ const SettingsPanel: React.FC = () => {
                 isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 <div className={`w-3 h-3 rounded-full ${
-                  category.color === 'blue' ? 'bg-blue-500' :
+                  category.color === 'purple' ? 'bg-purple-500' :
                   category.color === 'yellow' ? 'bg-yellow-500' :
                   'bg-purple-500'
                 }`}></div>
@@ -299,10 +298,10 @@ const SettingsPanel: React.FC = () => {
                   </div>
                   <div className={`border rounded-lg p-3 ${
                     isDark 
-                      ? 'bg-blue-500/10 border-blue-500/30' 
-                      : 'bg-blue-50 border-blue-200'
+                      ? 'bg-purple-500/10 border-purple-500/30' 
+                      : 'bg-purple-50 border-purple-200'
                   }`}>
-                    <div className="text-blue-500 font-semibold">Medium Risk</div>
+                    <div className="text-purple-500 font-semibold">Medium Risk</div>
                     <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                       75-{escalationThreshold-1}
                     </div>
@@ -342,7 +341,7 @@ const SettingsPanel: React.FC = () => {
                   icon: Mail,
                   title: 'Email Notifications',
                   description: 'Receive alerts via email',
-                  color: 'blue'
+                  color: 'purple'
                 },
                 {
                   key: 'slack',
@@ -369,7 +368,7 @@ const SettingsPanel: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <Icon className={`w-5 h-5 ${
-                          channel.color === 'blue' ? 'text-blue-500' :
+                          channel.color === 'purple' ? 'text-purple-500' :
                           channel.color === 'green' ? 'text-green-500' :
                           'text-purple-500'
                         }`} />

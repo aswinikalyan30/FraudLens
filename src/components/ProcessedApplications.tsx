@@ -118,11 +118,9 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
   const getStageColor = (stage: string) => {
     switch (stage) {
       case 'admission':
-        return isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-700';
+        return isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-50 text-purple-700';
       case 'financial-aid':
         return isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-700';
-      case 'enrollment':
-        return isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-50 text-purple-700';
       default:
         return isDark ? 'bg-gray-500/20 text-gray-400' : 'bg-gray-50 text-gray-700';
     }
@@ -692,8 +690,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                           }}
                           className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                             isDark 
-                              ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                              : 'bg-blue-600 text-white hover:bg-blue-700'
+                              ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                              : 'bg-purple-600 text-white hover:bg-purple-700'
                           }`}
                         >
                           → Review
@@ -766,8 +764,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                     }}
                     className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                       isDark 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                        ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                        : 'bg-purple-600 text-white hover:bg-purple-700'
                     }`}
                   >
                     → Review
