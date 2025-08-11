@@ -34,7 +34,7 @@ const defaultFilterState: FilterState = {
 };
 
 const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewApplication }) => {
-  const { processedApplications } = useApplications();
+  const { processedApplications, applicationsLoading, error } = useApplications();
   const { isDark } = useTheme();
   const { savePageState, getPageState } = useNavigation();
   const [selectedCase, setSelectedCase] = useState<Application | null>(null);
@@ -91,6 +91,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
         return <XCircle className="w-4 h-4 text-red-500" />;
       case 'escalated':
         return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+      case 'processed':
+        return <CheckCircle className="w-4 h-4 text-blue-500" />;
       default:
         return <Clock className="w-4 h-4 text-gray-500" />;
     }
@@ -104,6 +106,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
         return isDark ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-red-50 text-red-700 border-red-200';
       case 'escalated':
         return isDark ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'processed':
+        return isDark ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200';
       default:
         return isDark ? 'bg-gray-500/20 text-gray-400 border-gray-500/30' : 'bg-gray-50 text-gray-700 border-gray-200';
     }
@@ -268,8 +272,36 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
       {/* Breadcrumbs */}
       <Breadcrumbs className="mb-4" />
       
-      {/* Header with Search & Filter */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* Loading State */}
+      {applicationsLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+            <span className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Loading processed applications...
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !applicationsLoading && (
+        <div className={`p-4 border rounded-lg ${
+          isDark ? 'bg-red-900/20 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5" />
+            <span className="font-medium">Error loading applications:</span>
+          </div>
+          <p className="mt-1">{error}</p>
+        </div>
+      )}
+
+      {/* Main Content - Only show when not loading */}
+      {!applicationsLoading && !error && (
+        <>
+          {/* Header with Search & Filter */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
             Processed Applications ({filteredApplications.length})
@@ -644,11 +676,6 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
-                      <img 
-                        src={application.avatar} 
-                        alt={application.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
                       <div>
                         <div className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                           {application.name}
@@ -720,11 +747,6 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center space-x-3">
-                <img 
-                  src={application.avatar} 
-                  alt={application.name}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
                 <div>
                   <h3 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {application.name}
@@ -814,6 +836,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
           onClose={closeDrawer}
           mode="drawer"
         />
+      )}
+        </>
       )}
     </div>
   );

@@ -251,11 +251,6 @@ const CaseReview: React.FC<CaseReviewProps> = ({ case: fraudCase, onClose, mode 
                 </h3>
                 {/* Main Info */}
                 <div className="flex items-center space-x-3 mb-3">
-                  <img 
-                    src={fraudCase.avatar} 
-                    alt={fraudCase.name}
-                    className={`w-12 h-12 rounded-full object-cover border-2 ${isDark ? 'border-gray-600' : 'border-gray-300'}`}
-                  />
                   <div className="flex-1">
                     <h4 className={`font-semibold text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>{fraudCase.name}</h4>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{fraudCase.stage}</p>

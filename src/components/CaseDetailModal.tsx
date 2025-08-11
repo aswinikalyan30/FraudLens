@@ -223,13 +223,6 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-4">
-                <img 
-                  src={fraudCase.avatar} 
-                  alt={fraudCase.name}
-                  className={`w-16 h-16 rounded-full object-cover border-2 ${
-                    isDark ? 'border-gray-600' : 'border-gray-300'
-                  }`}
-                />
                 <div>
                   <h4 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {fraudCase.name}

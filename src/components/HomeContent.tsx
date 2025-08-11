@@ -31,7 +31,7 @@ const HomeContent: React.FC<HomeContentProps> = ({
   onNavigateToQueue, 
   onNavigateToProcessed
 }) => {
-  const { queueApplications, processedApplications, startBulkFraudDetection } = useApplications();
+  const { queueApplications, processedApplications, startBulkFraudDetection, applicationsLoading, error } = useApplications();
   const { addNotification } = useNotifications();
   const { isDark } = useTheme();
   const [selectedApplications, setSelectedApplications] = useState<string[]>([]);
@@ -185,6 +185,19 @@ const HomeContent: React.FC<HomeContentProps> = ({
 
   return (
     <div className="p-3 lg:p-4 space-y-4">
+      {/* Error State */}
+      {error && (
+        <div className={`p-4 border rounded-lg ${
+          isDark ? 'bg-red-900/20 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5" />
+            <span className="font-medium">Error loading data:</span>
+          </div>
+          <p className="mt-1">{error}</p>
+        </div>
+      )}
+
       {/* Compact Greeting Header */}
       <div className={`flex items-center justify-between mb-4 px-4 py-3`}>
         <div className="space-y-0.5">
@@ -731,7 +744,19 @@ const HomeContent: React.FC<HomeContentProps> = ({
             </div>
           )}
 
-          <div className="space-y-3 max-h-80 overflow-y-auto">
+          {/* Loading State for Applications */}
+          {applicationsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+                <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Loading applications...
+                </span>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3 max-h-80 overflow-y-auto">
             {queueApplications.slice(0, 6).map((application) => (
               <div
                 key={application.id}
@@ -761,11 +786,6 @@ const HomeContent: React.FC<HomeContentProps> = ({
                     }}
                     className="flex-shrink-0 transition-transform hover:scale-105"
                   >
-                    <img 
-                      src={application.avatar} 
-                      alt={application.name}
-                      className="w-5 h-5 rounded-full object-cover border border-gray-300 dark:border-gray-600"
-                    />
                   </button>
                   <div>
                     <div className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -789,12 +809,14 @@ const HomeContent: React.FC<HomeContentProps> = ({
             ))}
           </div>
 
-          {queueApplications.length === 0 && (
+          {!applicationsLoading && queueApplications.length === 0 && (
             <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               <div className="text-4xl mb-2">📝</div>
               <p className="text-sm">No pending applications</p>
               <p className="text-xs mt-1">All caught up!</p>
             </div>
+          )}
+            </>
           )}
         </div>
         {/* Recently Processed */}
@@ -820,7 +842,19 @@ const HomeContent: React.FC<HomeContentProps> = ({
             </button>
           </div>
 
-          <div className="space-y-3 max-h-80 overflow-y-auto">
+          {/* Loading State for Processed Applications */}
+          {applicationsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+                <span className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Loading processed applications...
+                </span>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-3 max-h-80 overflow-y-auto">
             {processedApplications.slice(0, 6).map((application) => {
               const riskInfo = application.riskScore ? getRiskLevel(application.riskScore) : null;
               return (
@@ -838,11 +872,6 @@ const HomeContent: React.FC<HomeContentProps> = ({
                       }}
                       className="flex-shrink-0 transition-transform hover:scale-105"
                     >
-                      <img 
-                        src={application.avatar} 
-                        alt={application.name}
-                        className="w-5 h-5 rounded-full object-cover border border-gray-300 dark:border-gray-600"
-                      />
                     </button>
                     <div>
                       <div className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -879,12 +908,14 @@ const HomeContent: React.FC<HomeContentProps> = ({
             })}
           </div>
 
-          {processedApplications.length === 0 && (
+          {!applicationsLoading && processedApplications.length === 0 && (
             <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               <div className="text-4xl mb-2">✅</div>
               <p className="text-sm">No processed applications</p>
               <p className="text-xs mt-1">Start processing to see results</p>
             </div>
+          )}
+            </>
           )}
         </div>
       </div>

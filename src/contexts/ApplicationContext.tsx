@@ -10,7 +10,6 @@ export interface Application {
   status: 'pending' | 'processing' | 'processed' | 'approved' | 'rejected' | 'escalated';
   riskScore?: number;
   flags?: string[];
-  avatar: string;
   aiProcessing?: boolean;
   processingStage?: string;
 }
@@ -31,6 +30,7 @@ interface ApplicationContextType {
   totalClosed: number;
   flagsResolved: number;
   loading: boolean;
+  applicationsLoading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
 }
@@ -41,10 +41,12 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [queueApplications, setQueueApplications] = useState<Application[]>([]);
   const [processedApplications, setProcessedApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
+  const [applicationsLoading, setApplicationsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
-    setLoading(true); setError(null);
+    setApplicationsLoading(true);
+    setError(null);
     try {
       const [{ fetchQueueApplications }, { fetchProcessedApplications }] = await Promise.all([
         import('../api/applications'),
@@ -61,6 +63,7 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setError(message);
     } finally {
       setLoading(false);
+      setApplicationsLoading(false);
     }
   }, []);
 
@@ -257,6 +260,7 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
       totalClosed,
       flagsResolved,
       loading,
+      applicationsLoading,
       error,
       refresh
     }}>

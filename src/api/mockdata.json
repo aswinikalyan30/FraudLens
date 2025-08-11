@@ -1,0 +1,223 @@
+{
+  "applications": [
+    {
+      "id": 2,
+      "tenant_id": "7a9c3e77-25df-4f0b-8d7a-91c9af7c3b57",
+      "application_id": "97689e9c-668e-4cf6-8afb-67e745009480",
+      "institution": "Newford State University",
+      "institution_address": "450 College Street, Newford, NY, 10001, USA",
+      "program_id": "UG-CS-101",
+      "program_name": "Bachelor of Science in Computer Science",
+      "application_type": "financial_aid",
+      "application_status": "Submitted",
+      "ip": "203.0.113.45",
+      "hashed_ssn": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "first_name": "John",
+      "last_name": "Smith",
+      "email": "john.smith@examplemail.com",
+      "phone": "+1-999-555-9999",
+      "dob": "2003-11-30",
+      "gender": "Male",
+      "nationality": "American",
+      "address": [
+        {
+          "city": "Brooklyn",
+          "type": "current",
+          "state": "NY",
+          "county": "Kings",
+          "street": "7890 Maple Street",
+          "country": "USA",
+          "postalCode": "11201"
+        },
+        {
+          "city": "Newark",
+          "type": "permanent",
+          "state": "NJ",
+          "county": "Essex",
+          "street": "1357 Oak Avenue",
+          "country": "USA",
+          "postalCode": "07103"
+        }
+      ],
+      "application_details": {
+        "mode": "Full-Time",
+        "term": "Fall 2025",
+        "campus": "Main Campus",
+        "entryType": "Transfer",
+        "intendedMajor": "Computer Science"
+      },
+      "academic_history": [
+        {
+          "gpa": "4.0",
+          "major": "Science",
+          "degree": "High School Diploma",
+          "address": "1234 High School Rd, Newark, NJ, 07103",
+          "endDate": "2021-06-15",
+          "gpaScale": "4.0",
+          "startDate": "2017-09-01",
+          "attendance": {
+            "totalClasses": 320,
+            "attendedClasses": 320
+          },
+          "institution": "Jefferson High School",
+          "courseSummary": {
+            "totalCourses": 6,
+            "advancedCourses": [
+              "AP Physics",
+              "AP Calculus"
+            ]
+          }
+        },
+        {
+          "gpa": "2.0",
+          "major": "Physics",
+          "degree": "Bachelor's",
+          "address": "1 University Plaza, New York, NY, 10027",
+          "endDate": "2023-05-15",
+          "gpaScale": "4.0",
+          "startDate": "2021-09-01",
+          "attendance": {
+            "totalClasses": 300,
+            "attendedClasses": 150
+          },
+          "institution": "Prestigious University",
+          "courseSummary": {
+            "totalCourses": 3,
+            "advancedCourses": []
+          }
+        }
+      ],
+      "supporting_documents": {
+        "sop": "I am transferring to specialize in Computer Science after completing a Physics degree. My academic record at Prestigious University reflects challenges, but I am motivated to excel in my new field.",
+        "references": [
+          {
+            "lor": "John Smith has potential but struggled with attendance and coursework. I believe with focused motivation, he could succeed in Computer Science.",
+            "name": "Dr. Jane Doe",
+            "email": "janedoe@prestigiousuni.edu",
+            "phone": "+1-212-555-1234",
+            "yearsKnown": 1,
+            "designation": "Professor",
+            "organization": "Prestigious University",
+            "relationship": "Professor"
+          }
+        ]
+      },
+      "created_at": "2025-08-11T04:20:51.186056+00:00",
+      "created_by": "john.smith@examplemail.com",
+      "updated_at": "2025-08-10T22:54:20.072325+00:00",
+      "updated_by": "john.smith@examplemail.com",
+      "audit_trail": [
+        "Application created"
+      ],
+      "fraud_detected": true,
+      "fraud_details": null,
+      "admin_override": null,
+      "admin_override_reason": null
+    },
+    {
+      "id": 1,
+      "tenant_id": "7a9c3e77-25df-4f0b-8d7a-91c9af7c3b57",
+      "application_id": "123",
+      "institution": "Updated University Name",
+      "institution_address": null,
+      "program_id": null,
+      "program_name": "maths",
+      "application_type": "admission",
+      "application_status": "processed",
+      "ip": "203.0.113.45",
+      "hashed_ssn": null,
+      "first_name": "shrikar",
+      "last_name": null,
+      "email": null,
+      "phone": null,
+      "dob": null,
+      "gender": "male",
+      "nationality": null,
+      "address": [
+        {
+          "city": "Brooklyn",
+          "type": "current",
+          "state": "NY",
+          "county": "Kings",
+          "street": "7890 Maple Street",
+          "country": "USA",
+          "postalCode": "11201"
+        },
+        {
+          "city": "Newark",
+          "type": "permanent",
+          "state": "NJ",
+          "county": "Essex",
+          "street": "1357 Oak Avenue",
+          "country": "USA",
+          "postalCode": "07103"
+        }
+      ],
+      "application_details": {
+        "mode": "Full-Time",
+        "term": "Fall 2025",
+        "campus": "Main Campus",
+        "entryType": "Transfer",
+        "intendedMajor": "Computer Science"
+      },
+      "academic_history": [
+        {
+          "gpa": "4.0",
+          "major": "Science",
+          "degree": "High School Diploma",
+          "address": "1234 High School Rd, Newark, NJ, 07103",
+          "endDate": "2021-06-15",
+          "gpaScale": "4.0",
+          "startDate": "2017-09-01",
+          "attendance": {
+            "totalClasses": 320,
+            "attendedClasses": 320
+          },
+          "institution": "Jefferson High School",
+          "courseSummary": {
+            "totalCourses": 6,
+            "advancedCourses": [
+              "AP Physics",
+              "AP Calculus"
+            ]
+          }
+        },
+        {
+          "gpa": "2.0",
+          "major": "Physics",
+          "degree": "Bachelor's",
+          "address": "1 University Plaza, New York, NY, 10027",
+          "endDate": "2023-05-15",
+          "gpaScale": "4.0",
+          "startDate": "2021-09-01",
+          "attendance": {
+            "totalClasses": 300,
+            "attendedClasses": 150
+          },
+          "institution": "Prestigious University",
+          "courseSummary": {
+            "totalCourses": 3,
+            "advancedCourses": []
+          }
+        }
+      ],
+      "supporting_documents": null,
+      "created_at": "2025-08-08T16:00:00+00:00",
+      "created_by": "punith",
+      "updated_at": "2025-08-11T04:32:36.867048+00:00",
+      "updated_by": "test_user",
+      "audit_trail": null,
+      "fraud_detected": null,
+      "fraud_details": {
+        "fraud_score": 0.8,
+        "admin_actions": "IMMEDIATE HOLD: Flag application for investigation and prevent any processing; Security review of submission protocols to determine how reserved test IP addresses were used; Cross-reference address fraud patterns against existing fraud databases and other applications; Investigate potential system vulnerability that allowed submission with no applicant identification; Require comprehensive identity verification including government-issued documentation before considering any future submissions",
+        "fraud_reasons": "The fraud score of 0.8 is assigned based on the confluence of multiple critical fraud indicators that transcend individual component analysis. While some agents assigned low scores due to absent data, the overall application exhibits a sophisticated fraud pattern: (1) Complete identity concealment with \"None None\" name fields, (2) Systematic address fraud with both addresses showing deliberate misrepresentation of prestigious locations (Brooklyn Heights vs Crown Heights, Newark vs Irvington), (3) Use of reserved test IP addresses indicating technical manipulation of submission protocols, and (4) Submission of completely empty application while maintaining fraudulent geographic claims. This pattern suggests either a sophisticated fraud operation testing system vulnerabilities or an attempt to establish fraudulent identity records. The high address fraud score (0.7) combined with the systematic absence of all other required components while maintaining deceptive location claims indicates intentional fraud rather than incomplete submission."
+      },
+      "admin_override": null,
+      "admin_override_reason": null
+    }
+  ],
+  "count": 2,
+  "offset": 0,
+  "limit": null
+}

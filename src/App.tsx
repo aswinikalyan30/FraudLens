@@ -93,7 +93,6 @@ function AppContent() {
       stage: stageOptions[randomStageIndex],
       status: 'escalated',
       flags: [['Essay Similarity', 'Email Age', 'Document Anomaly'][Math.floor(Math.random() * 3)]],
-      avatar: `https://images.pexels.com/photos/${1000000 + Math.floor(Math.random() * 1000)}/${1000000 + Math.floor(Math.random() * 1000)}.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop`,
       timestamp: new Date().toISOString(),
       aiProcessing: false
     };

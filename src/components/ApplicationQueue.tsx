@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Brain, Clock, Play, CheckCircle } from 'lucide-react';
+import { Brain, Clock, Play, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useApplications } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNotifications } from '../contexts/NotificationContext';
 
 const ApplicationQueue: React.FC = () => {
-  const { queueApplications, startBulkFraudDetection, isBulkProcessing, bulkProcessingStatus } = useApplications();
+  const { queueApplications, startBulkFraudDetection, isBulkProcessing, bulkProcessingStatus, applicationsLoading, error } = useApplications();
   // Selection state
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   // Priority state
@@ -98,8 +98,36 @@ const ApplicationQueue: React.FC = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex items-center justify-between flex-col sm:flex-row gap-4">
+      {/* Loading State */}
+      {applicationsLoading && (
+        <div className="flex items-center justify-center py-12">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+            <span className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              Loading applications...
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !applicationsLoading && (
+        <div className={`p-4 border rounded-lg ${
+          isDark ? 'bg-red-900/20 border-red-500/30 text-red-300' : 'bg-red-50 border-red-200 text-red-700'
+        }`}>
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="w-5 h-5" />
+            <span className="font-medium">Error loading applications:</span>
+          </div>
+          <p className="mt-1">{error}</p>
+        </div>
+      )}
+
+      {/* Main Content - Only show when not loading */}
+      {!applicationsLoading && !error && (
+        <>
+          {/* Header */}
+          <div className="flex items-center justify-between flex-col sm:flex-row gap-4">
         <div>
           <h1 className="text-2xl font-bold mb-2">
             Applications in Queue ({queueApplications.length})
@@ -271,11 +299,6 @@ const ApplicationQueue: React.FC = () => {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center space-x-3">
-                      <img
-                        src={application.avatar}
-                        alt={application.name}
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
                       <div>
                         <div className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{application.studentId}</div>
                         <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{application.name}</div>
@@ -295,7 +318,6 @@ const ApplicationQueue: React.FC = () => {
                           <div className="w-3 h-3 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
                           <span className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{application.processingStage || 'Processing...'}</span>
                         </div>
-                        {/* Progress bar */}
                         <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${50}%` }}></div>
                         </div>
@@ -303,7 +325,7 @@ const ApplicationQueue: React.FC = () => {
                     ) : (
                       <span className={`px-2 py-1 rounded-full text-xs border inline-flex items-center space-x-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-300' : 'bg-gray-100 border-gray-200 text-gray-700'}`}>
                         <Clock className="h-3 w-3 mr-1" />
-                        <span>Pending</span>
+                        <span>{application.status === 'pending' ? 'Submitted' : application.status}</span>
                       </span>
                     )}
                   </td>
@@ -348,11 +370,6 @@ const ApplicationQueue: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-3 mb-3">
-              <img 
-                src={application.avatar} 
-                alt={application.name}
-                className="w-8 h-8 rounded-full object-cover"
-              />
               <div>
                 <div className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   {application.name}
@@ -408,6 +425,8 @@ const ApplicationQueue: React.FC = () => {
           <h3 className={`text-lg font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>No applications in queue</h3>
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>All applications have been processed</p>
         </div>
+      )}
+        </>
       )}
     </div>
   );
