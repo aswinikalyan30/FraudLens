@@ -9,7 +9,7 @@ interface TimelineEvent {
   timestamp: string;
   risk: number;
   rules: string[];
-  color: string; // green | orange | red | blue | purple | gray
+  color: string; // green | orange | red | blue | blue | gray
   note?: string;
   type: 'investigator' | 'system' | 'communication' | 'evidence' | 'review' | 'override';
   investigator?: {
@@ -94,7 +94,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
       timestamp: '2024-01-15T09:05:00Z',
       risk: 85,
       rules: ['ESSAY_SIMILARITY', 'EMAIL_AGE'],
-      color: 'purple',
+      color: 'blue',
       type: 'system',
       system: {
         component: 'ML Risk Engine v2.3',
@@ -206,7 +206,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
       timestamp: '2024-01-15T16:00:00Z',
       risk: 45,
       rules: [],
-      color: 'purple',
+      color: 'blue',
       type: 'override',
       override: {
         originalDecision: 'Rejection Recommended',
@@ -252,7 +252,6 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
       case 'orange': return 'bg-orange-500 border-orange-200';
       case 'red': return 'bg-red-500 border-red-200';
       case 'blue': return 'bg-blue-500 border-blue-200';
-      case 'purple': return 'bg-purple-500 border-purple-200';
       case 'yellow': return 'bg-yellow-500 border-yellow-200';
       default: return 'bg-gray-500 border-gray-200';
     }
@@ -338,7 +337,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
                       e.type === 'investigator' 
                         ? isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
                         : e.type === 'system'
-                        ? isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-700'
+                        ? isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'
                         : e.type === 'communication'
                         ? isDark ? 'bg-cyan-500/20 text-cyan-400' : 'bg-cyan-100 text-cyan-700'
                         : e.type === 'evidence'
@@ -377,7 +376,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
                     <button
                       type="button"
                       onClick={() => setAddingNoteFor(e.id)}
-                      className={`text-[10px] px-2 py-0.5 rounded border flex items-center gap-1 ${isDark ? 'bg-purple-600/20 border-purple-500/30 hover:bg-purple-600/30 text-purple-300' : 'bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700'}`}
+                      className={`text-[10px] px-2 py-0.5 rounded border flex items-center gap-1 ${isDark ? 'bg-blue-600/20 border-blue-500/30 hover:bg-blue-600/30 text-blue-300' : 'bg-blue-100 border-blue-300 hover:bg-blue-200 text-blue-700'}`}
                     >
                       <PlusCircle className="w-2.5 h-2.5" /> Note
                     </button>
@@ -406,7 +405,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
                   {/* System Details */}
                   {e.system && (
                     <div className="space-y-2">
-                      <h5 className={`font-medium text-xs ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>System Details</h5>
+                      <h5 className={`font-medium text-xs ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>System Details</h5>
                       <div className="grid grid-cols-1 gap-1 text-[11px]">
                         <div><span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Component:</span> {e.system.component}</div>
                         <div><span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Action:</span> {e.system.action}</div>
@@ -415,7 +414,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
                           <div className="flex items-center gap-2">
                             <span className={`font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Confidence:</span> 
                             <div className="flex-1 bg-gray-200 rounded-full h-2 max-w-20">
-                              <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${e.system.confidence}%` }}></div>
+                              <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${e.system.confidence}%` }}></div>
                             </div>
                             <span className="text-[10px]">{e.system.confidence}%</span>
                           </div>
@@ -602,7 +601,7 @@ const Timeline: React.FC<TimelineProps> = ({ events, isDark }) => {
                     disabled={!noteText.trim()}
                     className={`text-xs px-3 py-1 rounded font-medium transition-colors ${
                       noteText.trim() 
-                        ? isDark ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-purple-600 text-white hover:bg-purple-700'
+                        ? isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
                         : isDark ? 'bg-gray-600 text-gray-400' : 'bg-gray-300 text-gray-500'
                     }`}
                   >

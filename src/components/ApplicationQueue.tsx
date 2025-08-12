@@ -69,7 +69,7 @@ const ApplicationQueue: React.FC = () => {
   const getStageColor = (stage: string) => {
     switch (stage) {
       case 'admission':
-        return isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-50 text-purple-700';
+        return isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-700';
       case 'financial-aid':
         return isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-700';
       default:
@@ -102,7 +102,7 @@ const ApplicationQueue: React.FC = () => {
       {applicationsLoading && (
         <div className="flex items-center justify-center py-12">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
             <span className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Loading applications...
             </span>
@@ -138,7 +138,7 @@ const ApplicationQueue: React.FC = () => {
         </div>
         <div className="flex items-center space-x-4">
           <span className={`px-2 py-1 rounded-full text-xs border inline-flex items-center
-            ${isDark ? 'border-purple-500/30 bg-purple-500/10 text-purple-400' : 'border-purple-300 bg-purple-50 text-purple-700'}`}>
+            ${isDark ? 'border-blue-500/30 bg-blue-500/10 text-blue-400' : 'border-blue-300 bg-blue-50 text-blue-700'}`}>
             <Clock className="h-3 w-3 mr-1" />
             {queuedCount} queued
           </span>
@@ -158,7 +158,7 @@ const ApplicationQueue: React.FC = () => {
         aria-label="Queue Controls"
       >
         <div className="flex items-center space-x-2 mb-2">
-          <Clock className={`h-5 w-5 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
+          <Clock className={`h-5 w-5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
           <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Queue Controls</h2>
         </div>
         <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -217,7 +217,7 @@ const ApplicationQueue: React.FC = () => {
               )}
             </button>
             {selectedIds.length > 0 && (
-              <span className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>Est. time: {estimatedTimeSec}s</span>
+              <span className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>Est. time: {estimatedTimeSec}s</span>
             )}
           </div>
         </div>
@@ -235,7 +235,7 @@ const ApplicationQueue: React.FC = () => {
         }`}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center space-x-2">
-              <Brain className={`w-5 h-5 animate-pulse ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
+              <Brain className={`w-5 h-5 animate-pulse ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
               <span className="font-medium">Fraud Detection in Progress</span>
             </div>
             <span className="text-sm">{bulkProcessingStatus.processed} of {bulkProcessingStatus.total} processed</span>
@@ -284,7 +284,7 @@ const ApplicationQueue: React.FC = () => {
                   key={application.id}
                   className={`transition-colors animate-fade-in
                     ${isDark ? 'hover:bg-gray-700 divide-gray-700' : 'hover:bg-gray-50 divide-gray-200'}
-                    ${application.aiProcessing ? `${isDark ? 'bg-purple-900/20' : 'bg-purple-50/50'}` : ''}`}
+                    ${application.aiProcessing ? `${isDark ? 'bg-blue-900/20' : 'bg-blue-50/50'}` : ''}`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <td className="px-4 py-3 whitespace-nowrap">
@@ -315,17 +315,17 @@ const ApplicationQueue: React.FC = () => {
                     {application.aiProcessing ? (
                       <div className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-2">
-                          <div className="w-3 h-3 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                          <span className={`text-xs ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{application.processingStage || 'Processing...'}</span>
+                          <div className="w-3 h-3 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                          <span className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{application.processingStage || 'Processing...'}</span>
                         </div>
                         <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                          <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${50}%` }}></div>
+                          <div className="h-full bg-blue-500 transition-all duration-500" style={{ width: `${50}%` }}></div>
                         </div>
                       </div>
                     ) : (
                       <span className={`px-2 py-1 rounded-full text-xs border inline-flex items-center space-x-1 ${isDark ? 'bg-gray-700 border-gray-600 text-gray-300' : 'bg-gray-100 border-gray-200 text-gray-700'}`}>
                         <Clock className="h-3 w-3 mr-1" />
-                        <span>{application.status === 'pending' ? 'Submitted' : application.status}</span>
+                        <span>{application.status === 'submitted' ? 'Submitted' : application.status}</span>
                       </span>
                     )}
                   </td>
@@ -357,11 +357,11 @@ const ApplicationQueue: React.FC = () => {
               isDark 
                 ? 'bg-gray-800 border-gray-700' 
                 : 'bg-white border-gray-200 shadow-sm'
-            } ${application.aiProcessing ? `ring-2 ring-purple-500/50` : ''}`}
+            } ${application.aiProcessing ? `ring-2 ring-blue-500/50` : ''}`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="flex items-center justify-between mb-3">
-              <span className={`text-sm font-mono ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+              <span className={`text-sm font-mono ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                 {application.studentId}
               </span>
               <span className={`px-2 py-1 rounded-full text-xs ${getStageColor(application.stage)}`}>
@@ -387,8 +387,8 @@ const ApplicationQueue: React.FC = () => {
               
               {application.aiProcessing && (
                 <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
-                  <span className={isDark ? 'text-purple-300' : 'text-purple-700'}>Processing</span>
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                  <span className={isDark ? 'text-blue-300' : 'text-blue-700'}>Processing</span>
                 </div>
               )}
             </div>
@@ -397,8 +397,8 @@ const ApplicationQueue: React.FC = () => {
             {application.aiProcessing && (
               <div className={`mt-3 px-3 py-2 rounded-md border text-xs ${
                 isDark 
-                  ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' 
-                  : 'bg-purple-50 border-purple-200 text-purple-700'
+                  ? 'bg-blue-500/10 border-blue-500/30 text-blue-300' 
+                  : 'bg-blue-50 border-blue-200 text-blue-700'
               }`}>
                 <div className="flex items-center space-x-1 mb-1">
                   <Brain className="w-3 h-3" />
@@ -408,7 +408,7 @@ const ApplicationQueue: React.FC = () => {
                 {/* Progress bar */}
                 <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mt-2">
                   <div 
-                    className="h-full bg-purple-500 transition-all duration-500"
+                    className="h-full bg-blue-500 transition-all duration-500"
                     style={{ width: '50%' }}
                   ></div>
                 </div>

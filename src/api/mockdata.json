@@ -1,223 +1,2160 @@
-{
-  "applications": [
+[
     {
-      "id": 2,
-      "tenant_id": "7a9c3e77-25df-4f0b-8d7a-91c9af7c3b57",
-      "application_id": "97689e9c-668e-4cf6-8afb-67e745009480",
-      "institution": "Newford State University",
-      "institution_address": "450 College Street, Newford, NY, 10001, USA",
-      "program_id": "UG-CS-101",
-      "program_name": "Bachelor of Science in Computer Science",
-      "application_type": "financial_aid",
-      "application_status": "Submitted",
-      "ip": "203.0.113.45",
-      "hashed_ssn": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-      "first_name": "John",
-      "last_name": "Smith",
-      "email": "john.smith@examplemail.com",
-      "phone": "+1-999-555-9999",
-      "dob": "2003-11-30",
-      "gender": "Male",
-      "nationality": "American",
-      "address": [
-        {
-          "city": "Brooklyn",
-          "type": "current",
-          "state": "NY",
-          "county": "Kings",
-          "street": "7890 Maple Street",
-          "country": "USA",
-          "postalCode": "11201"
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "46bd3314-20f6-4fe6-9f9b-a949ec58e9e3",
+        "institution": "Crestwood University",
+        "institution_address": "456 Crestwood Drive, Springfield, IL 62711",
+        "program_id": "UG-BA-EC01",
+        "program_name": "Bachelor of Arts in Economics",
+        "application_type": "finaid",
+        "application_status": "submitted",
+        "ip": "209.7.248.23",
+        "hashed_ssn": null,
+        "first_name": "Samira",
+        "last_name": "Perez",
+        "email": "samira.perez@gmail.com",
+        "phone": "+1-217-876-6743",
+        "dob": "2000-05-20",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Waukegan",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Lake County",
+                "street": "789 Maple Street",
+                "country": "United States",
+                "postalCode": "60085"
+            },
+            {
+                "city": "Springfield",
+                "type": "temporary",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "456 Oak Avenue",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Part-time",
+            "term": null,
+            "campus": null,
+            "entryType": null,
+            "costBreakdown": {
+                "fees": 800,
+                "books": 1200,
+                "details": "Part-time student with no housing costs, staying at permanent home. Annual childcare expenses for 2-year-old daughter on few occasions, generally covered by family.",
+                "housing": 0,
+                "tuition": 7500,
+                "childcare": 2000,
+                "technology": 250
+            },
+            "intendedMajor": null,
+            "aidAmountRequested": 12000,
+            "admissionsApplicationId": "427267c5-d86b-42f1-ac4c-a7c8baccaf4d"
         },
-        {
-          "city": "Newark",
-          "type": "permanent",
-          "state": "NJ",
-          "county": "Essex",
-          "street": "1357 Oak Avenue",
-          "country": "USA",
-          "postalCode": "07103"
-        }
-      ],
-      "application_details": {
-        "mode": "Full-Time",
-        "term": "Fall 2025",
-        "campus": "Main Campus",
-        "entryType": "Transfer",
-        "intendedMajor": "Computer Science"
-      },
-      "academic_history": [
-        {
-          "gpa": "4.0",
-          "major": "Science",
-          "degree": "High School Diploma",
-          "address": "1234 High School Rd, Newark, NJ, 07103",
-          "endDate": "2021-06-15",
-          "gpaScale": "4.0",
-          "startDate": "2017-09-01",
-          "attendance": {
-            "totalClasses": 320,
-            "attendedClasses": 320
-          },
-          "institution": "Jefferson High School",
-          "courseSummary": {
-            "totalCourses": 6,
-            "advancedCourses": [
-              "AP Physics",
-              "AP Calculus"
-            ]
-          }
+        "academic_history": [
+            {
+                "gpa": "3.8",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "2323 Waukegan Rd, Waukegan, IL 60085",
+                "endDate": "2020-05-10",
+                "gpaScale": "4.0",
+                "startDate": "2016-08-15",
+                "attendance": {
+                    "totalClasses": 1000,
+                    "attendedClasses": 950
+                },
+                "institution": "Waukegan High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "AP Microeconomics",
+                        "AP Macroeconomics",
+                        "Statistics",
+                        "World History",
+                        "English Literature"
+                    ]
+                },
+                "additionalDocuments": [
+                    {
+                        "type": "Extra-Curricular",
+                        "details": "Participated in economics discussions, debates, and competitions, enhancing analytical and public speaking skills.",
+                        "endDate": "2020-05-31",
+                        "startDate": "2017-09-01",
+                        "description": "Member of Economics Club and Debate Team"
+                    }
+                ]
+            },
+            {
+                "gpa": null,
+                "major": null,
+                "degree": null,
+                "address": null,
+                "endDate": "2022-05-15",
+                "gpaScale": null,
+                "gapReason": "Due to personal challenges, including becoming a single mother, I paused my education to focus on my family. Now, I am determined to resume my academic journey, balancing responsibilities while pursuing my passion for economics and securing a better future for myself and my child. While I took a break from formal education, I engaged in self-study and online courses to keep my knowledge current.",
+                "isGapYear": true,
+                "startDate": "2020-06-01",
+                "attendance": null,
+                "institution": null,
+                "courseSummary": null,
+                "additionalDocuments": [
+                    {
+                        "type": "Course Completion Certificate",
+                        "details": "This is to certify that Samira Perez completed an online course on Introduction to Economics, covering basic economic principles, microeconomics, and macroeconomics.",
+                        "endDate": "2023-03-31",
+                        "startDate": "2023-01-01",
+                        "description": "Online Course: Introduction to Economics"
+                    },
+                    {
+                        "type": "Course Completion Certificate",
+                        "details": "This is to certify that Samira Perez completed an online course on Advanced Economic Policy, focusing on economic theories, policy analysis, and their applications in real-world scenarios.",
+                        "endDate": "2024-01-31",
+                        "startDate": "2023-06-01",
+                        "description": "Online Course: Advanced Economic Policy"
+                    },
+                    {
+                        "type": "Volunteer Certificate",
+                        "details": "This is to certify that Samira Perez volunteered at a local non-profit organization, assisting with community outreach and economic education programs.",
+                        "endDate": "2025-05-30",
+                        "startDate": "2024-05-10",
+                        "description": "Volunteer at Local Non-Profit"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "My name is Samira Perez, and I am applying for financial aid to pursue my Bachelor of Arts in Economics at Crestwood University. I currently live with my parents in Waukegan, Illinois, rent-free, which allows me to afford basic living expenses for myself and my two-year-old daughter Lily. I contribute to household utilities, food, and pay for childcare while attending classes. Since graduating high school in 2020, I have spent time working as a full-time library assistant, taking accredited online economics courses, and volunteering with a local non-profit. I aim to use my degree to work in economic policy on behalf of low-income families. Financial aid will allow me to cover tuition, books, technology, and childcare costs while continuing to work and raise my daughter. I am committed to completing my program successfully and contributing to my community.",
+            "fafsa": {
+                "sai": 1400,
+                "fafsaId": "FAFSA-2025-9823456",
+                "parentInfo": [],
+                "applicantInfo": {
+                    "assets": {
+                        "cash": 500,
+                        "savings": 2500
+                    },
+                    "income": 15000,
+                    "details": "Part-time job as a cashier at a local grocery store, working approximately 20 hours per week. Paid hourly at $13.50."
+                },
+                "dependentInfo": [
+                    {
+                        "age": 2,
+                        "name": "Lily Perez",
+                        "relationship": "Daughter"
+                    }
+                ],
+                "incomeDetails": {
+                    "parentTotalIncome": 0,
+                    "otherUntaxedIncome": 0,
+                    "studentTotalIncome": 15000
+                },
+                "additionalInfo": "Samira is a single mother with a 2-year-old daughter. She has no housing costs as she lives with her parents. Childcare expenses are significant, and she requires financial aid to cover tuition, books, and childcare while pursuing her degree part-time.",
+                "irsHouseholdSize": 2,
+                "isFafsaDependent": false,
+                "fafsaHouseholdSize": 2,
+                "irsTaxFilingStatus": "Single",
+                "irsTaxFilerDependents": 1
+            },
+            "references": null
         },
-        {
-          "gpa": "2.0",
-          "major": "Physics",
-          "degree": "Bachelor's",
-          "address": "1 University Plaza, New York, NY, 10027",
-          "endDate": "2023-05-15",
-          "gpaScale": "4.0",
-          "startDate": "2021-09-01",
-          "attendance": {
-            "totalClasses": 300,
-            "attendedClasses": 150
-          },
-          "institution": "Prestigious University",
-          "courseSummary": {
-            "totalCourses": 3,
-            "advancedCourses": []
-          }
-        }
-      ],
-      "supporting_documents": {
-        "sop": "I am transferring to specialize in Computer Science after completing a Physics degree. My academic record at Prestigious University reflects challenges, but I am motivated to excel in my new field.",
-        "references": [
-          {
-            "lor": "John Smith has potential but struggled with attendance and coursework. I believe with focused motivation, he could succeed in Computer Science.",
-            "name": "Dr. Jane Doe",
-            "email": "janedoe@prestigiousuni.edu",
-            "phone": "+1-212-555-1234",
-            "yearsKnown": 1,
-            "designation": "Professor",
-            "organization": "Prestigious University",
-            "relationship": "Professor"
-          }
-        ]
-      },
-      "created_at": "2025-08-11T04:20:51.186056+00:00",
-      "created_by": "john.smith@examplemail.com",
-      "updated_at": "2025-08-10T22:54:20.072325+00:00",
-      "updated_by": "john.smith@examplemail.com",
-      "audit_trail": [
-        "Application created"
-      ],
-      "fraud_detected": true,
-      "fraud_details": null,
-      "admin_override": null,
-      "admin_override_reason": null
+        "created_at": "2025-08-12T17:34:17.482181+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:34:17.482185+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "490abe28-40ab-418e-8ad7-2f7b0ebb01a3",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
     },
     {
-      "id": 1,
-      "tenant_id": "7a9c3e77-25df-4f0b-8d7a-91c9af7c3b57",
-      "application_id": "123",
-      "institution": "Updated University Name",
-      "institution_address": null,
-      "program_id": null,
-      "program_name": "maths",
-      "application_type": "admission",
-      "application_status": "processed",
-      "ip": "203.0.113.45",
-      "hashed_ssn": null,
-      "first_name": "shrikar",
-      "last_name": null,
-      "email": null,
-      "phone": null,
-      "dob": null,
-      "gender": "male",
-      "nationality": null,
-      "address": [
-        {
-          "city": "Brooklyn",
-          "type": "current",
-          "state": "NY",
-          "county": "Kings",
-          "street": "7890 Maple Street",
-          "country": "USA",
-          "postalCode": "11201"
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "4ca3ae95-bf26-4784-ac86-804a0d11e088",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-CS-01",
+        "program_name": "Bachelor of Science in Computer Science",
+        "application_type": "finaid",
+        "application_status": "submitted",
+        "ip": "71.84.235.250",
+        "hashed_ssn": null,
+        "first_name": "Andrew",
+        "last_name": "Jonas",
+        "email": "andrew.jonas@gmail.com",
+        "phone": "+1-626-412-5709",
+        "dob": "2007-02-20",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Pasadena",
+                "type": "permanent",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "789 Maple Avenue",
+                "country": "United States",
+                "postalCode": "91101"
+            }
+        ],
+        "application_details": {
+            "mode": null,
+            "term": null,
+            "campus": null,
+            "entryType": null,
+            "costBreakdown": {
+                "fees": 1000,
+                "books": 1200,
+                "housing": 7000,
+                "tuition": 20000,
+                "technology": 800,
+                "transportation": 1500,
+                "otherLivingExpenses": 2000
+            },
+            "intendedMajor": null,
+            "aidAmountRequested": 33500,
+            "admissionsApplicationId": "33fdb716-c335-4253-9044-d80a128fc773"
         },
-        {
-          "city": "Newark",
-          "type": "permanent",
-          "state": "NJ",
-          "county": "Essex",
-          "street": "1357 Oak Avenue",
-          "country": "USA",
-          "postalCode": "07103"
-        }
-      ],
-      "application_details": {
-        "mode": "Full-Time",
-        "term": "Fall 2025",
-        "campus": "Main Campus",
-        "entryType": "Transfer",
-        "intendedMajor": "Computer Science"
-      },
-      "academic_history": [
-        {
-          "gpa": "4.0",
-          "major": "Science",
-          "degree": "High School Diploma",
-          "address": "1234 High School Rd, Newark, NJ, 07103",
-          "endDate": "2021-06-15",
-          "gpaScale": "4.0",
-          "startDate": "2017-09-01",
-          "attendance": {
-            "totalClasses": 320,
-            "attendedClasses": 320
-          },
-          "institution": "Jefferson High School",
-          "courseSummary": {
-            "totalCourses": 6,
-            "advancedCourses": [
-              "AP Physics",
-              "AP Calculus"
+        "academic_history": [
+            {
+                "gpa": "3.9",
+                "major": "Computer Science",
+                "degree": "Incomplete (Pending Transfer)",
+                "address": "1570 E Colorado Blvd, Pasadena, CA 91106",
+                "endDate": "2025-06-10",
+                "gpaScale": "4.0",
+                "startDate": "2023-08-20",
+                "attendance": {
+                    "totalClasses": 600,
+                    "attendedClasses": 590
+                },
+                "institution": "Pasadena Community College",
+                "courseSummary": {
+                    "totalCourses": 10,
+                    "advancedCourses": [
+                        "Data Structures",
+                        "Algorithms",
+                        "Discrete Mathematics",
+                        "Object-Oriented Programming",
+                        "Computer Networks"
+                    ]
+                },
+                "creditsEarned": 45,
+                "creditsRequiredForTransfer": 40
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Andrew Jonas, applying to Crestwood University's Bachelor of Science in Computer Science as a transfer student. My academic foundation at Pasadena Community College and 3.9 GPA reflect my dedication and ability to excel. Coming from a low-income household with a sibling already in college, I require substantial financial aid to continue my education without placing an unmanageable burden on my family. This support will allow me to access Crestwood’s advanced computer science curriculum, engage in research opportunities, and work toward a future in artificial intelligence and cybersecurity.",
+            "fafsa": {
+                "sai": 1200,
+                "fafsaId": "FAFSA-2025-9827654",
+                "parentInfo": [
+                    {
+                        "name": "Karen Jonas",
+                        "assets": {
+                            "cash": 2500,
+                            "savings": 1500,
+                            "investments": 500
+                        },
+                        "income": 26000
+                    },
+                    {
+                        "name": "Peter Jonas",
+                        "assets": {
+                            "cash": 3000,
+                            "savings": 1500,
+                            "investments": 500
+                        },
+                        "income": 28000
+                    }
+                ],
+                "applicantInfo": {
+                    "assets": {
+                        "cash": 800,
+                        "savings": 500
+                    },
+                    "income": 0,
+                    "details": "Full-time student with no current employment or income."
+                },
+                "dependentInfo": [
+                    {
+                        "age": 19,
+                        "name": "Michael Jonas",
+                        "notes": "Currently enrolled in a 4-year undergraduate program.",
+                        "relationship": "Sibling"
+                    }
+                ],
+                "incomeDetails": {
+                    "parentTotalIncome": 54000,
+                    "otherUntaxedIncome": 0,
+                    "studentTotalIncome": 0
+                },
+                "additionalInfo": "Household supports two children in college. Parents have low income and modest emergency savings. Student has no personal income. High need for financial assistance to cover tuition, housing, and educational expenses.",
+                "irsHouseholdSize": 4,
+                "isFafsaDependent": true,
+                "fafsaHouseholdSize": 4,
+                "irsTaxFilingStatus": "Married Filing Jointly",
+                "irsTaxFilerDependents": 2
+            },
+            "references": null
+        },
+        "created_at": "2025-08-12T17:34:16.494143+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:34:16.494147+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "8c827232-a6d1-4af5-9b47-1cd0cba279a5",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "e95e0d68-9ada-4a8b-94d2-bbbf20ef38bc",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-CS-01",
+        "program_name": "Bachelor of Science in Computer Science",
+        "application_type": "finaid",
+        "application_status": "submitted",
+        "ip": "113.113.46.18",
+        "hashed_ssn": null,
+        "first_name": "Brad",
+        "last_name": "Kelly",
+        "email": "brad.kelly@gmail.com",
+        "phone": "+1-512-555-7890",
+        "dob": "2002-10-27",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "New York",
+                "type": "permanent",
+                "state": "NY",
+                "county": "New York County",
+                "street": "1125 Broadway",
+                "country": "United States",
+                "postalCode": "10010"
+            }
+        ],
+        "application_details": {
+            "mode": null,
+            "term": null,
+            "campus": null,
+            "entryType": null,
+            "costBreakdown": {
+                "fees": 1100,
+                "books": 1200,
+                "housing": 9000,
+                "tuition": 20000,
+                "technology": 1000,
+                "transportation": 1300,
+                "otherLivingExpenses": 2000
+            },
+            "intendedMajor": null,
+            "aidAmountRequested": 24000,
+            "admissionsApplicationId": "8343e543-20be-45f2-90a7-2492f7ff037c"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.0",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "350 W 14th St, New York, NY 10014",
+                "endDate": "2022-06-15",
+                "gpaScale": "4.0",
+                "startDate": "2018-08-20",
+                "attendance": {
+                    "totalClasses": 950,
+                    "attendedClasses": 910
+                },
+                "institution": "New York High School",
+                "courseSummary": {
+                    "totalCourses": 18,
+                    "advancedCourses": [
+                        "AP Computer Science Principles",
+                        "Calculus AB",
+                        "Physics"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "Despite a few non-conventional paths in my education, I am committed to succeeding at Crestwood University. This financial aid will allow me to balance my commitments to education and family life with reduced financial strain. I aim to integrate my work experience working in a department store and apply that discipline to technology. With adequate support, I will be able to focus fully on my classes and contribute my unique perspective to the campus community.",
+            "fafsa": {
+                "sai": 6000,
+                "fafsaId": "FAFSA-2025-8812456",
+                "parentInfo": [],
+                "spouseInfo": {
+                    "name": "Melissa Kelly",
+                    "assets": {
+                        "cash": 1800,
+                        "savings": 5000
+                    },
+                    "income": 28000
+                },
+                "applicantInfo": {
+                    "assets": {
+                        "cash": 1500,
+                        "savings": 2500,
+                        "investments": 4000
+                    },
+                    "income": 12500,
+                    "details": "Part-time sales associate at Midtown Department Store, working approximately 22 hours per week since March 2024. Paid hourly at $14.10. Schedule varies seasonally with occasional overtime."
+                },
+                "incomeDetails": {
+                    "parentTotalIncome": 0,
+                    "otherUntaxedIncome": 8000,
+                    "studentTotalIncome": 12500
+                },
+                "additionalInfo": "Brad is recently married but filed taxes separately from his spouse citing 'complicated family finances'. Household sizes differ between FAFSA and IRS due to 'temporary shared living with cousin'. Received untaxed help from an 'informal family trust'.",
+                "irsHouseholdSize": 3,
+                "isFafsaDependent": false,
+                "fafsaHouseholdSize": 2,
+                "irsTaxFilingStatus": "Married Filing Separately",
+                "irsTaxFilerDependents": 0
+            },
+            "references": null
+        },
+        "created_at": "2025-08-12T17:34:15.515221+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:34:15.515225+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "8df78b36-6e40-4dd3-93d1-5675e7025cc1",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "0f42f677-993d-4b7b-8a8e-f41a9cf51a5a",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-CS-01",
+        "program_name": "Bachelor of Science in Computer Science",
+        "application_type": "finaid",
+        "application_status": "submitted",
+        "ip": "104.174.125.138",
+        "hashed_ssn": null,
+        "first_name": "Lorraine",
+        "last_name": "Warren",
+        "email": "lorraine.warren@gmail.com",
+        "phone": "+1-310-456-7890",
+        "dob": "2006-09-20",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Los Angeles",
+                "type": "permanent",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "4567 Sunset Blvd",
+                "country": "United States",
+                "postalCode": "90028"
+            }
+        ],
+        "application_details": {
+            "mode": null,
+            "term": null,
+            "campus": null,
+            "entryType": null,
+            "costBreakdown": {
+                "fees": 1200,
+                "books": 1500,
+                "housing": 8000,
+                "tuition": 20000,
+                "technology": 800,
+                "transportation": 1500,
+                "otherLivingExpenses": 2000
+            },
+            "intendedMajor": null,
+            "aidAmountRequested": 14500,
+            "admissionsApplicationId": "e8e4b823-5fb2-45c4-9a8a-5909d7b2ae46"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.85",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "4650 W Olympic Blvd, Los Angeles, CA 90019",
+                "endDate": "2025-05-15",
+                "gpaScale": "4.0",
+                "startDate": "2021-09-15",
+                "attendance": {
+                    "totalClasses": 1010,
+                    "attendedClasses": 950
+                },
+                "institution": "Los Angeles High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "Calculus AB",
+                        "AP Computer Science A"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am deeply passionate about computer science and eager to pursue a Bachelor of Science at Crestwood University. My advanced coursework in AP Computer Science A and Calculus AB has prepared me well for this journey. Growing up, my family faced financial challenges that taught me resilience, perseverance, and the value of hard work. Receiving financial aid is vital to relieve the burden on my family and let me focus fully on my education. With this support, I will dedicate myself to excelling academically and contributing meaningfully to Crestwood's vibrant tech community. I dream of developing innovative technology that can positively impact society and inspire change. This aid is not just financial help; it represents a life-changing chance to build a brighter future for myself and others.",
+            "fafsa": {
+                "sai": 12000,
+                "fafsaId": "FAFSA-2025-9823411",
+                "parentInfo": [
+                    {
+                        "name": "Elly Warren",
+                        "assets": {
+                            "cash": 4000,
+                            "savings": 10000,
+                            "investments": 7000
+                        },
+                        "income": 32000
+                    },
+                    {
+                        "name": "John Warren",
+                        "assets": {
+                            "cash": 3000,
+                            "savings": 8000,
+                            "investments": 5000
+                        },
+                        "income": 33000
+                    }
+                ],
+                "applicantInfo": {
+                    "assets": {
+                        "cash": 500,
+                        "details": "Student savings from part-time jobs",
+                        "savings": 2000
+                    },
+                    "income": 0
+                },
+                "incomeDetails": {
+                    "parentTotalIncome": 65000,
+                    "otherUntaxedIncome": 0,
+                    "studentTotalIncome": 0
+                },
+                "additionalInfo": "The IRS excludes spouses as dependents on joint returns; only qualifying children or relatives count. Lorraine is the sole dependent, so IRSTaxFilerDependents is set as 1.",
+                "irsHouseholdSize": 3,
+                "isFafsaDependent": true,
+                "fafsaHouseholdSize": 3,
+                "irsTaxFilingStatus": "Married Filing Jointly",
+                "irsTaxFilerDependents": 1
+            },
+            "references": null
+        },
+        "created_at": "2025-08-12T17:34:14.565948+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:34:14.565956+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "4650402a-44e8-4883-bba5-1b67827305a7",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "38b34936-16a0-452c-be3d-1c55d649635f",
+        "institution": "Crestwood University",
+        "institution_address": "456 Crestwood Drive, Springfield, IL 62711",
+        "program_id": "UG-BA-SOC01",
+        "program_name": "Bachelor of Arts in Sociology",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "209.7.248.23",
+        "hashed_ssn": null,
+        "first_name": "Samira",
+        "last_name": "Perez",
+        "email": "samira.perez@gmail.com",
+        "phone": "+1-217-876-6743",
+        "dob": "2000-05-20",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Waukegan",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Lake County",
+                "street": "789 Maple Street",
+                "country": "United States",
+                "postalCode": "60085"
+            },
+            {
+                "city": "Springfield",
+                "type": "temporary",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "456 Oak Avenue",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Part-time",
+            "term": "Fall 2025",
+            "campus": "Springfield Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "Sociology"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.8",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "2323 Waukegan Rd, Waukegan, IL 60085",
+                "endDate": "2020-05-10",
+                "gpaScale": "4.0",
+                "startDate": "2016-08-15",
+                "attendance": {
+                    "totalClasses": 1000,
+                    "attendedClasses": 950
+                },
+                "institution": "Waukegan High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "AP Psychology",
+                        "Sociology",
+                        "Statistics",
+                        "World History",
+                        "English Literature"
+                    ]
+                },
+                "additionalDocuments": [
+                    {
+                        "type": "Extra-Curricular",
+                        "details": "Participated in sociology discussions, debates, and competitions, enhancing analytical and communication skills.",
+                        "endDate": "2020-05-31",
+                        "startDate": "2017-09-01",
+                        "description": "Member of Sociology Club and Debate Team"
+                    }
+                ]
+            },
+            {
+                "gpa": null,
+                "major": null,
+                "degree": null,
+                "address": null,
+                "endDate": "2022-05-15",
+                "gpaScale": null,
+                "gapReason": "Due to personal challenges, including becoming a single mother, I paused my education to focus on my family. Now, I am determined to resume my academic journey, balancing responsibilities while pursuing my passion for sociology and understanding social dynamics to contribute to community development. While I took a break from formal education, I engaged in self-study and online courses to keep my knowledge current.",
+                "isGapYear": true,
+                "startDate": "2020-06-01",
+                "attendance": null,
+                "institution": null,
+                "courseSummary": null,
+                "additionalDocuments": [
+                    {
+                        "type": "Course Completion Certificate",
+                        "details": "This is to certify that Samira Perez completed an online course on Introduction to Sociology, covering foundational social theories, research methods, and social issues.",
+                        "endDate": "2023-03-31",
+                        "startDate": "2023-01-01",
+                        "description": "Online Course: Introduction to Sociology"
+                    },
+                    {
+                        "type": "Course Completion Certificate",
+                        "details": "This is to certify that Samira Perez completed an online course on Social Inequality and Policy, focusing on social stratification, inequality, and policy interventions.",
+                        "endDate": "2024-01-31",
+                        "startDate": "2023-06-01",
+                        "description": "Online Course: Social Inequality and Policy"
+                    },
+                    {
+                        "type": "Volunteer Certificate",
+                        "details": "This is to certify that Samira Perez volunteered at a local community center, assisting with outreach programs and social services.",
+                        "endDate": "2025-05-30",
+                        "startDate": "2024-05-10",
+                        "description": "Volunteer at Local Community Center"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "My deep interest in understanding social behavior and societal structures motivates me to pursue a Bachelor of Arts in Sociology at Crestwood University part-time. Balancing family responsibilities with studies has strengthened my resilience and time management skills. I am eager to contribute to the community through sociological research and policy advocacy, and I believe this program's rigorous curriculum and supportive environment will equip me for these goals.",
+            "references": [
+                {
+                    "lor": "Samira showed great enthusiasm and analytical ability in Sociology class. Her active involvement in the Sociology Club and community service activities demonstrated her commitment to understanding social issues. I believe she has great potential to excel in university-level sociology studies.",
+                    "name": "Dr. Linda Moore",
+                    "email": "lmoore@waukeganhigh.edu",
+                    "phone": "+1-217-234-1234",
+                    "yearsKnown": 4,
+                    "designation": "Sociology Teacher",
+                    "organization": "Waukegan High School",
+                    "relationship": "Sociology Teacher and Club Advisor"
+                }
             ]
-          }
         },
-        {
-          "gpa": "2.0",
-          "major": "Physics",
-          "degree": "Bachelor's",
-          "address": "1 University Plaza, New York, NY, 10027",
-          "endDate": "2023-05-15",
-          "gpaScale": "4.0",
-          "startDate": "2021-09-01",
-          "attendance": {
-            "totalClasses": 300,
-            "attendedClasses": 150
-          },
-          "institution": "Prestigious University",
-          "courseSummary": {
-            "totalCourses": 3,
-            "advancedCourses": []
-          }
-        }
-      ],
-      "supporting_documents": null,
-      "created_at": "2025-08-08T16:00:00+00:00",
-      "created_by": "punith",
-      "updated_at": "2025-08-11T04:32:36.867048+00:00",
-      "updated_by": "test_user",
-      "audit_trail": null,
-      "fraud_detected": null,
-      "fraud_details": {
-        "fraud_score": 0.8,
-        "admin_actions": "IMMEDIATE HOLD: Flag application for investigation and prevent any processing; Security review of submission protocols to determine how reserved test IP addresses were used; Cross-reference address fraud patterns against existing fraud databases and other applications; Investigate potential system vulnerability that allowed submission with no applicant identification; Require comprehensive identity verification including government-issued documentation before considering any future submissions",
-        "fraud_reasons": "The fraud score of 0.8 is assigned based on the confluence of multiple critical fraud indicators that transcend individual component analysis. While some agents assigned low scores due to absent data, the overall application exhibits a sophisticated fraud pattern: (1) Complete identity concealment with \"None None\" name fields, (2) Systematic address fraud with both addresses showing deliberate misrepresentation of prestigious locations (Brooklyn Heights vs Crown Heights, Newark vs Irvington), (3) Use of reserved test IP addresses indicating technical manipulation of submission protocols, and (4) Submission of completely empty application while maintaining fraudulent geographic claims. This pattern suggests either a sophisticated fraud operation testing system vulnerabilities or an attempt to establish fraudulent identity records. The high address fraud score (0.7) combined with the systematic absence of all other required components while maintaining deceptive location claims indicates intentional fraud rather than incomplete submission."
-      },
-      "admin_override": null,
-      "admin_override_reason": null
-    }
+        "created_at": "2025-08-12T17:08:19.485294+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:19.485297+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "33913a3d-2a6b-4177-8a1f-a50ee59cbd02",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "427267c5-d86b-42f1-ac4c-a7c8baccaf4d",
+        "institution": "Crestwood University",
+        "institution_address": "456 Crestwood Drive, Springfield, IL 62711",
+        "program_id": "UG-BA-EC01",
+        "program_name": "Bachelor of Arts in Economics",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "209.7.248.23",
+        "hashed_ssn": null,
+        "first_name": "Samira",
+        "last_name": "Perez",
+        "email": "samira.perez@gmail.com",
+        "phone": "+1-217-876-6743",
+        "dob": "2000-05-20",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Waukegan",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Lake County",
+                "street": "789 Maple Street",
+                "country": "United States",
+                "postalCode": "60085"
+            },
+            {
+                "city": "Springfield",
+                "type": "temporary",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "456 Oak Avenue",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Part-time",
+            "term": "Fall 2025",
+            "campus": "Springfield Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "Economics"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.8",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "2323 Waukegan Rd, Waukegan, IL 60085",
+                "endDate": "2020-05-10",
+                "gpaScale": "4.0",
+                "startDate": "2016-08-15",
+                "attendance": {
+                    "totalClasses": 1000,
+                    "attendedClasses": 950
+                },
+                "institution": "Waukegan High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "AP Microeconomics",
+                        "AP Macroeconomics",
+                        "Statistics",
+                        "World History",
+                        "English Literature"
+                    ]
+                },
+                "additionalDocuments": [
+                    {
+                        "type": "Extra-Curricular",
+                        "details": "Participated in economics discussions, debates, and competitions, enhancing analytical and public speaking skills.",
+                        "endDate": "2020-05-31",
+                        "startDate": "2017-09-01",
+                        "description": "Member of Economics Club and Debate Team"
+                    }
+                ]
+            },
+            {
+                "gpa": null,
+                "major": null,
+                "degree": null,
+                "address": null,
+                "endDate": "2022-05-15",
+                "gpaScale": null,
+                "gapReason": "Due to personal challenges, including becoming a single mother, I paused my education to focus on my family. Now, I am determined to resume my academic journey, balancing responsibilities while pursuing my passion for economics and securing a better future for myself and my child. While I took a break from formal education, I engaged in self-study and online courses to keep my knowledge current.",
+                "isGapYear": true,
+                "startDate": "2020-06-01",
+                "attendance": null,
+                "institution": null,
+                "courseSummary": null,
+                "additionalDocuments": [
+                    {
+                        "type": "Course Completion Certificate",
+                        "details": "This is to certify that Samira Perez completed an online course on Introduction to Economics, covering basic economic principles, microeconomics, and macroeconomics.",
+                        "endDate": "2023-03-31",
+                        "startDate": "2023-01-01",
+                        "description": "Online Course: Introduction to Economics"
+                    },
+                    {
+                        "type": "Course Completion Certificate",
+                        "details": "This is to certify that Samira Perez completed an online course on Advanced Economic Policy, focusing on economic theories, policy analysis, and their applications in real-world scenarios.",
+                        "endDate": "2024-01-31",
+                        "startDate": "2023-06-01",
+                        "description": "Online Course: Advanced Economic Policy"
+                    },
+                    {
+                        "type": "Volunteer Certificate",
+                        "details": "This is to certify that Samira Perez volunteered at a local non-profit organization, assisting with community outreach and economic education programs.",
+                        "endDate": "2025-05-30",
+                        "startDate": "2024-05-10",
+                        "description": "Volunteer at Local Non-Profit"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I have always been passionate about understanding how economic systems shape our world. Although personal circumstances required me to take a break after high school, becoming a single mother strengthened my resilience, determination, and time management skills. I am eager to pursue a Bachelor of Arts in Economics at Crestwood University part-time, allowing me to balance family and studies. I believe this program’s strong curriculum and supportive community will empower me to achieve my academic and career goals in economic policy and advocacy. I am committed to contributing my unique experiences and enthusiasm to the university.",
+            "references": [
+                {
+                    "lor": "Samira demonstrated exceptional analytical and critical thinking skills in AP Microeconomics and Macroeconomics. Her active participation in the Economics Club and Debate Team highlighted her leadership and communication talents. I am confident she will excel in her university studies and beyond.",
+                    "name": "Emma James",
+                    "email": "ejames@waukeganhigh.edu",
+                    "phone": "+1-217-234-5437",
+                    "yearsKnown": 4,
+                    "designation": "Economics Teacher",
+                    "organization": "Waukegan High School",
+                    "relationship": "Economics Teacher and Club Advisor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:18.533076+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:18.533082+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "059d8e27-6f69-4efd-b733-dfd2fb22e248",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "baabbce8-ecb6-4534-80c5-6902b64169eb",
+        "institution": "Crestwood University",
+        "institution_address": "456 Crestwood Drive, Springfield, IL 62711",
+        "program_id": "UG-BA-EL01",
+        "program_name": "Bachelor of Arts in English Literature",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "209.7.248.0",
+        "hashed_ssn": null,
+        "first_name": "John",
+        "last_name": "Kane",
+        "email": "john.kane2006@gmail.com",
+        "phone": "+1-217-123-4567",
+        "dob": "2006-01-08",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Springfield",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "123 Main Street",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Springfield Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "English Literature"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.7",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "523, Fifth Avenue, Springfield, IL 62704",
+                "endDate": "2024-05-10",
+                "gpaScale": "4.0",
+                "startDate": "2020-08-15",
+                "attendance": {
+                    "totalClasses": 1000,
+                    "attendedClasses": 900
+                },
+                "institution": "Springfield High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "AP English Literature",
+                        "Creative Writing",
+                        "World History",
+                        "Art History",
+                        "Philosophy"
+                    ]
+                },
+                "additionalDocuments": [
+                    {
+                        "type": "Extra-Curricular",
+                        "details": "Contributed to editing and curating literary content, fostering leadership and editorial skills.",
+                        "endDate": "2024-05-31",
+                        "startDate": "2021-09-01",
+                        "description": "Editor for School Literary Magazine"
+                    },
+                    {
+                        "type": "Volunteering Certificate",
+                        "details": "This is to certify that John Kane volunteered at the Springfield Public Library, assisting with community outreach and literacy programs.",
+                        "endDate": "2023-04-30",
+                        "startDate": "2022-10-01",
+                        "description": "Volunteer at Springfield Public Library"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am passionate about English Literature and eager to deepen my understanding through Crestwood University's Bachelor of Arts program. Throughout high school, I excelled in advanced courses like AP English Literature and Creative Writing, which nurtured my love for analyzing texts and crafting stories. I have actively contributed to my school's literary magazine and participated in writing competitions, which enhanced my critical thinking and creative expression. Volunteering at the local public library allowed me to share my enthusiasm for literature and support community literacy. Crestwood's renowned faculty and comprehensive curriculum align perfectly with my academic goals. I am confident that this program will equip me with the skills to pursue a career in writing, editing, or academia.",
+            "references": [
+                {
+                    "lor": "I have taught John Kane for four years in Advanced English Literature and Creative Writing at Springfield High School. John consistently demonstrated exceptional analytical and writing skills, showing a deep appreciation for literature and an ability to think critically. His leadership as editor of the school literary magazine and his active participation in writing competitions highlight his dedication and passion. I strongly endorse John's application to Crestwood University.",
+                    "name": "Dr. Sarah Mitchell",
+                    "email": "s.mitchell@springfieldhigh.edu",
+                    "phone": "+1-217-642-8395",
+                    "yearsKnown": 4,
+                    "designation": "English Literature Teacher",
+                    "organization": "Springfield High School",
+                    "relationship": "English Literature Teacher and Creative Writing Mentor"
+                },
+                {
+                    "lor": "John Kane has been a dedicated volunteer at the Springfield Public Library's community literacy program for the past year. I am confident that John's passion for literature and community engagement will make him a strong contributor at Crestwood University.",
+                    "name": "Ms. Laura Benson",
+                    "email": "l.benson@springfieldlibrary.org",
+                    "phone": "+1-217-987-6543",
+                    "yearsKnown": 1,
+                    "designation": "Community Literacy Program Coordinator",
+                    "organization": "Springfield Public Library",
+                    "relationship": "Volunteer Supervisor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:17.588724+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:17.588727+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "4ee57689-d275-44e2-a955-fa3520728045",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "c9586ef7-6151-499a-be6a-dc64db028e11",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BA-EC01",
+        "program_name": "Bachelor of Arts in Economics",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "216.125.0.0",
+        "hashed_ssn": null,
+        "first_name": "Eric",
+        "last_name": "Zene",
+        "email": "eric.zene1@gmail.com",
+        "phone": "+1 312 234 6789",
+        "dob": "2003-11-15",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Chicago",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Cook County",
+                "street": "789 Pine Street",
+                "country": "United States",
+                "postalCode": "60601"
+            },
+            {
+                "city": "Los Angeles",
+                "type": "temporary",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "456 Elm Street",
+                "country": "United States",
+                "postalCode": "90001"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Transfer",
+            "intendedMajor": "Economics"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.5",
+                "major": "Economics",
+                "degree": "Incomplete (Pending Transfer)",
+                "address": "9501 S King Dr, Chicago, IL 60628",
+                "endDate": "2024-05-20",
+                "gpaScale": "4.0",
+                "startDate": "2022-08-15",
+                "attendance": {
+                    "totalClasses": 480,
+                    "attendedClasses": 460
+                },
+                "institution": "Chicago State University",
+                "courseSummary": {
+                    "totalCourses": 12,
+                    "advancedCourses": [
+                        "Microeconomics",
+                        "Macroeconomics",
+                        "Statistics for Economists",
+                        "International Economics",
+                        "Economic Theory"
+                    ]
+                },
+                "creditsEarned": 32,
+                "creditsRequiredForTransfer": 30
+            },
+            {
+                "gpa": null,
+                "major": null,
+                "degree": null,
+                "address": null,
+                "endDate": "2025-05-15",
+                "gpaScale": null,
+                "gapReason": "Took a gap year to work as a research assistant at the Chicago Economic Research Institute. Gained practical experience in data analysis and economic modeling. Volunteered for local non-profits focusing on economic development. Attended workshops on advanced econometrics and data science.",
+                "isGapYear": true,
+                "startDate": "2024-06-01",
+                "attendance": null,
+                "institution": null,
+                "courseSummary": null,
+                "additionalDocuments": [
+                    {
+                        "type": "Research Assistant Certificate",
+                        "details": "This is to certify that Eric Zene worked as a research assistant at the Chicago Economic Research Institute, contributing to data analysis and economic modeling projects.",
+                        "endDate": "2025-05-15",
+                        "startDate": "2024-06-01",
+                        "description": "Research Assistant at Chicago Economic Research Institute"
+                    },
+                    {
+                        "type": "Volunteer Certificate",
+                        "details": "This is to certify that Eric Zene volunteered at a local non-profit organization focused on economic development, assisting with community outreach and educational programs.",
+                        "endDate": "2025-05-01",
+                        "startDate": "2024-07-01",
+                        "description": "Volunteer at Local Economic Development NGO"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "My passion for Economics drives my desire to deepen my understanding and contribute to economic development. After completing two years at Chicago State University with a 3.5 GPA, I am transferring to Crestwood University to benefit from its renowned faculty and comprehensive curriculum, which align closely with my academic and career goals. During my gap year, I worked as a Research Assistant at the Chicago Economic Research Institute, gaining valuable experience in data analysis and economic modeling, and volunteered with a non-profit focused on economic development. These practical experiences strengthened my commitment to applying economic theories to real-world issues. I am confident that Crestwood's Bachelor of Arts in Economics program will provide the advanced knowledge and skills I need to excel and make meaningful contributions to economic policy.",
+            "references": [
+                {
+                    "lor": "I have had the pleasure of mentoring Eric Zene for the past two years as his professor and academic advisor in Economics at Chicago State University. Eric has consistently demonstrated strong analytical skills, dedication, and a genuine passion for economics. His performance in advanced courses such as Economic Theory and Statistics for Economists has been exemplary. During his gap year, he gained valuable practical experience as a research assistant, further enhancing his capabilities. I strongly recommend Eric for admission to Crestwood University, where I am confident he will thrive and contribute meaningfully to the academic community.",
+                    "name": "Dr. Nita Mehta",
+                    "email": "nita.mehta@csu.edu",
+                    "phone": "+1 773 482 9013",
+                    "yearsKnown": 2,
+                    "designation": "Economics Professor",
+                    "organization": "Chicago State University",
+                    "relationship": "Professor and Academic Advisor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:16.649960+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:16.649964+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "2f0cd021-441b-4a3e-b3f6-624d547fbeb8",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "cccc9027-018f-4405-bc1c-41be46a78386",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BA-H1",
+        "program_name": "Bachelor of Arts in History",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "216.73.163.219",
+        "hashed_ssn": null,
+        "first_name": "Sanjay",
+        "last_name": "Patel",
+        "email": "sanjay.patel@gmail.com",
+        "phone": "+1-628-987-6543",
+        "dob": "2006-06-05",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "San Francisco",
+                "type": "permanent",
+                "state": "CA",
+                "county": "San Francisco County",
+                "street": "789 Oak Street",
+                "country": "United States",
+                "postalCode": "94102"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "History"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.8",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "123 Market St, San Francisco, CA 94103",
+                "endDate": "2025-06-10",
+                "gpaScale": "4.0",
+                "startDate": "2021-08-15",
+                "attendance": {
+                    "totalClasses": 1000,
+                    "attendedClasses": 980
+                },
+                "institution": "San Francisco High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "AP World History",
+                        "AP US History",
+                        "English Literature",
+                        "Political Science"
+                    ]
+                },
+                "additionalDocuments": [
+                    {
+                        "type": "Extra-Curricular Certificate",
+                        "details": "This is to certify that Sanjay Patel has actively participated in the History Club and Debate Team at San Francisco High School, demonstrating leadership and commitment to historical research and public speaking.",
+                        "endDate": "2025-05-31",
+                        "startDate": "2022-09-01",
+                        "description": "Participation in History Club and Debate Team, including leadership roles."
+                    },
+                    {
+                        "doi": "10.29013/ysj.2024.0115",
+                        "type": "Publication in Young Scholars History Journal",
+                        "details": "A research paper analyzing how the Silk Road facilitated cultural exchange and influenced the development of early civilizations.",
+                        "description": "The Impact of the Silk Road on Cultural Exchange"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Sanjay Patel, applying for the Bachelor of Arts in History at Crestwood University. My fascination with history began early, inspired by a desire to understand how past events influence our present world. In high school, I pursued advanced history courses such as AP World History and AP US History, which deepened my knowledge and analytical skills. Beyond academics, I actively participated in the History Club and Debate Team, holding leadership roles that enhanced my critical thinking and communication abilities. I am eager to study diverse historical perspectives and contribute to research that promotes cultural awareness. Crestwood University’s academic environment and faculty expertise are ideal to develop my passion further, equipping me for a career in history-related fields, such as academia, research, or public service.",
+            "references": [
+                {
+                    "lor": "Sanjay Patel is an exceptional student with a deep passion for history and a strong academic record. He has consistently demonstrated critical thinking skills and a commitment to understanding historical contexts. His leadership in the History Club and Debate Team showcases his dedication to promoting historical knowledge and public discourse. I am confident that Sanjay will thrive at Crestwood University and make significant contributions to the field of history.",
+                    "name": "Dr. Amanda Lee",
+                    "email": "amanda.lee@sfcoll.edu",
+                    "phone": "+1-415-872-9916",
+                    "yearsKnown": 4,
+                    "designation": "History Teacher",
+                    "organization": "San Francisco High School",
+                    "relationship": "Teacher"
+                },
+                {
+                    "lor": "Sanjay has been a dedicated member of our Debate Team, showing excellent research skills and persuasive communication. His commitment to public speaking and historical topics makes him well-suited for a rigorous academic program like that at Crestwood University.",
+                    "name": "Mr. Patrick Wilson",
+                    "email": "patrick.wilson@sfcoll.edu",
+                    "phone": "+1-415-266-5916",
+                    "yearsKnown": 2,
+                    "designation": "Debate Coach",
+                    "organization": "San Francisco High School",
+                    "relationship": "Coach and Mentor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:15.707860+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:15.707863+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "a468c0d4-1d00-4b74-b373-0037c1d1022b",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "ca4c0ff7-4d54-429d-af9d-467383caeab0",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BA-H1",
+        "program_name": "Bachelor of Arts in History",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "103.45.67.89",
+        "hashed_ssn": null,
+        "first_name": "Daniel",
+        "last_name": "Lin",
+        "email": "john.doe@gmail.com",
+        "phone": "+1-123-456-7890",
+        "dob": "2007-01-03",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Springfield",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "412 Elm Street",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "History"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.6",
+                "major": "High School Diploma - General Studies",
+                "degree": "High School Diploma",
+                "address": "55 Victoria Road, Springfield, IL 62701",
+                "endDate": "2025-06-30",
+                "gpaScale": "4.0",
+                "startDate": "2022-09-01",
+                "attendance": {
+                    "totalClasses": 980,
+                    "attendedClasses": 870
+                },
+                "institution": "Lincoln High School",
+                "courseSummary": {
+                    "totalCourses": 18,
+                    "advancedCourses": [
+                        "English Literature",
+                        "Creative Writing",
+                        "World History",
+                        "Art History"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Daniel Lin, applying for the Bachelor of Arts in History at Crestwood University. My passion for history and critical analysis has been nurtured through my coursework and independent reading. I am particularly interested in exploring ancient history and contributing to research. I believe Crestwood University's academic environment will greatly foster my intellectual growth and prepare me for a career in writing or academia.",
+            "references": [
+                {
+                    "lor": "Daniel Lin is a highly motivated student with excellent analytical skills and a strong passion for Ancient History. She consistently delivers insightful essays and actively contributes to class discussions. Janice's dedication and creativity make her an outstanding candidate who will thrive at Crestwood University.",
+                    "name": "Prof. Grace Adams",
+                    "email": "jane.doe@gmail.com",
+                    "phone": "+1-123-456-7890",
+                    "yearsKnown": 4,
+                    "designation": "Teacher",
+                    "organization": "Lincoln High School",
+                    "relationship": "Teacher"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:14.750020+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:14.750024+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "f12ba09b-fba2-46ba-b4a8-bf7f0f65ff80",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "6d5ba85b-f8ca-4ffd-ae2e-4c483385ad28",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BA-EC01",
+        "program_name": "Bachelor of Arts in Economics",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "103.45.67.89",
+        "hashed_ssn": null,
+        "first_name": "Ivana",
+        "last_name": "Parker",
+        "email": "jane.doe@gmail.com",
+        "phone": "+1-123-456-7890",
+        "dob": "2007-01-03",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Springfield",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "412 Elm Street",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "Economics"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.6",
+                "major": "High School Diploma - General Studies",
+                "degree": "High School Diploma",
+                "address": "55 Victoria Road, Springfield, IL 62701",
+                "endDate": "2025-06-30",
+                "gpaScale": "4.0",
+                "startDate": "2022-09-01",
+                "attendance": {
+                    "totalClasses": 980,
+                    "attendedClasses": 870
+                },
+                "institution": "Lincoln High School",
+                "courseSummary": {
+                    "totalCourses": 18,
+                    "advancedCourses": [
+                        "Economics",
+                        "English Literature",
+                        "Creative Writing",
+                        "World History",
+                        "Art History"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Ivana Parker, applying for the Bachelor of Arts in Economics at Crestwood University. My passion for economics has been nurtured through my coursework and independent reading. I believe Crestwood University's academic environment will greatly foster my intellectual growth and prepare me for a career in economics.",
+            "references": [
+                {
+                    "lor": "Ivana Parker is a highly motivated student with excellent analytical skills and a strong passion for Economics. She consistently delivers insightful essays and actively contributes to class discussions. Janice's dedication and creativity make her an outstanding candidate who will thrive at Crestwood University.",
+                    "name": "Prof. Grace Adams",
+                    "email": "jane.doe@gmail.com",
+                    "phone": "+1-123-456-7890",
+                    "yearsKnown": 4,
+                    "designation": "Teacher",
+                    "organization": "Lincoln High School",
+                    "relationship": "Teacher"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:13.823287+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:13.823290+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "d7a7567d-6348-4e84-97f3-1b2f1ae62997",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "303a36f8-c4d3-4a2e-85ce-dcaa5816dd04",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BA-EL01",
+        "program_name": "Bachelor of Arts in English Literature",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "103.45.67.89",
+        "hashed_ssn": null,
+        "first_name": "Janice",
+        "last_name": "Johnson",
+        "email": "jane.doe@gmail.com",
+        "phone": "+1-123-456-7890",
+        "dob": "2007-01-03",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Springfield",
+                "type": "permanent",
+                "state": "IL",
+                "county": "Sangamon County",
+                "street": "412 Elm Street",
+                "country": "United States",
+                "postalCode": "62701"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "English Literature"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.6",
+                "major": "High School Diploma - General Studies",
+                "degree": "High School Diploma",
+                "address": "55 Victoria Road, Springfield, IL 62701",
+                "endDate": "2025-06-30",
+                "gpaScale": "4.0",
+                "startDate": "2022-09-01",
+                "attendance": {
+                    "totalClasses": 980,
+                    "attendedClasses": 870
+                },
+                "institution": "Lincoln High School",
+                "courseSummary": {
+                    "totalCourses": 18,
+                    "advancedCourses": [
+                        "English Literature",
+                        "Creative Writing",
+                        "World History",
+                        "Art History"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Janice Johnson, applying for the Bachelor of Arts in English Literature at Crestwood University. My passion for literature and critical analysis has been nurtured through my coursework and independent reading. I am particularly interested in exploring classical and contemporary literary works and contributing to literary research. I believe Crestwood University's academic environment will greatly foster my intellectual growth and prepare me for a career in writing or academia.",
+            "references": [
+                {
+                    "lor": "Janice Johnson is a highly motivated student with excellent analytical skills and a strong passion for English Literature. She consistently delivers insightful essays and actively contributes to class discussions. Janice's dedication and creativity make her an outstanding candidate who will thrive at Crestwood University.",
+                    "name": "Prof. Grace Adams",
+                    "email": "jane.doe@gmail.com",
+                    "phone": "+1-123-456-7890",
+                    "yearsKnown": 4,
+                    "designation": "Teacher",
+                    "organization": "Lincoln High School",
+                    "relationship": "Teacher"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:12.894044+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:12.894049+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "e23f0236-7259-4a07-8dce-99f54990b0be",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "163ac06d-44d4-4590-aa27-974f3c5ef980",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-EE-01",
+        "program_name": "Bachelor of Science in Electrical Engineering",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "163.116.132.45",
+        "hashed_ssn": null,
+        "first_name": "David",
+        "last_name": "Matthews",
+        "email": "david.matthews@gmail.com",
+        "phone": "+1-424-379-8421",
+        "dob": "2006-12-03",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Los Angeles",
+                "type": "permanent",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "1234 Olive Street",
+                "country": "United States",
+                "postalCode": "90015"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Fresher",
+            "intendedMajor": "Electrical Engineering"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.0",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "4650 W Olympic Blvd, Los Angeles, CA 90019",
+                "endDate": "2025-06-10",
+                "gpaScale": "4.0",
+                "startDate": "2021-08-15",
+                "attendance": {
+                    "totalClasses": 1000,
+                    "attendedClasses": 850
+                },
+                "institution": "Los Angeles High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "Physics",
+                        "Pre-Calculus",
+                        "Introduction to Electronics",
+                        "Basic Chemistry",
+                        "Computer Applications"
+                    ]
+                },
+                "additionalDocuments": [
+                    {
+                        "type": "Extra-Curricular Certificate",
+                        "details": "This is to certify that David Matthews has actively participated in the Robotics Club and Electronics Workshop at Los Angeles High School, completing various projects and enhancing his practical skills in electronics and robotics.",
+                        "endDate": "2023-05-31",
+                        "startDate": "2022-09-01",
+                        "description": "Participation in Robotics Club and Electronics Workshop."
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am David Matthews, applying for the Bachelor of Science in Electrical Engineering at Crestwood University as a full-time student. My attendance in high school was lower than ideal due to family health issues, which also impacted my GPA. Despite these challenges, I remained committed to my studies and actively engaged in practical electronics projects to enhance my skills. I am passionate about advancing my knowledge in electrical engineering to build a successful career and contribute to technological innovations.",
+            "references": [
+                {
+                    "lor": "David Matthews has demonstrated strong perseverance and dedication throughout high school despite personal challenges. His curiosity and hands-on skills in electrical projects are impressive for his age. He approaches learning with enthusiasm and a desire to improve, qualities that will serve him well in his studies and future career in electrical engineering.",
+                    "name": "Mrs. Linda Carter",
+                    "email": "linda.carter@lashs.net",
+                    "phone": "+1-818-412-5709",
+                    "yearsKnown": 5,
+                    "designation": "Physics and Electronics Teacher",
+                    "organization": "Los Angeles High School",
+                    "relationship": "Teacher and Mentor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:11.969390+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:11.969394+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "d31d8e18-e946-4429-b993-8eba130111af",
+        "sat_scores": 1250,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "33fdb716-c335-4253-9044-d80a128fc773",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-CS-01",
+        "program_name": "Bachelor of Science in Computer Science",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "71.84.235.250",
+        "hashed_ssn": null,
+        "first_name": "Andrew",
+        "last_name": "Jonas",
+        "email": "andrew.jonas@gmail.com",
+        "phone": "+1-626-412-5709",
+        "dob": "2007-02-20",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Pasadena",
+                "type": "permanent",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "789 Maple Avenue",
+                "country": "United States",
+                "postalCode": "91101"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Transfer",
+            "intendedMajor": "Computer Science"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.9",
+                "major": "Computer Science",
+                "degree": "Incomplete (Pending Transfer)",
+                "address": "1570 E Colorado Blvd, Pasadena, CA 91106",
+                "endDate": "2025-06-10",
+                "gpaScale": "4.0",
+                "startDate": "2023-08-20",
+                "attendance": {
+                    "totalClasses": 600,
+                    "attendedClasses": 590
+                },
+                "institution": "Pasadena Community College",
+                "courseSummary": {
+                    "totalCourses": 10,
+                    "advancedCourses": [
+                        "Data Structures",
+                        "Algorithms",
+                        "Discrete Mathematics",
+                        "Object-Oriented Programming",
+                        "Computer Networks"
+                    ]
+                },
+                "creditsEarned": 45,
+                "creditsRequiredForTransfer": 40
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Andrew Jonas, applying to Crestwood University's Bachelor of Science in Computer Science as a transfer student. My studies at Pasadena Community College have provided a strong foundation in key computer science areas, and I have maintained a 3.9 GPA. I am eager to further specialize in fields such as artificial intelligence and cybersecurity. Crestwood University's curriculum, faculty, and research opportunities closely match my academic and career goals. I seek this transfer to experience greater academic challenges and access advanced resources that will help me deepen my knowledge and prepare for a successful career.",
+            "references": [
+                {
+                    "lor": "Andy has been an outstanding student in my Computer Science courses over the past three years. He demonstrates strong analytical skills, consistently excels in coursework, and shows great enthusiasm for learning and innovation. His collaborative spirit and dedication make him an ideal candidate for transfer to Crestwood University.",
+                    "name": "Dr. Sarah Mitchell",
+                    "email": "sarah.mitchell@pcc.edu",
+                    "phone": "+1-626-379-8421",
+                    "yearsKnown": 3,
+                    "designation": "Computer Science Professor",
+                    "organization": "Pasadena Community College",
+                    "relationship": "Professor and Academic Mentor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:11.048050+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:11.048054+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "85cd9df2-008e-436a-9dd2-1ddc5b5b06ac",
+        "sat_scores": 1450,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "6cc4394a-3793-4c3a-a0d2-658ac9d1df2e",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BIO-03",
+        "program_name": "Bachelor of Science in Biology",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "83.0.0.0",
+        "hashed_ssn": null,
+        "first_name": "Amy",
+        "last_name": "Becker",
+        "email": "amy.becker@gmail.com",
+        "phone": "+44-20-7946-0857",
+        "dob": "2005-08-07",
+        "gender": "Female",
+        "nationality": "British",
+        "address": [
+            {
+                "city": "London",
+                "type": "permanent",
+                "state": "England",
+                "county": "Greater London",
+                "street": "28 Kensington Church Street",
+                "country": "United Kingdom",
+                "postalCode": "W8 4EP"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Transfer",
+            "intendedMajor": "Biology"
+        },
+        "academic_history": [
+            {
+                "gpa": null,
+                "major": "Biological Sciences",
+                "degree": "Incomplete (Pending Transfer)",
+                "address": "Strand, London WC2R 2LS, United Kingdom",
+                "endDate": "2023-11-20",
+                "gpaScale": null,
+                "startDate": "2023-09-18",
+                "attendance": {
+                    "totalClasses": 45,
+                    "attendedClasses": 28
+                },
+                "institution": "King's College London",
+                "courseSummary": {
+                    "totalCourses": 4,
+                    "advancedCourses": [
+                        "Introduction to Biology",
+                        "General Chemistry",
+                        "Fundamentals of Statistics",
+                        "Basic Environmental Science"
+                    ]
+                },
+                "creditsEarned": 6,
+                "creditsRequiredForTransfer": 24
+            }
+        ],
+        "supporting_documents": {
+            "sop": "I am Amy Beckett, applying to Crestwood University's BS in Biology program as a transfer student. Although my previous studies at King's College London were brief, I am eager to join Crestwood and benefit from its resources. I am particularly interested in your flexible part-time program, which suits my current needs.",
+            "references": [
+                {
+                    "lor": "I have had the pleasure of teaching Ms.Becket for the past year at King's College London. She possesses a strong natural curiosity and genuine potential in biology. While her attendance has been limited during this time, she has shown noteworthy engagement and a willingness to learn.",
+                    "name": "Dr. Helen Thompson",
+                    "email": "helen.thompson@kcl.ac.uk",
+                    "phone": "+44-20-7848-5679",
+                    "yearsKnown": 1,
+                    "designation": "Lecturer, Department of Biological Sciences",
+                    "organization": "King's College London",
+                    "relationship": "Course Instructor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:10.119696+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:10.119700+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "13d8c9ea-b2dd-4f3d-9f2c-b2331a374e3d",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "fa9d8d6f-2686-4cb5-a0ab-8f0f84c01e04",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-BIO-03",
+        "program_name": "Bachelor of Science in Biology",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "167.153.0.16",
+        "hashed_ssn": null,
+        "first_name": "Sarah",
+        "last_name": "Miller",
+        "email": "sarah.miller@gmail.com",
+        "phone": "+1-646-123-4567",
+        "dob": "2005-12-05",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Los Angeles",
+                "type": "temporary",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "4567 Sunset Blvd",
+                "country": "United States",
+                "postalCode": "90028"
+            },
+            {
+                "city": "New York",
+                "type": "permanent",
+                "state": "NY",
+                "county": "New York County",
+                "street": "123 Broadway",
+                "country": "United States",
+                "postalCode": "10007"
+            }
+        ],
+        "application_details": {
+            "mode": "Part-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "Biology"
+        },
+        "academic_history": [
+            {
+                "gpa": "2.8",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "123 Main St, New York, NY 10001",
+                "endDate": "2023-06-15",
+                "gpaScale": "4.0",
+                "startDate": "2019-08-15",
+                "attendance": {
+                    "totalClasses": 1010,
+                    "attendedClasses": 990
+                },
+                "institution": "New York High School",
+                "courseSummary": {
+                    "totalCourses": 15,
+                    "advancedCourses": [
+                        "AP Biology",
+                        "Chemistry",
+                        "Calculus AB",
+                        "AP Physics",
+                        "Statistics"
+                    ]
+                }
+            },
+            {
+                "gpa": null,
+                "major": null,
+                "degree": null,
+                "address": null,
+                "endDate": "2025-05-20",
+                "gpaScale": null,
+                "gapReason": "Took time to manage personal health and family commitments. Gained practical experience through an internship in a biological research lab. Volunteered for local environmental conservation projects. Attended biology-related workshops and seminars. Completed additional courses related to biological sciences before starting university.",
+                "isGapYear": true,
+                "startDate": "2023-06-16",
+                "attendance": null,
+                "institution": null,
+                "courseSummary": null,
+                "additionalDocuments": [
+                    {
+                        "type": "Internship Completion Certificate",
+                        "details": "This is to certify that Sarah Miller has successfully completed an internship at the New York Biological Research Laboratory from July 1, 2023 to June 30, 2024, working on environmental biology projects and assisting in data collection and analysis.",
+                        "endDate": "2024-06-30",
+                        "startDate": "2023-07-01",
+                        "description": "Internship at New York Biological Research Laboratory"
+                    },
+                    {
+                        "type": "Conservation Volunteer Certificate",
+                        "details": "This is to certify that Sarah Miller participated in community clean-up drives and conducted educational workshops on environmental conservation.",
+                        "endDate": "2025-05-01",
+                        "startDate": "2024-07-01",
+                        "description": "Volunteer at Local Environmental Conservation NGO"
+                    },
+                    {
+                        "type": "Workshop Attendance Certificate",
+                        "details": "This is to certify that Sarah Miller attended a workshop on ecological research methods and conservation strategies.",
+                        "endDate": "2024-12-01",
+                        "startDate": "2024-08-01",
+                        "description": "Biology Workshop Series"
+                    }
+                ]
+            }
+        ],
+        "supporting_documents": {
+            "sop": "My name is Sarah Miller, and I am eager to pursue a part-time Bachelor of Science in Biology beginning Fall 2025. Having completed my high school education at New York High School with advanced coursework in AP Biology, Chemistry, and related sciences, I am passionate about understanding life's complexities. During my gap year, I balanced personal health and family commitments while gaining hands-on experience through internships and volunteering in environmental conservation. This enriched my practical knowledge and strengthened my resolve. I am committed to contributing to biological research and excited to grow academically and personally at your Main Campus.",
+            "references": [
+                {
+                    "lor": "I have had the pleasure of teaching Sarah Miller in AP Biology over the past four years. She consistently exhibits a strong grasp of biological concepts, analytical thinking, and curiosity. Sarah's dedication to her studies and her proactive approach in volunteering and research internships demonstrate her passion and readiness for advanced studies in biology.",
+                    "name": "Dr. Karen Mitchell",
+                    "email": "karen.mitchell@nyhighschool.org",
+                    "phone": "+1-718-923-4567",
+                    "yearsKnown": 4,
+                    "designation": "AP Biology Teacher",
+                    "organization": "New York High School",
+                    "relationship": "Teacher and Academic Mentor"
+                },
+                {
+                    "lor": "During her internship at New York Biological Research Laboratory, Sarah Miller demonstrated excellent practical skills, a strong work ethic, and eagerness to learn. She contributed to several research projects in environmental biology and showed great initiative in applying her academic knowledge to real-world scientific problems.",
+                    "name": "Dr. Michael Stevenson",
+                    "email": "michael.stevenson@nybiologylab.org",
+                    "phone": "+1-646-384-1290",
+                    "yearsKnown": 1,
+                    "designation": "Research Supervisor",
+                    "organization": "New York Biological Research Laboratory",
+                    "relationship": "Internship Supervisor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:09.171024+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:09.171028+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "dbda7de5-1bc3-4022-9dab-9060142bb9f3",
+        "sat_scores": null,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "8343e543-20be-45f2-90a7-2492f7ff037c",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-CS-01",
+        "program_name": "Bachelor of Science in Computer Science",
+        "application_type": "admissions",
+        "application_status": "processed",
+        "ip": "213.143.46.18",
+        "hashed_ssn": null,
+        "first_name": "Brad",
+        "last_name": "Kelly",
+        "email": "brad.kelly@gmail.com",
+        "phone": "+1-512-555-7890",
+        "dob": "2002-10-27",
+        "gender": "Male",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "New York",
+                "type": "permanent",
+                "state": "NY",
+                "county": "New York County",
+                "street": "1125 Broadway",
+                "country": "United States",
+                "postalCode": "10010"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "Computer Science"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.0",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "350 W 14th St, New York, NY 10014",
+                "endDate": "2022-06-15",
+                "gpaScale": "4.0",
+                "startDate": "2018-08-20",
+                "attendance": {
+                    "totalClasses": 950,
+                    "attendedClasses": 910
+                },
+                "institution": "New York High School",
+                "courseSummary": {
+                    "totalCourses": 18,
+                    "advancedCourses": [
+                        "AP Computer Science Principles",
+                        "Calculus AB",
+                        "Physics"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "While I have always been interested in technology, I recently became motivated to apply to Crestwood University's CS program. My experiences are varied, and I believe I can adapt quickly. I am certain that my background will be sufficient for admission, even though I have taken a different path.",
+            "references": [
+                {
+                    "lor": "Brad is a capable student who works independently, I believe he could do well in college.",
+                    "name": "Mr. Alan Smith",
+                    "email": "alan.smith@nyhighschool.edu",
+                    "phone": "+1-917-555-7689",
+                    "yearsKnown": 1,
+                    "designation": "Math Teacher",
+                    "organization": "New York High School",
+                    "relationship": "Teacher"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:08.222215+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T14:43:05.432264+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": {
+    "application_behaviour": [
+      "Suspicious IP address originating from a foreign country not consistent with applicant's claimed permanent address in New York, NY.",
+      "No details or explanation provided for any gap year or non-traditional path mentioned in the SOP."
+    ],
+    "address": [
+      "Phone number area code (+1-512) does not match the permanent address location in New York, NY, indicating potential contact information inconsistency."
+    ],
+    "academic_record": [
+      "Reference from Mr. Alan Smith has only known the applicant for 1 year while the applicant graduated high school 3 years ago, raising questions about the authenticity and thoroughness of the recommendation."
+    ]
+  },
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "346455f3-375f-4f2f-8782-8e5e65a6c694",
+        "sat_scores": 1100,
+        "fraud_score": "0.8",
+        "agent_recommendations": [
+    "Request a detailed explanation of the gap year or non-traditional educational path referenced in the SOP.",
+    "Confirm the applicant's phone number and contact details for consistency with the stated permanent address.",
+    "Contact New York High School to verify academic records, GPA, attendance, and the legitimacy of the reference.",
+    "Request additional references or letters of recommendation from teachers or mentors with longer acquaintance.",
+    "Verify applicant identity via government-issued photo ID to confirm personal information."
   ],
-  "count": 2,
-  "offset": 0,
-  "limit": null
-}
+        "admin_comments": null
+    },
+    {
+        "tenant_id": "cf2f1e91-8244-40e2-93a8-b396d13b28b4",
+        "application_id": "e8e4b823-5fb2-45c4-9a8a-5909d7b2ae46",
+        "institution": "Crestwood University",
+        "institution_address": "206 Keels Avenue, Los Angeles, CA 90095",
+        "program_id": "UG-CS-01",
+        "program_name": "Bachelor of Science in Computer Science",
+        "application_type": "admissions",
+        "application_status": "submitted",
+        "ip": "104.174.125.138",
+        "hashed_ssn": null,
+        "first_name": "Lorraine",
+        "last_name": "Warren",
+        "email": "lorraine.warren@gmail.com",
+        "phone": "+1-310-456-7890",
+        "dob": "2006-09-20",
+        "gender": "Female",
+        "nationality": "American",
+        "address": [
+            {
+                "city": "Los Angeles",
+                "type": "permanent",
+                "state": "CA",
+                "county": "Los Angeles County",
+                "street": "4567 Sunset Blvd",
+                "country": "United States",
+                "postalCode": "90028"
+            }
+        ],
+        "application_details": {
+            "mode": "Full-time",
+            "term": "Fall 2025",
+            "campus": "Main Campus",
+            "entryType": "Freshman",
+            "intendedMajor": "Computer Science"
+        },
+        "academic_history": [
+            {
+                "gpa": "3.85",
+                "major": "High School Diploma - College Preparatory",
+                "degree": "High School Diploma",
+                "address": "4650 W Olympic Blvd, Los Angeles, CA 90019",
+                "endDate": "2025-05-15",
+                "gpaScale": "4.0",
+                "startDate": "2021-09-15",
+                "attendance": {
+                    "totalClasses": 1010,
+                    "attendedClasses": 950
+                },
+                "institution": "Los Angeles High School",
+                "courseSummary": {
+                    "totalCourses": 20,
+                    "advancedCourses": [
+                        "Calculus AB",
+                        "AP Physics",
+                        "AP Computer Science A",
+                        "Chemistry",
+                        "Statistics"
+                    ]
+                }
+            }
+        ],
+        "supporting_documents": {
+            "sop": "My fascination with technology began in high school through courses like AP Computer Science, Calculus, and AP Physics. These classes challenged me to think creatively and strengthened my programming skills. With a 3.85 GPA, I'm proud of my academic achievements and eager to explore fields like artificial intelligence and data science. Crestwood University offers excellent faculty and hands-on research opportunities, making it the ideal place to grow. I look forward to contributing to projects and campus initiatives while preparing for a career where I can use technology to solve real-world problems and make a positive impact.",
+            "references": [
+                {
+                    "lor": "I have had the pleasure of teaching Lorraine Warren in AP Computer Science for the past four years. She consistently demonstrates strong academic abilities, a keen understanding of complex concepts, and leadership in group projects. Her dedication and curiosity make her stand out as a motivated and capable student.",
+                    "name": "Dr. Emily Roberts",
+                    "email": "emily.roberts@lahighschool.net",
+                    "phone": "+1-323-789-1234",
+                    "yearsKnown": 4,
+                    "designation": "AP Computer Science Teacher",
+                    "organization": "Los Angeles High School",
+                    "relationship": "Teacher and Academic Mentor"
+                },
+                {
+                    "lor": "As the advisor of the Coding Club, I have worked closely with Lorraine for three years. She shows remarkable passion for coding and has proven herself to be an excellent team leader during competitions. Her enthusiasm and collaborative spirit inspire her peers.",
+                    "name": "Mr. James Lee",
+                    "email": "james.lee@lahighschool.net",
+                    "phone": "+1-424-345-6789",
+                    "yearsKnown": 3,
+                    "designation": "President",
+                    "organization": "Los Angeles High School Coding Club",
+                    "relationship": "Club Advisor"
+                }
+            ]
+        },
+        "created_at": "2025-08-12T17:08:07.094780+00:00",
+        "created_by": "system",
+        "updated_at": "2025-08-12T17:08:07.094784+00:00",
+        "updated_by": null,
+        "audit_trail": null,
+        "fraud_detected": null,
+        "fraud_details": null,
+        "admin_override": null,
+        "admin_override_reason": null,
+        "id": "5ab97920-693a-47a5-88db-07863c47a914",
+        "sat_scores": 1450,
+        "fraud_score": null,
+        "agent_recommendations": null,
+        "admin_comments": null
+    }
+]

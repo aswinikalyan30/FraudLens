@@ -5,13 +5,17 @@ export interface Application {
   studentId: string;
   name: string;
   email: string;
-  stage: 'admission' | 'financial-aid';
+  stage: 'admissions' | 'financial-aid';
   timestamp: string;
-  status: 'pending' | 'processing' | 'processed' | 'approved' | 'rejected' | 'escalated';
+  status: 'submitted' | 'processing' | 'processed' | 'approved' | 'rejected' | 'escalated' | 'onhold' | 'low_risk' | 'in_review';
   riskScore?: number;
   flags?: string[];
   aiProcessing?: boolean;
   processingStage?: string;
+  programId?: string;
+  // Added programName for displaying the program title
+  programName?: string;
+  updatedAt?: string;
 }
 
 interface ApplicationContextType {
@@ -57,7 +61,13 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
         fetchProcessedApplications()
       ]);
       setQueueApplications(queue);
-      setProcessedApplications(processed);
+      // Sort processed applications by updatedAt in descending order (most recent first)
+      const sortedProcessed = processed.sort((a, b) => {
+        const dateA = new Date(a.updatedAt || a.timestamp || 0).getTime();
+        const dateB = new Date(b.updatedAt || b.timestamp || 0).getTime();
+        return dateB - dateA; // Descending order
+      });
+      setProcessedApplications(sortedProcessed);
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Failed to load applications';
       setError(message);
@@ -118,10 +128,19 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
           riskScore,
           flags,
           aiProcessing: false,
-          processingStage: undefined
+          processingStage: undefined,
+          updatedAt: new Date().toISOString() // Set current timestamp
         };
 
-        setProcessedApplications(prev => [processedApp, ...prev]);
+        setProcessedApplications(prev => {
+          const newList = [processedApp, ...prev];
+          // Sort by updatedAt in descending order
+          return newList.sort((a, b) => {
+            const dateA = new Date(a.updatedAt || a.timestamp || 0).getTime();
+            const dateB = new Date(b.updatedAt || b.timestamp || 0).getTime();
+            return dateB - dateA;
+          });
+        });
         setQueueApplications(prev => prev.filter(a => a.id !== applicationId));
       }
     }, 10000);
@@ -206,11 +225,20 @@ export const ApplicationProvider: React.FC<{ children: React.ReactNode }> = ({ c
               flags,
               aiProcessing: false,
               processingStage: undefined,
-              timestamp: new Date().toISOString() // Update timestamp to now
+              timestamp: new Date().toISOString(), // Update timestamp to now
+              updatedAt: new Date().toISOString() // Set current timestamp
             };
             
-            // Update processed applications (add to beginning)
-            setProcessedApplications(prev => [processedApp, ...prev]);
+            // Update processed applications with sorting
+            setProcessedApplications(prev => {
+              const newList = [processedApp, ...prev];
+              // Sort by updatedAt in descending order
+              return newList.sort((a, b) => {
+                const dateA = new Date(a.updatedAt || a.timestamp || 0).getTime();
+                const dateB = new Date(b.updatedAt || b.timestamp || 0).getTime();
+                return dateB - dateA;
+              });
+            });
             
             // Remove from queue
             setQueueApplications(prev => prev.filter(a => a.id !== app.id));

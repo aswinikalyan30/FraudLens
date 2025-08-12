@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MoreVertical, BarChart3 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const FlagsChart: React.FC = () => {
+const FlagsChart: React.FC<{ onNavigateToReporting?: () => void; compact?: boolean }> = ({ onNavigateToReporting, compact = false }) => {
   const { isDark } = useTheme();
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('7d');
   const [showOptions, setShowOptions] = useState(false);
@@ -38,11 +38,11 @@ const FlagsChart: React.FC = () => {
 
   const maxApplications = Math.max(...data.map(d => d.applications));
   const maxFlags = Math.max(...data.map(d => d.flags));
-  const avgFlagRate = data.reduce((sum, item) => sum + item.flagRate, 0) / data.length;
+  // const avgFlagRate = data.reduce((sum, item) => sum + item.flagRate, 0) / data.length;
   const totalApplications = data.reduce((sum, item) => sum + item.applications, 0);
   const totalFlags = data.reduce((sum, item) => sum + item.flags, 0);
   
-  const chartHeight = 160;
+  const chartHeight = compact ? 110 : 160;
   const chartWidth = 400;
   const padding = 30;
 
@@ -53,45 +53,45 @@ const FlagsChart: React.FC = () => {
   ];
 
   return (
-    <div className={`border rounded-lg p-4 ${
+    <div className={`border rounded-lg ${compact ? 'p-3' : 'p-4'} ${
       isDark 
         ? 'bg-gray-800 border-gray-700 shadow-lg' 
         : 'bg-white border-gray-200 shadow-sm'
-    } hover:shadow-md transition-shadow`}>
+    }`}>
       {/* Header with controls */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
+      <div className={`flex items-center justify-between ${compact ? 'mb-2' : 'mb-4'}`}>
+        <div className="flex items-center gap-3">
           <div>
-            <h3 className={`text-base font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                isDark ? 'bg-purple-500/10' : 'bg-purple-50'
+            <h3 className={`text-sm font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
+                isDark ? 'bg-gray-500/10' : 'bg-gray-50'
               }`}>
-                <BarChart3 className={`w-4 h-4 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
+                <BarChart3 className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
               </div>
               Application Trends
             </h3>
-            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              Detection patterns and volumes
-            </p>
+            {!compact && (
+              <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Detection patterns and volumes
+              </p>
+            )}
           </div>
           
           {/* Quick stats */}
-          <div className="flex items-center gap-3 ml-4">
-            <div className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
-              <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Avg Flag Rate</div>
-              <div className={`text-sm font-semibold ${
-                avgFlagRate > 30 ? 'text-red-500' : avgFlagRate > 20 ? 'text-yellow-500' : 'text-green-500'
-              }`}>
-                {avgFlagRate.toFixed(1)}%
+          {!compact && (
+            <div className="flex items-center gap-3 ml-4">
+              <div className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Avg Flag Rate</div>
+                
+              </div>
+              <div className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Total Processed</div>
+                <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  {totalApplications}
+                </div>
               </div>
             </div>
-            <div className={`px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-gray-50'}`}>
-              <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Total Processed</div>
-              <div className={`text-sm font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                {totalApplications}
-              </div>
-            </div>
-          </div>
+          )}
         </div>
         
         {/* Time range and options */}
@@ -99,11 +99,11 @@ const FlagsChart: React.FC = () => {
           <select 
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | '90d')}
-            className={`px-3 py-2 rounded-lg border text-sm ${
+            className={`px-2 py-1 rounded-lg border text-xs ${
               isDark 
                 ? 'bg-gray-700 border-gray-600 text-white' 
                 : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-purple-500`}
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
           >
             {timeRangeOptions.map(option => (
               <option key={option.value} value={option.value}>
@@ -112,47 +112,57 @@ const FlagsChart: React.FC = () => {
             ))}
           </select>
           
-          <div className="relative">
-            <button 
-              onClick={() => setShowOptions(!showOptions)}
-              className={`p-2 rounded-lg border ${
-                isDark 
-                  ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' 
-                  : 'bg-white border-gray-200 hover:bg-gray-50'
-              } transition-colors`}
-            >
-              <MoreVertical className="w-4 h-4" />
-            </button>
-            
-            {showOptions && (
-              <div className={`absolute right-0 top-12 w-48 rounded-lg border shadow-lg z-10 ${
-                isDark ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
-              }`}>
-                <div className="p-2">
-                  <button className={`w-full text-left px-3 py-2 rounded-md text-sm hover:${
-                    isDark ? 'bg-gray-700' : 'bg-gray-100'
-                  } transition-colors`}>
-                    Export Data
-                  </button>
-                  <button className={`w-full text-left px-3 py-2 rounded-md text-sm hover:${
-                    isDark ? 'bg-gray-700' : 'bg-gray-100'
-                  } transition-colors`}>
-                    Configure Alerts
-                  </button>
+          {!compact && (
+            <div className="relative">
+              <button 
+                onClick={() => setShowOptions(!showOptions)}
+                className={`p-2 rounded-lg border ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 hover:bg-gray-600' 
+                    : 'bg-white border-gray-200 hover:bg-gray-50'
+                } transition-colors`}
+              >
+                <MoreVertical className="w-4 h-4" />
+              </button>
+              
+              {showOptions && (
+                <div className={`absolute right-0 top-12 w-48 rounded-lg border shadow-lg z-10 ${
+                  isDark ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+                }`}>
+                  <div className="p-2">
+                    <button className={`w-full text-left px-3 py-2 rounded-md text-sm hover:${
+                      isDark ? 'bg-gray-700' : 'bg-gray-100'
+                    } transition-colors`}>
+                      Export Data
+                    </button>
+                    <button className={`w-full text-left px-3 py-2 rounded-md text-sm hover:${
+                      isDark ? 'bg-gray-700' : 'bg-gray-100'
+                    } transition-colors`}>
+                      Configure Alerts
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       
-      {/* Chart container with legend on the right */}
-      <div className="flex items-start gap-6">
+      {/* Chart container */}
+      <div className={`flex items-start ${compact ? 'gap-3' : 'gap-4'}`}>
         {/* Chart */}
-        <div className="flex-1 relative" style={{ height: chartHeight + 50 }}>
+        <div
+          className={`flex-1 relative ${onNavigateToReporting ? 'group cursor-pointer' : ''}`}
+          style={{ height: chartHeight + 40 }}
+          onClick={() => onNavigateToReporting && onNavigateToReporting()}
+          title={onNavigateToReporting ? 'Click to open Reporting & Analytics' : undefined}
+        >
+          {onNavigateToReporting && (
+            <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-5 bg-gray-500 transition-opacity pointer-events-none" />
+          )}
           <svg 
             width="100%" 
-            height={chartHeight + 50}
+            height={chartHeight + 40}
             className="overflow-visible"
           >
             {/* Grid lines */}
@@ -170,14 +180,16 @@ const FlagsChart: React.FC = () => {
                     strokeDasharray="2,2"
                     opacity="0.5"
                   />
-                  <text
-                    x={padding - 10}
-                    y={y + 4}
-                    textAnchor="end"
-                    className={`text-xs ${isDark ? 'fill-gray-400' : 'fill-gray-500'}`}
-                  >
-                    {Math.round((percent / 100) * maxApplications)}
-                  </text>
+                  {!compact && (
+                    <text
+                      x={padding - 10}
+                      y={y + 4}
+                      textAnchor="end"
+                      className={`text-xs ${isDark ? 'fill-gray-400' : 'fill-gray-500'}`}
+                    >
+                      {Math.round((percent / 100) * maxApplications)}
+                    </text>
+                  )}
                 </g>
               );
             })}
@@ -190,8 +202,8 @@ const FlagsChart: React.FC = () => {
                 return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
               }).join(' ')}
               fill="none"
-              stroke="#8b5cf6"
-              strokeWidth="3"
+              stroke="#838dcfff"
+              strokeWidth={compact ? 2 : 3}
               strokeLinecap="round"
               strokeLinejoin="round"
               className="drop-shadow-sm"
@@ -206,7 +218,7 @@ const FlagsChart: React.FC = () => {
               }).join(' ')}
               fill="none"
               stroke="#ef4444"
-              strokeWidth="2"
+              strokeWidth={compact ? 1.5 : 2}
               strokeLinecap="round"
               strokeLinejoin="round"
               className="drop-shadow-sm"
@@ -225,11 +237,11 @@ const FlagsChart: React.FC = () => {
                   <circle
                     cx={x}
                     cy={yApps}
-                    r={isHovered ? 6 : 4}
-                    fill="#8b5cf6"
+                    r={isHovered ? (compact ? 4.5 : 6) : (compact ? 3.5 : 4)}
+                    fill="#1537b4ff"
                     stroke="#ffffff"
                     strokeWidth="2"
-                    className="cursor-pointer transition-all duration-200 drop-shadow-sm"
+                    className={`transition-all duration-200 drop-shadow-sm ${compact ? '' : 'cursor-pointer'}`}
                     onMouseEnter={() => setHoveredPoint(index)}
                     onMouseLeave={() => setHoveredPoint(null)}
                   />
@@ -238,17 +250,15 @@ const FlagsChart: React.FC = () => {
                   <circle
                     cx={x}
                     cy={yFlags}
-                    r={isHovered ? 5 : 3}
+                    r={isHovered ? (compact ? 3.5 : 5) : (compact ? 2.5 : 3)}
                     fill="#ef4444"
                     stroke="#ffffff"
                     strokeWidth="2"
-                    className="cursor-pointer transition-all duration-200 drop-shadow-sm"
+                    className={`transition-all duration-200 drop-shadow-sm ${compact ? '' : 'cursor-pointer'}`}
                     onMouseEnter={() => setHoveredPoint(index)}
                     onMouseLeave={() => setHoveredPoint(null)}
                   />
-                  
-                  {/* Enhanced hover tooltip */}
-                  {isHovered && (
+                  {!compact && isHovered && (
                     <g>
                       <rect
                         x={x - 50}
@@ -298,9 +308,9 @@ const FlagsChart: React.FC = () => {
                 <text
                   key={`label-${item.day}`}
                   x={x}
-                  y={chartHeight + padding + 20}
+                  y={chartHeight + padding + 16}
                   textAnchor="middle"
-                  className={`text-xs font-medium ${isDark ? 'fill-gray-400' : 'fill-gray-600'}`}
+                  className={`text-[10px] font-medium ${isDark ? 'fill-gray-400' : 'fill-gray-600'}`}
                 >
                   {item.day}
                 </text>
@@ -310,48 +320,51 @@ const FlagsChart: React.FC = () => {
         </div>
         
         {/* Legend on the right */}
-        <div className="flex flex-col gap-4 min-w-[140px] pt-8">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-1.5 bg-purple-500 rounded-full"></div>
-              <div className="flex flex-col">
-                <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Applications
-                </span>
-                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {totalApplications} total
-                </span>
+        {!compact ? (
+          <div className="flex flex-col gap-4 min-w-[170px] pt-8">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-4 bg-blue-500 rounded-full"></div>
+                <div className="flex flex-col">
+                  <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Applications
+                  </span>
+                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {totalApplications} total
+                  </span>
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-1.5 bg-red-500 rounded-full"></div>
-              <div className="flex flex-col">
-                <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Flagged
-                </span>
-                <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {totalFlags} total
-                </span>
+              
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-1.5 bg-red-500 rounded-full"></div>
+                <div className="flex flex-col">
+                  <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Flagged
+                  </span>
+                  <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {totalFlags} total
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-          
-          {/* Status indicator */}
-          <div className={`pt-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex items-center gap-2 mb-1">
-              <div className={`w-2 h-2 rounded-full ${
-                avgFlagRate > 30 ? 'bg-red-500' : avgFlagRate > 20 ? 'bg-yellow-500' : 'bg-green-500'
-              }`}></div>
-              <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
-                Status
+        ) : (
+          /* Compact legend below chart */
+          <div className="flex items-center justify-center gap-4 mt-2 text-[10px]">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-1 bg-blue-500 rounded-full"></div>
+              <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Apps ({totalApplications})
               </span>
             </div>
-            <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {avgFlagRate > 30 ? 'High Alert' : avgFlagRate > 20 ? 'Moderate' : 'Normal'}
-            </span>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-1 bg-red-500 rounded-full"></div>
+              <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Flags ({totalFlags})
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

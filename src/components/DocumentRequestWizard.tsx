@@ -287,7 +287,7 @@ Admissions Review Committee`,
 
   const getUrgencyColor = (level: number) => {
     if (level <= 2) return 'text-green-500';
-    if (level === 3) return 'text-purple-500';
+    if (level === 3) return 'text-blue-500';
     if (level === 4) return 'text-yellow-500';
     return 'text-red-500';
   };
@@ -360,7 +360,7 @@ Admissions Review Committee`,
               <div key={step} className="flex items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
                   step === currentStep 
-                    ? 'bg-purple-700 text-white'
+                    ? 'bg-blue-700 text-white'
                     : step < currentStep 
                     ? 'bg-green-500 text-white'
                     : isDark 
@@ -401,7 +401,7 @@ Admissions Review Committee`,
                     onClick={() => setActiveCategory(category)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                       activeCategory === category
-                        ? 'bg-purple-700 text-white'
+                        ? 'bg-blue-700 text-white'
                         : isDark
                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -420,7 +420,7 @@ Admissions Review Committee`,
                     onClick={() => handleDocumentToggle(doc.id)}
                     className={`p-4 rounded-lg border cursor-pointer transition-all ${
                       selectedDocuments.includes(doc.id)
-                        ? 'border-purple-100 dark:bg-purple-900/20'
+                        ? 'border-blue-100 dark:bg-blue-900/20'
                         : isDark
                         ? 'border-gray-600 bg-gray-700 hover:bg-gray-650 hover:border-gray-500'
                         : 'border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300'
@@ -429,7 +429,7 @@ Admissions Review Committee`,
                     <div className="flex items-start space-x-3">
                       <div className={`p-2 rounded-lg ${
                         selectedDocuments.includes(doc.id)
-                          ? 'text-purple-600 dark:bg-purple-800 dark:text-purple-300'
+                          ? 'text-blue-600 dark:bg-blue-800 dark:text-blue-300'
                           : isDark
                           ? 'bg-gray-600 text-gray-300'
                           : 'bg-gray-100 text-gray-600'
@@ -456,7 +456,7 @@ Admissions Review Committee`,
                         </p>
                       </div>
                       {selectedDocuments.includes(doc.id) && (
-                        <div className="text-purple-600 dark:text-purple-400">
+                        <div className="text-blue-600 dark:text-blue-400">
                           ✓
                         </div>
                       )}
@@ -491,7 +491,7 @@ Admissions Review Committee`,
                     onClick={() => setActiveCategory(category)}
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1 ${
                       activeCategory === category
-                        ? 'bg-purple-50 text-white'
+                        ? 'bg-blue-50 text-white'
                         : isDark
                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -512,7 +512,7 @@ Admissions Review Committee`,
                     onClick={() => handleTemplateSelect(template)}
                     className={`p-4 rounded-lg border cursor-pointer transition-all ${
                       selectedTemplate?.id === template.id
-                        ? 'border-purple-100 bg-purple-50 dark:bg-purple-900/20'
+                        ? 'border-blue-100 bg-blue-50 dark:bg-blue-900/20'
                         : isDark
                         ? 'border-gray-600 bg-gray-700 hover:bg-gray-650'
                         : 'border-gray-200 bg-white hover:bg-gray-50'
@@ -530,7 +530,7 @@ Admissions Review Committee`,
                           template.successRate >= 90
                             ? 'bg-green-100 text-green-700'
                             : template.successRate >= 80
-                            ? 'bg-purple-100 text-purple-700'
+                            ? 'bg-blue-100 text-blue-700'
                             : 'bg-yellow-100 text-yellow-700'
                         }`}>
                           {template.successRate}% success
@@ -593,7 +593,7 @@ Admissions Review Committee`,
                         onClick={() => setTone(toneOption)}
                         className={`w-full p-2 rounded-lg border text-left transition-colors ${
                           tone === toneOption
-                            ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                             : isDark
                             ? 'border-gray-600 bg-gray-700 hover:bg-gray-650'
                             : 'border-gray-200 bg-white hover:bg-gray-50'
@@ -624,7 +624,7 @@ Admissions Review Committee`,
                       isDark
                         ? 'bg-gray-700 border-gray-600 text-white'
                         : 'bg-white border-gray-300 text-gray-900'
-                    } focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
+                    } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                   >
                     {languages.map(lang => (
                       <option key={lang.code} value={lang.code}>
@@ -674,7 +674,7 @@ Admissions Review Committee`,
                     isDark
                       ? 'bg-gray-700 border-gray-600 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
+                  } focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                 />
               </div>
 
@@ -821,7 +821,7 @@ Admissions Review Committee`,
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                   currentStep === 1 && selectedDocuments.length === 0
                     ? 'opacity-50 cursor-not-allowed bg-gray-300'
-                    : 'bg-purple-800 text-white hover:bg-purple-700'
+                    : 'bg-blue-800 text-white hover:bg-blue-700'
                 }`}
               >
                 <span>Next</span>

@@ -47,10 +47,10 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   
   // Mock user data - in real app would come from context/API
   const [userData, setUserData] = useState<UserData>({
-    firstName: 'John',
-    lastName: 'Smith', 
-    displayName: 'Admin 1',
-    email: 'john.smith@university.edu',
+    firstName: 'Robert',
+    lastName: 'Wesley', 
+    displayName: 'Robert Wesley',
+    email: 'robert.wesley@university.edu',
     emailVerified: true,
     phone: '+1 (555) 123-4567',
     jobTitle: 'Senior Fraud Analyst',
@@ -78,7 +78,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const fraudDetectionAccuracy = 94.2; // Mock data
 
   // Case type breakdown
-  const admissionCases = processedApplications.filter(app => app.stage === 'admission').length;
+  const admissionCases = processedApplications.filter(app => app.stage === 'admissions').length;
   const financialAidCases = processedApplications.filter(app => app.stage === 'financial-aid').length;
   
   // Recent performance trends (mock data)
@@ -133,7 +133,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
         }`}>
           <div className="flex items-center gap-3">
             <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-              isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-100 text-purple-600'
+              isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'
             }`}>
               <User className="w-5 h-5" />
             </div>
@@ -163,7 +163,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               onClick={() => setActiveTab('analytics')}
               className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'analytics'
-                  ? isDark ? 'border-purple-400 text-purple-400' : 'border-purple-600 text-purple-600'
+                  ? isDark ? 'border-blue-400 text-blue-400' : 'border-blue-600 text-blue-600'
                   : isDark ? 'border-transparent text-gray-400 hover:text-gray-300' : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -173,7 +173,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               onClick={() => setActiveTab('profile')}
               className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === 'profile'
-                  ? isDark ? 'border-purple-400 text-purple-400' : 'border-purple-600 text-purple-600'
+                  ? isDark ? 'border-blue-400 text-blue-400' : 'border-blue-600 text-blue-600'
                   : isDark ? 'border-transparent text-gray-400 hover:text-gray-300' : 'border-transparent text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -196,7 +196,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                     isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
                   }`}>
                     <div className="flex items-center gap-3 mb-2">
-                      <FileText className="w-5 h-5 text-purple-500" />
+                      <FileText className="w-5 h-5 text-blue-500" />
                       <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                         Total Cases
                       </span>
@@ -247,7 +247,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                     isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
                   }`}>
                     <div className="flex items-center gap-3 mb-2">
-                      <Award className="w-5 h-5 text-purple-500" />
+                      <Award className="w-5 h-5 text-blue-500" />
                       <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                         Accuracy
                       </span>
@@ -282,7 +282,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                         <div className="flex items-center gap-2">
                           <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-purple-500 transition-all"
+                              className="h-full bg-blue-500 transition-all"
                               style={{ width: `${(admissionCases / totalCasesProcessed) * 100}%` }}
                             />
                           </div>
@@ -351,7 +351,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                     isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
                   }`}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Activity className="w-4 h-4 text-purple-500" />
+                      <Activity className="w-4 h-4 text-blue-500" />
                       <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                         Investigation
                       </span>
@@ -385,7 +385,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                     isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
                   }`}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Users className="w-4 h-4 text-purple-500" />
+                      <Users className="w-4 h-4 text-blue-500" />
                       <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                         Collaboration
                       </span>
@@ -426,8 +426,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                     onClick={handlePhotoUpload}
                     className={`absolute -bottom-2 -right-2 w-8 h-8 rounded-full border-2 flex items-center justify-center ${
                       isDark 
-                        ? 'bg-purple-600 border-gray-800 text-white hover:bg-purple-700' 
-                        : 'bg-purple-600 border-white text-white hover:bg-purple-700'
+                        ? 'bg-blue-600 border-gray-800 text-white hover:bg-blue-700' 
+                        : 'bg-blue-600 border-white text-white hover:bg-blue-700'
                     }`}
                   >
                     <Camera className="w-4 h-4" />
@@ -747,8 +747,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
                       className={`px-3 py-2 rounded-lg text-sm border transition-colors ${
                         userData.specializations.includes(spec)
                           ? isDark 
-                            ? 'bg-purple-600/20 border-purple-500/50 text-purple-400'
-                            : 'bg-purple-100 border-purple-300 text-purple-700'
+                            ? 'bg-blue-600/20 border-blue-500/50 text-blue-400'
+                            : 'bg-blue-100 border-blue-300 text-blue-700'
                           : isDark
                             ? 'bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600'
                             : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import {AlertTriangle, CheckCircle, XCircle, Clock, Search, Filter, Sliders, Save, Trash, Star, X } from 'lucide-react';
+import {AlertTriangle, Search, Filter, Sliders, Save, Trash, Star, X } from 'lucide-react';
 import { useApplications, Application } from '../contexts/ApplicationContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigation } from '../contexts/NavigationContext';
@@ -83,35 +83,33 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
     });
   }, [filters, showFilterPanel, savedFilters, savePageState]);
 
-  const getStatusIcon = (status: string) => {
+  // Returns a colored dot for status
+  const getStatusDotColor = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return 'bg-green-500';
       case 'rejected':
-        return <XCircle className="w-4 h-4 text-red-500" />;
+        return 'bg-red-500';
       case 'escalated':
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+        return 'bg-yellow-500';
       case 'processed':
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
+        return 'bg-blue-500';
+      case 'in_review':
+        return 'bg-blue-500';
       default:
-        return <Clock className="w-4 h-4 text-gray-500" />;
+        return 'bg-gray-400';
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return isDark ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-green-50 text-green-700 border-green-200';
-      case 'rejected':
-        return isDark ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-red-50 text-red-700 border-red-200';
-      case 'escalated':
-        return isDark ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'processed':
-        return isDark ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200';
-      default:
-        return isDark ? 'bg-gray-500/20 text-gray-400 border-gray-500/30' : 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
+  const StatusDot: React.FC<{ status: string }> = ({ status }) => (
+    <span
+      className={`inline-block w-2 h-2 rounded-full mr-2 align-middle ${getStatusDotColor(status)}`}
+      aria-label={status}
+    />
+  );
+
+  // No longer used for dot/text, but keep for possible background/border if needed
+  // const getStatusColor = ...
 
   const getRiskColor = (score: number) => {
     if (score >= 80) return 'text-red-500';
@@ -122,7 +120,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
   const getStageColor = (stage: string) => {
     switch (stage) {
       case 'admission':
-        return isDark ? 'bg-purple-500/20 text-purple-400' : 'bg-purple-50 text-purple-700';
+        return isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-700';
       case 'financial-aid':
         return isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-700';
       default:
@@ -131,6 +129,10 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
   };
 
   const handleViewCase = (application: Application) => {
+    if (onReviewApplication) {
+      onReviewApplication(application.studentId);
+      return;
+    }
     setSelectedCase(application);
   };
 
@@ -138,8 +140,22 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
     setSelectedCase(null);
   };
 
+  // Returns a string like 'X hours ago', and the full timestamp for tooltip
   const formatTimestamp = (timestamp: string) => {
-    return new Date(timestamp).toLocaleString();
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    if (diffHours < 1) {
+      if (diffMinutes < 1) return 'just now';
+      return `${diffMinutes} min ago`;
+    }
+    if (diffHours < 24) {
+      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    }
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
   };
 
   // Save filters to local storage
@@ -276,7 +292,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
       {applicationsLoading && (
         <div className="flex items-center justify-center py-12">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
             <span className={`text-lg ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               Loading processed applications...
             </span>
@@ -321,8 +337,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
               placeholder="Search applications..."
               className={`w-full px-4 py-2 pl-10 rounded-lg border transition-colors ${
                 isDark 
-                  ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-purple-500' 
-                  : 'bg-white border-gray-300 text-gray-800 focus:border-purple-500'
+                  ? 'bg-gray-800 border-gray-700 text-gray-200 focus:border-blue-500' 
+                  : 'bg-white border-gray-300 text-gray-800 focus:border-blue-500'
               }`}
             />
             <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
@@ -363,7 +379,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
               if (typeof v === 'string' && v) return true;
               
               return false;
-            }) ? 'border-purple-500 text-purple-500' : ''}`}
+            }) ? 'border-blue-500 text-blue-500' : ''}`}
           >
             <Sliders className="w-5 h-5" />
           </button>
@@ -382,8 +398,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                 className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium transition-all ${
                   JSON.stringify(filter.filter) === JSON.stringify(filters)
                     ? isDark 
-                      ? 'bg-purple-600 text-white' 
-                      : 'bg-purple-600 text-white'
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-blue-600 text-white'
                     : isDark
                     ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -458,7 +474,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                     }))}
                     className={`inline-flex items-center px-2 py-1 rounded text-xs ${
                       filters.statuses.includes(status)
-                        ? 'bg-purple-600 text-white'
+                        ? 'bg-blue-600 text-white'
                         : isDark
                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -485,7 +501,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                     }))}
                     className={`inline-flex items-center px-2 py-1 rounded text-xs ${
                       filters.stages.includes(stage)
-                        ? 'bg-purple-600 text-white'
+                        ? 'bg-blue-600 text-white'
                         : isDark
                         ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -553,8 +569,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                 disabled={!filterName.trim()}
                 className={`inline-flex items-center gap-1 px-3 py-1 rounded text-xs disabled:opacity-50 ${
                   isDark 
-                    ? 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-purple-800' 
-                    : 'bg-purple-600 text-white hover:bg-purple-700 disabled:bg-purple-400'
+                    ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-800' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-blue-400'
                 }`}
               >
                 <Save className="w-3 h-3" /> Save
@@ -645,7 +661,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                   Student
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Stage
+                  Program
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Risk Score
@@ -655,9 +671,6 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Processed
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                  Actions
                 </th>
               </tr>
             </thead>
@@ -669,7 +682,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
               {filteredApplications.map((application) => (
                 <tr 
                   key={application.id}
-                  onClick={() => onReviewApplication &&onReviewApplication(application.id)}
+                  onClick={() => onReviewApplication && onReviewApplication(application.studentId)}
                   className={`cursor -pointer transition-colors ${
                     isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50'
                   }`}
@@ -680,15 +693,17 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                         <div className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                           {application.name}
                         </div>
-                        <div className={`text-xs font-mono ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+                        <div className={`text-xs font-mono ${isDark ? 'text-gray-100' : 'text-gray-400'}`}>
                           {application.studentId}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 py-1 rounded-full text-xs ${getStageColor(application.stage)}`}>
-                      {application.stage.replace('-', ' ')}
+                    <span className={`truncate text-base text-left text-sm ${isDark ? 'text-gray-100' : 'text-gray-400'}`}
+                      title={application.programName || ''}
+                    >
+                      {application.programName || '—'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -697,34 +712,17 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(application.status)}
-                      <span className={`px-2 py-1 rounded-full text-xs border ${getStatusColor(application.status)}`}>
-                        {application.status.toUpperCase()}
+                    <div className="flex items-center">
+                      <StatusDot status={application.status} />
+                      <span className="text-xs font-medium">
+                        {application.status.replace(/(^|\s|-)\S/g, (l) => l.toUpperCase())}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {formatTimestamp(application.timestamp)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                      {onReviewApplication && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onReviewApplication(application.id);
-                          }}
-                          className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                            isDark 
-                              ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                              : 'bg-purple-600 text-white hover:bg-purple-700'
-                          }`}
-                        >
-                          → Review
-                        </button>
-                      )}
-                    </div>
+                    <span title={new Date(application.timestamp).toLocaleString()}>
+                      {formatTimestamp(application.timestamp)}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -751,7 +749,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                   <h3 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
                     {application.name}
                   </h3>
-                  <p className={`text-xs font-mono ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+                  <p className={`text-xs font-mono ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                     {application.studentId}
                   </p>
                 </div>
@@ -765,16 +763,19 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
               <span className={`px-2 py-1 rounded-full text-xs ${getStageColor(application.stage)}`}>
                 {application.stage.replace('-', ' ')}
               </span>
-              <div className="flex items-center space-x-1">
-                {getStatusIcon(application.status)}
-                <span className={`px-2 py-1 rounded-full text-xs border ${getStatusColor(application.status)}`}>
+              <div className="flex items-center">
+                <StatusDot status={application.status} />
+                <span className="text-xs font-medium text-black dark:text-white">
                   {application.status.toUpperCase()}
                 </span>
               </div>
             </div>
             
             <div className="flex items-center justify-between">
-              <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              <span
+                className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+                title={new Date(application.timestamp).toLocaleString()}
+              >
                 {formatTimestamp(application.timestamp)}
               </span>
               <div className="flex space-x-2">
@@ -782,12 +783,12 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onReviewApplication(application.id);
+                      onReviewApplication(application.studentId);
                     }}
                     className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
                       isDark 
-                        ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                        : 'bg-purple-600 text-white hover:bg-purple-700'
+                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
                     → Review
@@ -818,8 +819,8 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
             onClick={() => setFilters(defaultFilterState)}
             className={`mt-4 px-4 py-2 rounded-lg text-sm font-medium ${
               isDark 
-                ? 'bg-purple-600 text-white hover:bg-purple-700' 
-                : 'bg-purple-600 text-white hover:bg-purple-700'
+                ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
             Reset Filters
@@ -830,7 +831,7 @@ const ProcessedApplications: React.FC<ProcessedApplicationsProps> = ({ onReviewA
       {/* Timeline Modal - Removed for now */}
       
       {/* Case Review Drawer */}
-      {selectedCase && (
+      {selectedCase && !onReviewApplication && (
         <CaseReview
           case={selectedCase}
           onClose={closeDrawer}

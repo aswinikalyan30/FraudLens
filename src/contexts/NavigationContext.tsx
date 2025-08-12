@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-export type NavigationSection = 'home' | 'queue' | 'processed' | 'settings';
+export type NavigationSection = 'home' | 'queue' | 'processed' | 'settings' | 'reporting';
 
 interface NavigationState {
   currentSection: NavigationSection;
@@ -37,7 +37,8 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         home: 'Dashboard',
         queue: 'Application Queue',
         processed: 'Processed Applications',
-        settings: 'Settings'
+        settings: 'Settings',
+        reporting: 'Reporting'
       };
 
       const newLabel = label || sectionLabels[section];

@@ -37,7 +37,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onToggl
       case 'escalation':
         return <Shield className="w-4 h-4 text-yellow-500" />;
       case 'new-case':
-        return <Flag className="w-4 h-4 text-purple-500" />;
+        return <Flag className="w-4 h-4 text-blue-500" />;
       default:
         return <Bell className="w-4 h-4" />;
     }
@@ -125,7 +125,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onToggl
                   key={notification.id}
                   className={`p-4 border-b transition-all cursor-pointer min-h-[44px] flex items-center ${
                     isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-100 hover:bg-gray-50'
-                  } ${!notification.read ? (isDark ? 'bg-gray-700/50' : 'bg-purple-50/50') : ''}`}
+                  } ${!notification.read ? (isDark ? 'bg-gray-700/50' : 'bg-blue-50/50') : ''}`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start space-x-3">
@@ -140,7 +140,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onToggl
                           {notification.title}
                         </p>
                         {!notification.read && (
-                          <div className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                         )}
                       </div>
                       <p className={`text-sm mt-1 ${

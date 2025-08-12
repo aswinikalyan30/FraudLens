@@ -116,7 +116,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ isDark, confidenceProgress })
           <Brain className="w-4 h-4" />
           <span>AI Risk Analysis</span>
           <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-medium ${
-            isDark ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-700'
+            isDark ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'
           }`}>
             {confidenceProgress}% confident
           </span>
@@ -274,7 +274,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ isDark, confidenceProgress })
                       ? (isDark ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-600')
                       : suggestion.priority === 'medium'
                       ? (isDark ? 'bg-yellow-900/30 text-yellow-400' : 'bg-yellow-100 text-yellow-600')
-                      : (isDark ? 'bg-purple-900/30 text-purple-400' : 'bg-purple-100 text-purple-600')
+                      : (isDark ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-600')
                   }`}>
                     {suggestion.icon}
                   </div>
@@ -314,7 +314,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ isDark, confidenceProgress })
                         ? 'bg-red-500'
                         : suggestion.priority === 'medium'
                         ? 'bg-yellow-500'
-                        : 'bg-purple-500'
+                        : 'bg-blue-500'
                     }`} />
                     <span className={`text-xs font-medium capitalize ${
                       isDark ? 'text-gray-400' : 'text-gray-500'
@@ -343,7 +343,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ isDark, confidenceProgress })
               </span>
               <div className={`flex-1 h-3 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'} overflow-hidden`}>
                 <div 
-                  className="h-full bg-gradient-to-r from-purple-500 to-purple-600 rounded-full confidence-bar transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full confidence-bar transition-all duration-500"
                   style={{ width: `${confidenceProgress}%` }}
                   role="progressbar"
                   aria-valuenow={confidenceProgress}

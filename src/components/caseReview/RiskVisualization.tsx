@@ -67,7 +67,7 @@ const RiskVisualization: React.FC<RiskVisualizationProps> = ({ score, trend = []
             )}
             {trend.length > 0 && (
               <div className="text-xs flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-purple-500" />
+                <TrendingUp className="w-4 h-4 text-blue-500" />
                 <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Recent trend: {trend.join(' → ')}</span>
               </div>
             )}

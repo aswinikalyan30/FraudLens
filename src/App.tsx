@@ -1,17 +1,20 @@
-import { useState } from 'react';
-import { Shield, Settings, Search, Sun, Moon, Users, FileText, Home } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Shield, Settings, Search, Sun, Moon, FileText, Home, BarChart3 } from 'lucide-react';
 import HomeContent from './components/HomeContent';
 import SettingsPanel from './components/SettingsPanel';
 import NotificationCenter from './components/NotificationCenter';
 import CaseReview from './components/CaseReview';
 import MobileBottomNav from './components/MobileBottomNav';
-import ApplicationQueue from './components/ApplicationQueue';
 import ProcessedApplications from './components/ProcessedApplications';
+import ReportingDashboard from './components/ReportingDashboard';
 import UserProfile from './components/UserProfile';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ApplicationProvider, Application, useApplications } from './contexts/ApplicationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
+import ChatAgent from './components/ChatAgent';
+import FlagsChart from './components/FlagsChart';
+import { fetchApplicationById, fetchApplicationDetailById, type ApplicationDetail } from './api/applications';
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -21,33 +24,154 @@ function AppContent() {
   const [reviewingApplicationId, setReviewingApplicationId] = useState<string | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
-  const { queueApplications, processedApplications } = useApplications();
+  // Use local lists only to map UI id -> API id (no merging)
+  const { processedApplications, queueApplications } = useApplications();
+  const [detailedApplication, setDetailedApplication] = useState<Application | null>(null);
+  const [applicationDetail, setApplicationDetail] = useState<ApplicationDetail | null>(null);
+  // New: loading and error state for case detail
+  const [isLoadingCase, setIsLoadingCase] = useState(false);
+  const [detailLoadError, setDetailLoadError] = useState<string | null>(null);
 
+  // Memoized helper to build minimal Application from detail
+  const buildCaseFromDetail = useCallback((detail: ApplicationDetail): Application => {
+    const riskFraction = detail.fraud_score != null
+      ? (typeof detail.fraud_score === 'string' ? parseFloat(detail.fraud_score) : detail.fraud_score)
+      : undefined;
+    const riskScore = typeof riskFraction === 'number' && !Number.isNaN(riskFraction)
+      ? Math.round(riskFraction * 100)
+      : undefined;
+    const flags: string[] = [];
+    const fd = detail.fraud_details as unknown as Record<string, unknown> | undefined;
+    if (fd && typeof fd === 'object') {
+      Object.values(fd).forEach(v => { if (Array.isArray(v)) v.forEach(i => { if (typeof i === 'string') flags.push(i); }); });
+    }
+    const stageNorm = (() => {
+      const v = (detail.application_type || '').toLowerCase().replace(/\s+/g, '-').replace(/_/g, '-');
+      return v === 'financial-aid' || v === 'financialaid' || v === 'finaid' ? 'financial-aid' : 'admissions';
+    })();
+    console.log('Building case from detail:', detail.application_id, 'with risk score:', riskScore, 'and flags:', flags);
+    return {
+      id: detail.application_id,
+      studentId: detail.application_id,
+      name: [detail.first_name, detail.last_name].filter(Boolean).join(' ') || 'Unknown Applicant',
+      email: detail.email || 'unknown@example.com',
+      stage: stageNorm,
+      timestamp: detail.updated_at || detail.created_at || new Date().toISOString(),
+      status: (detail.application_status as Application['status']) || 'submitted',
+      riskScore,
+      flags,
+      programId: detail.program_id,
+      programName: detail.program_name,
+      updatedAt: detail.updated_at,
+    };
+  }, []);
+
+  useEffect(() => {
+    let canceled = false;
+    if (!reviewingApplicationId) {
+      setDetailedApplication(null);
+      setApplicationDetail(null);
+      setDetailLoadError(null);
+      setIsLoadingCase(false);
+      return;
+    }
+    setIsLoadingCase(true);
+    setDetailLoadError(null);
+
+    const listJoin = [...processedApplications, ...queueApplications];
+    const match = listJoin.find(a => a.studentId === reviewingApplicationId);
+    const candidates = Array.from(new Set([
+      match?.studentId,
+      match?.id,
+      reviewingApplicationId,
+    ].filter(Boolean))) as string[];
+
+    (async () => {
+      for (const apiId of candidates) {
+        try {
+          const [app, detail] = await Promise.all([
+            fetchApplicationById(apiId),
+            fetchApplicationDetailById(apiId)
+          ]);
+          if (canceled) return;
+          if (detail) {
+            console.log('Fetched application detail for:', apiId,detail);
+            setApplicationDetail(detail);
+            setDetailedApplication(app ?? buildCaseFromDetail(detail));
+            setIsLoadingCase(false);
+            return;
+          }
+        } catch {
+          // try next candidate
+        }
+      }
+      if (!canceled) {
+        setDetailedApplication(null);
+        setApplicationDetail(null);
+        setDetailLoadError('We could not load this application from the API.');
+        setIsLoadingCase(false);
+      }
+    })();
+
+    return () => { canceled = true; };
+  }, [reviewingApplicationId, processedApplications, queueApplications, buildCaseFromDetail]);
+
+  // Tabs for sidebar and mobile nav
   const tabs = [
     { id: 'home', label: 'Home', icon: Home },
-    { id: 'queue', label: 'Queue', icon: Users, count: queueApplications.length>0 ? queueApplications.length : undefined },
     { id: 'processed', label: 'Processed', icon: FileText },
+    { id: 'reporting', label: 'Reporting', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const renderContent = () => {
+    // When reviewing a case, wait for API results and do NOT use local list fallback
     if (reviewingApplicationId) {
-      // Find the application from queue or processed applications
-      const allApplications = [...queueApplications, ...processedApplications];
-      const application = allApplications.find(app => app.id === reviewingApplicationId);
-      
-      if (!application) {
-        // Fallback if application not found
-        setReviewingApplicationId(null);
-        return null;
+      if (isLoadingCase) {
+        return (
+          <div className={`flex items-center justify-center h-full ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            <div className="flex flex-col items-center space-y-3">
+              <div className="w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <span className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Loading application…</span>
+            </div>
+          </div>
+        );
       }
 
+      if (detailLoadError) {
+        return (
+          <div className={`flex items-center justify-center h-full ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            <div className={`p-6 border rounded-lg text-center ${isDark ? 'bg-red-900/20 border-red-500/30 text-red-200' : 'bg-red-50 border-red-200 text-red-700'}`}>
+              <div className="font-semibold mb-2">Unable to load application</div>
+              <div className="text-sm mb-4">{detailLoadError}</div>
+              <button
+                onClick={() => setReviewingApplicationId(null)}
+                className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-800 text-white hover:bg-gray-700'}`}
+              >
+                Go back
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      if (applicationDetail) {
+        console.log('Rendering CaseReview with detailedApplication:', detailedApplication);
+        return (
+          <CaseReview
+            case={detailedApplication ?? buildCaseFromDetail(applicationDetail)}
+            detail={applicationDetail}
+            onClose={() => setReviewingApplicationId(null)}
+            mode="fullscreen"
+          />
+        );
+      }
+
+      // Fallback safeguard (shouldn’t reach here)
       return (
-        <CaseReview
-          case={application}
-          onClose={() => setReviewingApplicationId(null)}
-          mode="fullscreen"
-        />
+        <div className={`flex items-center justify-center h-full ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+          <span className={`${isDark ? 'text-gray-400' : 'text-gray-600'}`}>No application selected.</span>
+        </div>
       );
     }
 
@@ -55,25 +179,21 @@ function AppContent() {
       case 'home':
         return (
           <HomeContent
-            onNavigateToQueue={() => setActiveTab('queue')}
             onNavigateToProcessed={() => setActiveTab('processed')}
+            onOpenCaseFullScreen={(id) => setReviewingApplicationId(id)}
           />
         );
-      case 'queue':
-        return <ApplicationQueue />;
       case 'processed':
-        return <ProcessedApplications 
-          onReviewApplication={(applicationId) => {
-            setReviewingApplicationId(applicationId);
-          }}
-        />;
+        return <ProcessedApplications onReviewApplication={(applicationId) => setReviewingApplicationId(applicationId)} />;
+      case 'reporting':
+        return <ReportingDashboard />;
       case 'settings':
         return <SettingsPanel />;
       default:
         return (
           <HomeContent
-            onNavigateToQueue={() => setActiveTab('queue')}
             onNavigateToProcessed={() => setActiveTab('processed')}
+            onOpenCaseFullScreen={(id) => setReviewingApplicationId(id)}
           />
         );
     }
@@ -82,8 +202,8 @@ function AppContent() {
   const handleNavigateToCase = (caseId: string) => {
     // Create a mock case from the notification caseId
     const randomStageIndex = Math.floor(Math.random() * 2); // only two stages now
-    const stageOptions: Array<'admission' | 'financial-aid'> = ['admission', 'financial-aid'];
-    
+    const stageOptions: Array<'admissions' | 'financial-aid'> = ['admissions', 'financial-aid'];
+
     const mockCase: Application = {
       id: caseId,
       studentId: caseId,
@@ -128,10 +248,10 @@ function AppContent() {
           }`}>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${
               isDark 
-                ? 'bg-purple-500/20 border-purple-500/30' 
-                : 'bg-purple-50 border-purple-200'
+                ? 'bg-blue-500/20 border-blue-500/30' 
+                : 'bg-blue-50 border-blue-200'
             }`}>
-              <Shield className={`w-5 h-5 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
+              <img src="https://cdn-ch-prod-bqhwa0ewbpg6eyc2.z01.azurefd.net/prod-img-cache/CDN-ik-images/charityprofile/9/5853/Foundation+Logo-Jan2015%20(1)%20(2)_1.png" alt="Logo" className="w-5 h-5" />
             </div>
           </div>
           
@@ -144,6 +264,8 @@ function AppContent() {
                     onClick={() => {
                       setActiveTab(tab.id);
                       setSidebarOpen(false);
+                      // Exit case review if open when navigating via sidebar
+                      setReviewingApplicationId(null);
                     }}
                     className={`
                       w-12 h-12 rounded-lg flex items-center justify-center mb-2 transition-all duration-200 relative
@@ -158,12 +280,6 @@ function AppContent() {
                     `}
                   >
                     <Icon className="w-5 h-5" />
-                    {/* Notification Badge */}
-                    {tab.count && tab.count > 0 && (
-                      <div className="absolute -top-1 -right-1 min-w-[18px] h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center px-1">
-                        {tab.count > 99 ? '99+' : tab.count}
-                      </div>
-                    )}
                     {activeTab === tab.id && (
                       <div className={`absolute -right-px top-0 bottom-0 w-0.5 rounded-l ${
                         isDark ? 'bg-gray-400' : 'bg-gray-600'
@@ -238,33 +354,15 @@ function AppContent() {
                 
                 <div className="flex items-center space-x-2">
                   <div className={`w-1 h-1 rounded-full animate-pulse ${
-                    isDark ? 'bg-teal-400' : 'bg-teal-500'
+                    isDark ? 'bg-blue-400' : 'bg-blue-500'
                   }`}></div>
-                  <span className={`text-sm hidden sm:block ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                    {activeTab === 'home' && 'Application Management Dashboard'}
-                    {activeTab === 'queue' && 'Application Queue'}
-                    {activeTab === 'processed' && 'Processed Applications'}
-                    {activeTab === 'settings' && 'System Configuration'}
+                  <span className={`text-l font-bold hidden sm:block ${isDark ? 'text-gray-300' : 'text-gray-800'}`}>
+                    Crestwood University
                   </span>
                 </div>
               </div>
               
               <div className="flex items-center space-x-4">
-                <div className="relative hidden md:block">
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
-                    isDark ? 'text-gray-400' : 'text-gray-500'
-                  }`} />
-                  <input
-                    type="text"
-                    placeholder="Search cases..."
-                    className={`border rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all ${
-                      isDark 
-                        ? 'bg-gray-900 border-gray-700 text-white placeholder-gray-400' 
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                    }`}
-                  />
-                </div>
-                
                 <NotificationCenter 
                   isOpen={notificationsOpen}
                   onToggle={() => setNotificationsOpen(!notificationsOpen)}
@@ -285,14 +383,14 @@ function AppContent() {
                 <div className="flex items-center space-x-2 hidden sm:flex">
                   <button
                     onClick={() => setIsProfileOpen(true)}
-                    className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-500 rounded-full flex items-center justify-center transition-transform hover:scale-105 cursor-pointer"
+                    className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-500 rounded-full flex items-center justify-center transition-transform hover:scale-105 cursor-pointer"
                   >
                     <span className="text-xs font-bold text-white">AI</span>
                   </button>
                   <div className="text-sm">
-                    <div className={isDark ? 'text-white' : 'text-gray-900'}>Admin 1</div>
+                    <div className={isDark ? 'text-white' : 'text-gray-900'}>Robert Wesley</div>
                     <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Fraud Analyst
+                      Financial Aid Admin
                     </div>
                   </div>
                 </div>
@@ -300,17 +398,41 @@ function AppContent() {
             </div>
           </header>
 
-          {/* Page Content - All pages use same container */}
-          <main className="flex-1 overflow-auto">
-            {renderContent()}
-          </main>
+          {/* Page Content with right activity/chat panel */}
+          <div className="flex-1 flex overflow-hidden pt-3 pe-5">
+            {activeTab === 'home' ? (
+              <>
+                <main className="flex-[5] min-w-0 overflow-auto">
+                  {renderContent()}
+                </main>
+                {/* Hide FlagsChart and ChatAgent when a case is open from Home */}
+                {!reviewingApplicationId && (
+                  <aside className={`hidden xl:flex flex-[3] min-w-0 flex-col`}>
+                    <div className="flex-[2]">
+                      <FlagsChart onNavigateToReporting={() => setActiveTab('reporting')} compact={true} />
+                    </div>
+                    <div className="flex-[3] border-t border-gray-200">
+                      <ChatAgent applicationId="home" />
+                    </div>
+                  </aside>
+                )}
+              </>
+            ) : (
+              <main className="flex-1 overflow-auto">
+                {renderContent()}
+              </main>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav 
         activeTab={activeTab}
-        onTabChange={setActiveTab}
+        onTabChange={(tabId) => {
+          setActiveTab(tabId);
+          setReviewingApplicationId(null);
+        }}
         tabs={tabs}
       />
       

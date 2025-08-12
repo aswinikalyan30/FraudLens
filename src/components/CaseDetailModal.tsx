@@ -144,6 +144,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
       result: 'Recommended for immediate human review'
     }
   ];
+  console.log('Application Detail:', fraudCase);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 lg:p-4">
@@ -176,7 +177,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               <button
                 onClick={() => setTranscriptAvailable(true)}
                 className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                  isDark ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-purple-600 text-white hover:bg-purple-700'
+                  isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
                 title="Request Call"
               >
@@ -189,7 +190,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
             <button
               onClick={() => docsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
               className={`hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${
-                isDark ? 'bg-purple-600 text-white hover:bg-purple-500' : 'bg-purple-600 text-white hover:bg-purple-700'
+                isDark ? 'bg-blue-600 text-white hover:bg-blue-500' : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
               title="Request Documents"
             >
@@ -216,7 +217,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               : 'bg-gray-50 border-gray-200'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-              isDark ? 'text-purple-400' : 'text-purple-600'
+              isDark ? 'text-blue-400' : 'text-blue-600'
             }`}>
               <User className="w-5 h-5" />
               <span>Student Information</span>
@@ -228,7 +229,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
                     {fraudCase.name}
                   </h4>
                   <p className={isDark ? 'text-gray-400' : 'text-gray-600'}>{fraudCase.email}</p>
-                  <p className={`font-mono text-sm ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+                  <p className={`font-mono text-sm ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                     {fraudCase.studentId}
                   </p>
                 </div>
@@ -257,9 +258,9 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
                   {fraudCase.flags.map((f, i) => (
                     <span key={i} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs ${
                       f.toLowerCase().includes('essay')
-                        ? (isDark ? 'bg-purple-500/10 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200')
+                        ? (isDark ? 'bg-blue-500/10 text-blue-300 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200')
                         : f.toLowerCase().includes('email')
-                        ? (isDark ? 'bg-purple-500/10 text-purple-300 border-purple-500/30' : 'bg-purple-50 text-purple-700 border-purple-200')
+                        ? (isDark ? 'bg-blue-500/10 text-blue-300 border-blue-500/30' : 'bg-blue-50 text-blue-700 border-blue-200')
                         : (isDark ? 'bg-orange-500/10 text-orange-300 border-orange-500/30' : 'bg-orange-50 text-orange-700 border-orange-200')
                     }`}>
                       <Flag className="w-3 h-3" /> {f}
@@ -277,7 +278,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               : 'bg-gray-50 border-gray-200'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-              isDark ? 'text-purple-400' : 'text-purple-600'
+              isDark ? 'text-blue-400' : 'text-blue-600'
             }`}>
               <Activity className="w-5 h-5" />
               <span>Full Case Timeline</span>
@@ -354,7 +355,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               : 'bg-gray-50 border-gray-200'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-              isDark ? 'text-purple-400' : 'text-purple-600'
+              isDark ? 'text-blue-400' : 'text-blue-600'
             }`}>
               <AlertTriangle className="w-5 h-5" />
               <span>Rule Trace Analysis</span>
@@ -414,7 +415,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               : 'bg-gray-50 border-gray-200'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-              isDark ? 'text-purple-400' : 'text-purple-600'
+              isDark ? 'text-blue-400' : 'text-blue-600'
             }`}>
               <Shield className="w-5 h-5" />
               <span>AI Reasoning</span>
@@ -426,8 +427,8 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
                   <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-[#7100EB] to-transparent animate-pulse" />
                 )}
                 <div className={`flex items-start gap-3 ${isGenerating ? 'animate-pulse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
-                    <Brain className={`${isDark ? 'text-purple-400' : 'text-purple-600'} w-4 h-4`} />
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                    <Brain className={`${isDark ? 'text-blue-400' : 'text-blue-600'} w-4 h-4`} />
                   </div>
                   <p className={`text-sm leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                     {caseSummary}
@@ -444,7 +445,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               : 'bg-gray-50 border-gray-200'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-              isDark ? 'text-purple-400' : 'text-purple-600'
+              isDark ? 'text-blue-400' : 'text-blue-600'
             }`}>
               <MessageSquare className="w-5 h-5" />
               <span>AI Agent Discussion</span>
@@ -456,7 +457,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
                     isDark ? 'bg-gray-800 border-gray-700 text-gray-200' : 'bg-white border-gray-200 text-gray-800'
                   }`}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className={`text-xs font-medium ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{log.agent}</span>
+                      <span className={`text-xs font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{log.agent}</span>
                       <span className={`text-[11px] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{new Date(log.timestamp).toLocaleTimeString()}</span>
                     </div>
                     <div className="text-sm">{log.action}</div>
@@ -474,7 +475,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
               : 'bg-gray-50 border-gray-200'
           }`}>
             <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-              isDark ? 'text-purple-400' : 'text-purple-600'
+              isDark ? 'text-blue-400' : 'text-blue-600'
             }`}>
               <Mail className="w-5 h-5" />
               <span>Request Documents</span>
@@ -595,7 +596,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
           {/* Transcript Drawer */}
           {transcriptAvailable && showTranscript && (
             <div className={`border rounded-lg p-4 ${isDark ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
-              <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+              <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                 <FileAudio className="w-5 h-5" /> Call Transcript
               </h3>
               <div className="space-y-2 text-sm">
@@ -620,7 +621,7 @@ const CaseDetailModal: React.FC<CaseDetailModalProps> = ({ case: fraudCase, onCl
             : 'bg-gray-50 border-gray-200'
         } mb-16 lg:mb-0`}>
           <h3 className={`text-lg font-semibold mb-4 flex items-center space-x-2 ${
-            isDark ? 'text-purple-400' : 'text-purple-600'
+            isDark ? 'text-blue-400' : 'text-blue-600'
           }`}>
             <Shield className="w-5 h-5" />
             <span>Case Actions</span>

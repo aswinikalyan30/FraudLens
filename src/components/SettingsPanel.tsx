@@ -99,7 +99,7 @@ const SettingsPanel: React.FC = () => {
   };
 
   const categories = [
-    { id: 'admission', name: 'Admission', color: 'purple' },
+    { id: 'admission', name: 'Admission', color: 'blue' },
     { id: 'financial', name: 'Financial Aid', color: 'yellow' }
   ];
 
@@ -134,8 +134,8 @@ const SettingsPanel: React.FC = () => {
         </div>
         <button className={`flex items-center space-x-2 px-4 py-2 border rounded-lg transition-all ${
           isDark 
-            ? 'bg-purple-500/20 border-purple-500 text-purple-400 hover:bg-purple-500/30' 
-            : 'bg-purple-50 border-purple-500 text-purple-700 hover:bg-purple-100'
+            ? 'bg-blue-500/20 border-blue-500 text-blue-400 hover:bg-blue-500/30' 
+            : 'bg-blue-50 border-blue-500 text-blue-700 hover:bg-blue-100'
         }`}>
           <Save className="w-4 h-4" />
           <span>Save Changes</span>
@@ -158,8 +158,8 @@ const SettingsPanel: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
                 activeTab === tab.id
                   ? isDark
-                    ? 'bg-purple-500/20 text-purple-400'
-                    : 'bg-purple-50 text-purple-700'
+                    ? 'bg-blue-500/20 text-blue-400'
+                    : 'bg-blue-50 text-blue-700'
                   : isDark
                     ? 'text-gray-400 hover:text-white hover:bg-gray-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200'
@@ -185,9 +185,9 @@ const SettingsPanel: React.FC = () => {
                 isDark ? 'text-white' : 'text-gray-900'
               }`}>
                 <div className={`w-3 h-3 rounded-full ${
-                  category.color === 'purple' ? 'bg-purple-500' :
+                  category.color === 'blue' ? 'bg-blue-500' :
                   category.color === 'yellow' ? 'bg-yellow-500' :
-                  'bg-purple-500'
+                  'bg-blue-500'
                 }`}></div>
                 <span>{category.name} Rules</span>
               </h3>
@@ -298,10 +298,10 @@ const SettingsPanel: React.FC = () => {
                   </div>
                   <div className={`border rounded-lg p-3 ${
                     isDark 
-                      ? 'bg-purple-500/10 border-purple-500/30' 
-                      : 'bg-purple-50 border-purple-200'
+                      ? 'bg-blue-500/10 border-blue-500/30' 
+                      : 'bg-blue-50 border-blue-200'
                   }`}>
-                    <div className="text-purple-500 font-semibold">Medium Risk</div>
+                    <div className="text-blue-500 font-semibold">Medium Risk</div>
                     <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                       75-{escalationThreshold-1}
                     </div>
@@ -341,7 +341,7 @@ const SettingsPanel: React.FC = () => {
                   icon: Mail,
                   title: 'Email Notifications',
                   description: 'Receive alerts via email',
-                  color: 'purple'
+                  color: 'blue'
                 },
                 {
                   key: 'slack',
@@ -355,7 +355,7 @@ const SettingsPanel: React.FC = () => {
                   icon: Settings,
                   title: 'Webhook Notifications',
                   description: 'Custom webhook endpoints',
-                  color: 'purple'
+                  color: 'blue'
                 }
               ].map((channel) => {
                 const Icon = channel.icon;
@@ -368,9 +368,9 @@ const SettingsPanel: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <Icon className={`w-5 h-5 ${
-                          channel.color === 'purple' ? 'text-purple-500' :
+                          channel.color === 'blue' ? 'text-blue-500' :
                           channel.color === 'green' ? 'text-green-500' :
-                          'text-purple-500'
+                          'text-blue-500'
                         }`} />
                         <div>
                           <h4 className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
