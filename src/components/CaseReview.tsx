@@ -327,7 +327,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                 application.status !== "submitted" && (
                   <>
                     {
-                      application.status !== "approved" &&  application.status === "lowRisk" && (<button
+                      application.status === "lowRisk" && (<button
                       title="Accept application"
                       onClick={handleAcceptApplication}
                       disabled={isUpdating}
