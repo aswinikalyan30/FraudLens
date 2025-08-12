@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useApplications } from '../contexts/ApplicationContext';
 
 interface ChatMessage {
   id: string;
@@ -11,57 +12,71 @@ interface ChatMessage {
 
 interface ChatAgentProps {
   applicationId: string;
+  userName?: string;
 }
 
 // Session management utilities
 const SESSION_STORAGE_KEY = 'fraudlens_chat_session';
-const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
+// const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
 
 interface ChatSession {
   sessionId: string;
   createdAt: number;
 }
 
-const generateSessionId = (): string => {
-  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
+// const generateSessionId = (): string => {
+//   return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+// };
 
-const getOrCreateSession = (): string => {
-  const stored = localStorage.getItem(SESSION_STORAGE_KEY);
+// const getOrCreateSession = (): string => {
+//   const stored = localStorage.getItem(SESSION_STORAGE_KEY);
   
-  if (stored) {
-    try {
-      const session: ChatSession = JSON.parse(stored);
-      const now = Date.now();
+//   if (stored) {
+//     try {
+//       const session: ChatSession = JSON.parse(stored);
+//       const now = Date.now();
       
-      // Check if session is still valid (within 4 hours)
-      if (now - session.createdAt < SESSION_DURATION) {
-        return session.sessionId;
-      }
-    } catch {
-      // Invalid session data, create new one
-      console.warn('Invalid session data, creating new session');
-    }
-  }
+//       // Check if session is still valid (within 4 hours)
+//       if (now - session.createdAt < SESSION_DURATION) {
+//         return session.sessionId;
+//       }
+//     } catch {
+//       // Invalid session data, create new one
+//       console.warn('Invalid session data, creating new session');
+//     }
+//   }
   
-  // Create new session
-  const newSessionId = generateSessionId();
-  const newSession: ChatSession = {
-    sessionId: newSessionId,
-    createdAt: Date.now()
-  };
+//   // Create new session
+//   const newSessionId = generateSessionId();
+//   const newSession: ChatSession = {
+//     sessionId: newSessionId,
+//     createdAt: Date.now()
+//   };
   
-  localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newSession));
-  return newSessionId;
-};
+//   localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newSession));
+//   return newSessionId;
+// };
 
-const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
+const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
   const { isDark } = useTheme();
+  const { 
+    queueApplications, 
+    processedApplications 
+  } = useApplications();
+  
   const isHomePage = applicationId === 'home';
-  const [sessionId] = useState(() => getOrCreateSession());
+//   const [sessionId] = useState(() => getOrCreateSession());
+  
+  // Calculate statistics for the initial message
+  const rejectedCount = processedApplications.filter(app => app.status === 'rejected').length;
+  const highRiskCount = processedApplications.filter(app => app.riskScore && app.riskScore >= 80).length;
+  const moderateRiskCount = processedApplications.filter(app => app.riskScore && app.riskScore >= 50 && app.riskScore < 80).length;
+  const lowRiskCount = processedApplications.filter(app => app.riskScore && app.riskScore < 50).length;
+  const processedCount = processedApplications.length;
+  const queuedCount = queueApplications.length;
   
   const initialMessage = isHomePage 
-    ? 'Hello! I\'m your AI assistant. I can help with fraud detection insights, system navigation, and answer questions about the application process. How can I help you today?'
+    ? `Hi Robert, Here's what you have to look at today.\nRejected Applications - ${rejectedCount}\nHigh Risk - ${highRiskCount}\nModerate Risk - ${moderateRiskCount}\nLow Risk - ${lowRiskCount}\nProcessed - ${processedCount}\nQueued - ${queuedCount}`
     : 'Hello! I\'m your AI assistant. I can help explain why this application was flagged, provide additional context, or assist with document requests. What would you like to know?';
   
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
@@ -115,8 +130,8 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
       const response = await fetch('https://4xituwvy3i.execute-api.us-east-1.amazonaws.com/dev/conversation_agent', {
         method: 'POST',
         body: JSON.stringify({
-          session_id: sessionId,
-          message: message,
+          session_id: '123',
+          message: `Query the DB and ${message}, provide the output in the following format: Name : Application Type`,
         }),
       });
 
@@ -252,7 +267,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
       }`}>
         <div className="flex flex-wrap gap-1">
           {(isHomePage ? [
-            'How does risk scoring work?',
+            'Give me the high risk and rejected application details',
             'Show application statistics',
             'Tips for fraud detection',
             'System navigation help'
@@ -344,7 +359,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId }) => {
                     ? 'bg-gray-700 text-gray-200'
                     : 'bg-gray-100 text-gray-800'
               }`}>
-                <p className="text-xs leading-relaxed">{message.message}</p>
+                <p className="text-xs leading-relaxed whitespace-pre-line">{message.message}</p>
                 <p className={`text-xs mt-1 opacity-70`}>
                   {message.timestamp.toLocaleTimeString()}
                 </p>

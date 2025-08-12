@@ -271,8 +271,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
             <h3 className={`text-base font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               Pending Applications
             </h3>
-            <div className={`px-2 py-0.5 rounded-full text-xs font-medium  'bg-blue-100 text-blue-700'
-            `}>
+            <div className={`px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700`}>
               {queueApplications.length}
             </div>
           </div>
@@ -289,8 +288,20 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
                 : isDark ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
-            {isProcessing ? 'Analyzing...' : `Analyzing All (${queueApplications.length})`}
+            {isProcessing ? 'Analyzing...' : `Analyze All (${queueApplications.length})`}
           </button>
+        </div>
+        
+        {/* Table Header */}
+        <div className={`grid grid-cols-4 gap-2 py-2 px-4 mb-3 rounded ${
+          isDark ? 'bg-gray-700/50' : 'bg-gray-50'
+        } font-medium text-sm`}>
+          <div className="flex items-center ml-7">
+            Name / ID
+          </div>
+          <div>Program</div>
+          <div>Application Type</div>
+          <div className="text-right pr-4">Time</div>
         </div>
 
         {/* Bulk Actions */}
@@ -347,42 +358,46 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
                     onOpenCaseFullScreen(application.studentId);
                   }}
                 >
-                  <div className="flex items-center space-x-3 w-full">
+                  <div className="flex items-center w-full pl-1">
                     <input
                       type="checkbox"
                       checked={selectedApplications.includes(application.id)}
                       onChange={() => handleSelectApplication(application.id)}
-                      className="rounded text-blue-200"
+                      className="rounded text-blue-200 mr-3"
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsProfileOpen(true);
-                      }}
-                      className="flex-shrink-0 transition-transform hover:scale-105"
-                    >
-                    </button>
-                    {/* Standardized columns using a 3-column grid for perfect centering */}
-                    <div className="grid w-full items-center grid-cols-3">
+                    
+                    {/* Standardized columns using a 4-column grid */}
+                    <div className="grid w-full items-center grid-cols-4">
                       {/* Name & ID - left, allow truncate */}
-                      <div className="flex flex-col min-w-0 pr-2">
+                      <div className="flex flex-col min-w-0 overflow-hidden">
                         <div className={`font-medium text-sm truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{application.name}</div>
                         <div className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>ID: {application.studentId}</div>
                       </div>
 
-                      {/* Program - centered: Program Name only (larger text) */}
-                      <div className="flex items-center justify-start min-w-0 justify-self-start px-2 w-full">
+                      {/* Program Name */}
+                      <div className="px-2 overflow-hidden">
                         <div
-                          className={`truncate text-base text-left text-sm ${isDark ? 'text-gray-100' : 'text-gray-400'}`}
+                          className={`truncate max-w-full text-sm ${isDark ? 'text-gray-100' : 'text-gray-400'}`}
                           title={application.programName || ''}
                         >
                           {application.programName || '—'}
                         </div>
                       </div>
+                      
+                      {/* Application Type - as a chip */}
+                      <div className="flex items-center">
+                        <div className={`px-2 py-1 rounded-full text-xs ${
+                          application.stage === 'admissions'
+                            ? isDark ? 'bg-purple-900/20 text-purple-300 border border-purple-500/30' : 'bg-purple-50 text-purple-700 border border-purple-200'
+                            : isDark ? 'bg-blue-900/20 text-blue-300 border border-blue-500/30' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                        }`}>
+                          {application.stage === 'admissions' ? 'Admissions' : 'Financial Aid'}
+                        </div>
+                      </div>
 
                       {/* Time - right aligned */}
-                      <div className={`text-sm flex items-center justify-self-end pl-2 ${isDark ? 'text-gray-400' : 'text-gray-400'}`}>
+                      <div className={`text-sm flex items-center justify-end pr-2 ${isDark ? 'text-gray-400' : 'text-gray-400'}`}>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" fill="none"/><path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" /></svg>
                         {getTimeElapsed(application.updatedAt)}
                       </div>
@@ -411,8 +426,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
             <h3 className={`text-base font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               Recently Processed
             </h3>
-            <div className={`px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700
-            }`}>
+            <div className={`px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700`}>
               {processedToday} today
             </div>
           </div>
@@ -422,6 +436,16 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
           >
             View All
           </button>
+        </div>
+        
+        {/* Table Header */}
+        <div className={`grid grid-cols-4 gap-2 py-2 px-4 mb-3 rounded ${
+          isDark ? 'bg-gray-700/50' : 'bg-gray-50'
+        } font-medium text-sm`}>
+          <div>Name / ID</div>
+          <div>Program</div>
+          <div>Application Type</div>
+          <div className="text-right pr-4">Status / Risk</div>
         </div>
 
         {/* Loading State for Processed Applications */}
@@ -437,35 +461,46 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
         ) : (
           <>
             <div className="space-y-3 max-h-80 overflow-y-auto">
-              {processedApplications.slice(0, 8).map((application) => {
+              {processedApplications?.map((application) => {
                 const riskInfo = application.riskScore ? getRiskLevel(application.riskScore) : null;
                 return (
                   <div
                     key={application.id}
-                    className={`flex items-center p-4 rounded-lg border justify-between cursor-pointer ${
+                    className={`flex items-center p-4 rounded-lg border cursor-pointer ${
                       isDark ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-50 border-gray-200'
                     } hover:shadow-md transition-all`}
                     onClick={() => onOpenCaseFullScreen(application.studentId)}
                   >
-                    <div className="grid w-full items-center grid-cols-3 gap-2">
+                    <div className="grid w-full items-center grid-cols-4">
                       {/* Name & ID - left */}
-                      <div className="flex flex-col min-w-0 pr-2">
+                      <div className="flex flex-col min-w-0 overflow-hidden">
                         <div className={`font-medium text-sm truncate ${isDark ? 'text-white' : 'text-gray-900'}`}>{application.name}</div>
                         <div className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>{application.studentId}</div>
                       </div>
 
-                      {/* Program Name - center */}
-                      <div className="flex items-center justify-start min-w-0 justify-self-start px-2 w-full">
+                      {/* Program Name */}
+                      <div className="px-2 overflow-hidden">
                         <div
-                          className={`truncate text-base text-left text-sm ${isDark ? 'text-gray-100' : 'text-gray-400'}`}
+                          className={`truncate max-w-full text-sm ${isDark ? 'text-gray-100' : 'text-gray-400'}`}
                           title={application.programName || ''}
                         >
                           {application.programName || '—'}
                         </div>
                       </div>
+                      
+                      {/* Application Type - as a chip */}
+                      <div className="flex items-center">
+                        <div className={`px-2 py-1 rounded-full text-xs ${
+                          application.stage === 'admissions'
+                            ? isDark ? 'bg-purple-900/20 text-purple-300 border border-purple-500/30' : 'bg-purple-50 text-purple-700 border border-purple-200'
+                            : isDark ? 'bg-blue-900/20 text-blue-300 border border-blue-500/30' : 'bg-blue-50 text-blue-700 border border-blue-200'
+                        }`}>
+                          {application.stage === 'admissions' ? 'Admissions' : 'Financial Aid'}
+                        </div>
+                      </div>
 
                       {/* Risk/Status - right */}
-                      <div className="flex items-center gap-2 justify-self-end pl-2">
+                      <div className="flex items-center gap-2 justify-end pr-2">
                         {application.riskScore && riskInfo && (
                           <div className={`px-2 py-1 rounded-full text-xs font-mono border ${riskInfo.bgClass}`}>
                             <span className={
@@ -479,7 +514,10 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
                         <span className="flex items-center px-2 py-1 rounded-full text-xs border font-medium bg-transparent border-transparent">
                           <StatusDot status={application.status} />
                           <span className={isDark ? 'text-white' : 'text-black'}>
-                            {application.status.replace(/(^|\s|-)\S/g, (l) => l.toUpperCase())}
+                            {application.status
+                              .replace(/_/g, ' ')
+                              .replace(/([a-z])([A-Z])/g, '$1 $2')
+                              .replace(/(^|\s)\S/g, (l) => l.toUpperCase())}
                           </span>
                         </span>
                       </div>

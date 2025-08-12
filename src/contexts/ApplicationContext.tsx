@@ -7,7 +7,7 @@ export interface Application {
   email: string;
   stage: 'admissions' | 'financial-aid';
   timestamp: string;
-  status: 'submitted' | 'processing' | 'processed' | 'approved' | 'rejected' | 'escalated' | 'onhold' | 'low_risk' | 'in_review';
+  status: 'submitted' | 'processing' | 'processed' | 'approved' | 'rejected' | 'escalated' | 'onhold' | 'lowRisk' | 'in_review';
   riskScore?: number;
   flags?: string[];
   aiProcessing?: boolean;

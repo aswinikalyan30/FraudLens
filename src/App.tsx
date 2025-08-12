@@ -412,7 +412,7 @@ function AppContent() {
                       <FlagsChart onNavigateToReporting={() => setActiveTab('reporting')} compact={true} />
                     </div>
                     <div className="flex-[3] border-t border-gray-200">
-                      <ChatAgent applicationId="home" />
+                      <ChatAgent applicationId="home" userName="Robert" />
                     </div>
                   </aside>
                 )}

@@ -1154,7 +1154,10 @@ const CaseReview: React.FC<CaseReviewProps> = ({
             </div>
             {/* Chat Content */}
             <div className="flex-1 overflow-hidden rounded-b-lg">
-              <ChatAgent applicationId={application.studentId} />
+              <ChatAgent 
+                applicationId={application.studentId} 
+                userName={application.name?.split(' ')[0] || 'User'} 
+              />
             </div>
           </div>
         )}
