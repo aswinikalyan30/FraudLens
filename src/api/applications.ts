@@ -71,7 +71,11 @@ export interface ApplicationDetail {
   sat_scores?: number | null;
 }
 
-const REMOTE_ENDPOINT = 'https://4xituwvy3i.execute-api.us-east-1.amazonaws.com/dev/applications';
+const REMOTE_ENDPOINT = import.meta.env.DEV 
+  ? '/api/aws/applications'  // Use proxy in development
+  : window.location.hostname.includes('netlify.app') || window.location.hostname.includes('netlify.com')
+    ? '/api/aws/applications'  // Use Netlify proxy in production
+    : 'https://4xituwvy3i.execute-api.us-east-1.amazonaws.com/dev/applications'; // Direct call for other deployments
 
 // Cache remote fetch to avoid duplicate calls when queue & processed both requested
 let remoteFetchPromise: Promise<RawApplication[] | null> | null = null;
@@ -79,9 +83,17 @@ let remoteFetchPromise: Promise<RawApplication[] | null> | null = null;
 async function fetchRemoteApplications(): Promise<RawApplication[] | null> {
   try {
     if (!remoteFetchPromise) {
-      remoteFetchPromise = fetch(REMOTE_ENDPOINT, { method: 'GET' })
+      remoteFetchPromise = fetch(REMOTE_ENDPOINT, { 
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        mode: 'cors', // Explicitly set CORS mode
+        credentials: 'omit', // Don't send credentials for security
+      })
         .then(async r => {
-          if (!r.ok) throw new Error(`Remote fetch failed: ${r.status}`);
+          if (!r.ok) throw new Error(`Remote fetch failed: ${r.status} ${r.statusText}`);
           const data = await r.json();
           // Expect shape { applications: [...] } or { data: [...] } else attempt to infer
           if (Array.isArray(data)) return data as RawApplication[];
@@ -90,12 +102,15 @@ async function fetchRemoteApplications(): Promise<RawApplication[] | null> {
           return null;
         })
         .catch(err => {
-          console.warn('[applications] Remote fetch error, falling back to local mock:', err);
+          console.warn('[applications] Remote fetch error, falling back to local mock:', err.message || err);
+          // Reset the promise so we can retry later if needed
+          remoteFetchPromise = null;
           return null;
         });
     }
     return await remoteFetchPromise;
-  } catch {
+  } catch (err) {
+    console.warn('[applications] Fetch error:', err);
     return null;
   }
 }
@@ -297,14 +312,22 @@ return {
 // Fetch summary Application by id (application_id)
 export async function fetchApplicationById(applicationId: string): Promise<Application | null> {
   try {
-    const res = await fetch(`${REMOTE_ENDPOINT}/${encodeURIComponent(applicationId)}`, { method: 'GET' });
+    const res = await fetch(`${REMOTE_ENDPOINT}/${encodeURIComponent(applicationId)}`, { 
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      mode: 'cors',
+      credentials: 'omit',
+    });
     if (res.ok) {
       const data: unknown = await res.json();
       const raw = unwrapRawApplication(data);
       if (raw) return buildApplicationFromRaw(raw, applicationId);
     }
   } catch (e) {
-    console.warn('[applications] Remote summary fetch error:', e);
+    console.warn('[applications] Remote summary fetch error:', e instanceof Error ? e.message : e);
   }
   // Fallback to list search (remote)
   try {
@@ -328,14 +351,22 @@ export async function fetchApplicationById(applicationId: string): Promise<Appli
 // Fetch full detail by id
 export async function fetchApplicationDetailById(applicationId: string): Promise<ApplicationDetail | null> {
   try {
-    const res = await fetch(`${REMOTE_ENDPOINT}/${encodeURIComponent(applicationId)}`, { method: 'GET' });
+    const res = await fetch(`${REMOTE_ENDPOINT}/${encodeURIComponent(applicationId)}`, { 
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      mode: 'cors',
+      credentials: 'omit',
+    });
     if (res.ok) {
       const data: unknown = await res.json();
       const raw = unwrapRawApplication(data);
       if (raw) return buildApplicationDetailFromRaw(raw, applicationId);
     }
   } catch (e) {
-    console.warn('[applications] Remote detail fetch error:', e);
+    console.warn('[applications] Remote detail fetch error:', e instanceof Error ? e.message : e);
   }
   // Fallback to list search (remote)
   try {

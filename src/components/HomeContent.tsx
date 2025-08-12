@@ -122,8 +122,8 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
       
       // Show processing notification immediately
       addNotification({
-        title: 'Processing Started',
-        message: `Processing ${appsToProcess.length} application${appsToProcess.length > 1 ? 's' : ''}`,
+        title: 'Analyzing Started',
+        message: `Analyzing ${appsToProcess.length} application${appsToProcess.length > 1 ? 's' : ''}`,
         type: 'new-case'
       });
 
@@ -271,11 +271,8 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
             <h3 className={`text-base font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               Pending Applications
             </h3>
-            <div className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-              queueApplications.length > 10 
-                ? 'bg-red-100 text-red-700'
-                : 'bg-blue-100 text-blue-700'
-            }`}>
+            <div className={`px-2 py-0.5 rounded-full text-xs font-medium  'bg-blue-100 text-blue-700'
+            `}>
               {queueApplications.length}
             </div>
           </div>
@@ -292,7 +289,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
                 : isDark ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
           >
-            {isProcessing ? 'Processing...' : `Process All (${queueApplications.length})`}
+            {isProcessing ? 'Analyzing...' : `Analyzing All (${queueApplications.length})`}
           </button>
         </div>
 
@@ -314,7 +311,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
                     : 'bg-blue-600 text-white hover:bg-gray-700'
                 }`}
               >
-                {isProcessing ? 'Processing...' : 'Process Selected'}
+                {isProcessing ? 'Analyzing...' : 'Analyze Selected'}
               </button>
             </div>
           </div>
