@@ -2,17 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApplications } from '../contexts/ApplicationContext';
-
-interface ChatMessage {
-  id: string;
-  type: 'user' | 'agent';
-  message: string;
-  timestamp: Date;
-}
+import { useChat, ChatMessage } from '../contexts/ChatContext';
 
 interface ChatAgentProps {
   applicationId: string;
   userName?: string;
+  onOpenCaseFullScreen?: (id: string) => void;
 }
 
 // Session management utilities
@@ -57,12 +52,13 @@ interface ChatSession {
 //   return newSessionId;
 // };
 
-const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
+const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert', onOpenCaseFullScreen }) => {
   const { isDark } = useTheme();
   const { 
     queueApplications, 
     processedApplications 
   } = useApplications();
+  const { messages, setMessages, isTyping, setIsTyping } = useChat();
   
   const isHomePage = applicationId === 'home';
 //   const [sessionId] = useState(() => getOrCreateSession());
@@ -75,44 +71,60 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
   const processedCount = processedApplications.length;
   const queuedCount = queueApplications.length;
   
-  const initialMessage = isHomePage 
-    ? `Hi Robert, Here's what you have to look at today.\nRejected Applications - ${rejectedCount}\nHigh Risk - ${highRiskCount}\nModerate Risk - ${moderateRiskCount}\nLow Risk - ${lowRiskCount}\nProcessed - ${processedCount}\nQueued - ${queuedCount}`
+  const initialMessageText = isHomePage 
+    ? `Hi ${userName}, Here's what you have to look at today.\nRejected Applications - ${rejectedCount}\nHigh Risk - ${highRiskCount}\nModerate Risk - ${moderateRiskCount}\nLow Risk - ${lowRiskCount}\nProcessed - ${processedCount}\nQueued - ${queuedCount}`
     : 'Hello! I\'m your AI assistant. I can help explain why this application was flagged, provide additional context, or assist with document requests. What would you like to know?';
   
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    const sessionInfo = localStorage.getItem(SESSION_STORAGE_KEY);
-    let sessionMessage = '';
-    
-    try {
-      if (sessionInfo) {
-        const session: ChatSession = JSON.parse(sessionInfo);
-        const now = Date.now();
-        const isNewSession = now - session.createdAt < 60000; // If created within last minute, it's new
-        
-        if (isNewSession) {
-          sessionMessage = ' (New session started)';
-        } else {
-          const hoursAgo = Math.floor((now - session.createdAt) / (1000 * 60 * 60));
-          if (hoursAgo > 0) {
-            sessionMessage = ` (Session resumed - ${hoursAgo}h ago)`;
+  useEffect(() => {
+    if (messages.length === 0 && isHomePage) {
+      const sessionInfo = localStorage.getItem(SESSION_STORAGE_KEY);
+      let sessionMessage = '';
+      
+      try {
+        if (sessionInfo) {
+          const session: ChatSession = JSON.parse(sessionInfo);
+          const now = Date.now();
+          const isNewSession = now - session.createdAt < 60000; // If created within last minute, it's new
+          
+          if (isNewSession) {
+            sessionMessage = ' (New session started)';
+          } else {
+            const hoursAgo = Math.floor((now - session.createdAt) / (1000 * 60 * 60));
+            if (hoursAgo > 0) {
+              sessionMessage = ` (Session resumed - ${hoursAgo}h ago)`;
+            }
           }
         }
+      } catch {
+        // Ignore session info parsing errors
       }
-    } catch {
-      // Ignore session info parsing errors
+      
+      setMessages([
+        {
+          id: '1',
+          type: 'agent',
+          message: initialMessageText + sessionMessage,
+          timestamp: new Date()
+        }
+      ]);
+    } else if (!isHomePage) {
+      // For case view, we can decide if we want to clear chat or show a specific message
+      // For now, let's just show a case-specific initial message if there are no messages
+      const caseMessageExists = messages.some(m => m.message.includes('flagged'));
+      if (!caseMessageExists) {
+        const initialMessage = {
+          id: 'case-intro',
+          type: 'agent' as const,
+          message: 'Hello! I\'m your AI assistant. I can help explain why this application was flagged, provide additional context, or assist with document requests. What would you like to know?',
+          timestamp: new Date()
+        };
+        // Add to existing messages without clearing them
+        setMessages(prev => [...prev, initialMessage]);
+      }
     }
-    
-    return [
-      {
-        id: '1',
-        type: 'agent',
-        message: initialMessage + sessionMessage,
-        timestamp: new Date()
-      }
-    ];
-  });
+  }, [isHomePage, messages.length, setMessages, initialMessageText]);
+
   const [inputMessage, setInputMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'online' | 'offline' | 'error'>('online');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -123,6 +135,23 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Function to parse application list from API response
+  const parseApplicationList = (responseText: string): Array<{name: string, type: string}> => {
+    try {
+      // Extract lines that match the pattern "Name : type"
+      const lines = responseText.split('\n');
+      return lines
+        .filter(line => line.includes(' : '))
+        .map(line => {
+          const [name, type] = line.split(' : ').map(part => part.trim());
+          return { name, type };
+        });
+    } catch (error) {
+      console.error('Error parsing application list:', error);
+      return [];
+    }
+  };
 
   const sendMessageToAPI = async (message: string): Promise<string> => {
     try {
@@ -141,11 +170,26 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
       }
 
       const data = await response.json();
+      console.log('API response:', data);
       setConnectionStatus('online');
       
-      // Assuming the API returns { response: "..." } or similar
-      // Adjust this based on the actual API response structure
-      return data.response || data.message || 'I apologize, but I\'m having trouble processing your request right now.';
+      // For application listings, we'll maintain the raw response to parse into chips
+      const responseText = data.response || data.body || data.message || 
+        'I apologize, but I\'m having trouble processing your request right now.';
+      
+      // Check if the response is a JSON string that contains application details
+      try {
+        if (typeof responseText === 'string' && responseText.startsWith('{"response":')) {
+          const parsedJson = JSON.parse(responseText);
+          if (parsedJson && parsedJson.response) {
+            return parsedJson.response;
+          }
+        }
+      } catch {
+        console.log('Not a JSON response');
+      }
+      
+      return responseText;
       
     } catch (error) {
       console.error('Chat API error:', error);
@@ -158,6 +202,9 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
 
   const getFallbackResponse = (message: string): string => {
     const homeResponses = {
+      'give me the high risk and rejected application details': '{"response": "## **HIGH RISK AND REJECTED APPLICATION DETAILS**\\n\\nJanice Johnson : admissions \\nBrad Kelly : finaid \\nBrad Kelly : admissions \\nDaniel Lin : admissions \\nDaniel Lin : finaid \\nSanjay Patel : admissions \\nEric Zene : admissions\\n"}',
+      'high risk': '{"response": "## **HIGH RISK AND REJECTED APPLICATION DETAILS**\\n\\nJanice Johnson : admissions \\nBrad Kelly : finaid \\nDaniel Lin : finaid \\nSanjay Patel : admissions\\n"}',
+      'rejected': '{"response": "## **REJECTED APPLICATION DETAILS**\\n\\nBrad Kelly : admissions \\nDaniel Lin : admissions \\nEric Zene : admissions\\n"}',
       'how does risk scoring work': 'Our fraud risk scoring system analyzes multiple factors: document authenticity (30%), behavioral patterns (25%), identity verification (25%), and application consistency (20%). Scores above 80 are auto-flagged for review, while scores 60-80 receive targeted verification checks.',
       'system navigation': 'The main navigation sections are: Home (dashboard overview), Queue (pending applications), Processed (completed reviews), and Settings. You can also use the quick filters at the top to sort by risk level, or search by applicant name or ID in the search bar.',
       'fraud detection': 'Look for inconsistent application details, unusually quick form completion times, and patterns across multiple applications. Compare suspicious applications side by side using the "Compare" tool in the review panel. Always verify documentation through official channels.',
@@ -359,7 +406,44 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId}) => {
                     ? 'bg-gray-700 text-gray-200'
                     : 'bg-gray-100 text-gray-800'
               }`}>
-                <p className="text-xs leading-relaxed whitespace-pre-line">{message.message}</p>
+                {message.type === 'agent' && message.message.includes(' : ') ? (
+                  <div className="space-y-2">
+                    {message.message.includes('**HIGH RISK AND REJECTED') && (
+                      <p className="text-xs font-medium mb-2">HIGH RISK AND REJECTED APPLICATION DETAILS:</p>
+                    )}
+                    
+                    <div className="flex flex-wrap gap-2">
+                      {parseApplicationList(message.message).map((app, index) => (
+                        <button 
+                          key={index}
+                          onClick={() => {
+                            // Find the student ID from the application name
+                            const student = [...queueApplications, ...processedApplications].find(
+                              s => s.name.includes(app.name.split(' ')[0])
+                            );
+                            
+                            if (student && onOpenCaseFullScreen) {
+                              onOpenCaseFullScreen(student.studentId);
+                            } else {
+                              console.warn('Could not find student ID for', app.name);
+                            }
+                          }}
+                          className={`px-2 py-1 rounded-md text-xs font-medium transition-colors border ${
+                            app.type === 'admissions'
+                              ? isDark ? 'bg-purple-900/30 border-purple-600/30 text-purple-300 hover:bg-purple-800/40' 
+                                      : 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100'
+                              : isDark ? 'bg-blue-900/30 border-blue-600/30 text-blue-300 hover:bg-blue-800/40'
+                                      : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
+                          }`}
+                        >
+                          {app.name} ({app.type === 'admissions' ? 'Admissions' : 'Financial Aid'})
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs leading-relaxed whitespace-pre-line">{message.message}</p>
+                )}
                 <p className={`text-xs mt-1 opacity-70`}>
                   {message.timestamp.toLocaleTimeString()}
                 </p>

@@ -11,17 +11,19 @@ interface DecisionDocumentationModalProps {
   };
   onClose: () => void;
   onSubmit: (decision: DecisionData) => void;
+  decisionType: 'approve' | 'reject' | 'hold' | null;
 }
 
 export interface DecisionData {
-  resolution: 'fraudulent' | 'valid';
+  resolution?: 'fraudulent' | 'valid';
   adminNote: string;
 }
 
 const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({ 
   case: fraudCase, 
   onClose, 
-  onSubmit 
+  onSubmit,
+  decisionType
 }) => {
   const { isDark } = useTheme();
   const [resolution, setResolution] = useState<'fraudulent' | 'valid' | null>(null);
@@ -29,7 +31,7 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!resolution) return;
+    if (decisionType !== 'hold' && !resolution) return;
 
     setIsSubmitting(true);
 
@@ -37,7 +39,7 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     const decisionData: DecisionData = {
-      resolution: resolution || 'valid',
+      resolution: resolution || undefined,
       adminNote
     };
 
@@ -76,32 +78,34 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
 
         <div className="p-4 space-y-4">
           {/* Decision Options */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setResolution('fraudulent')}
-              className={`p-3 border-2 rounded-lg transition-all ${
-                resolution === 'fraudulent'
-                  ? 'border-red-500 bg-red-500/10'
-                  : isDark
-                    ? 'border-gray-600 hover:border-gray-500'
-                    : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              Mark as Fraudulent
-            </button>
-            <button
-              onClick={() => setResolution('valid')}
-              className={`p-3 border-2 rounded-lg transition-all ${
-                resolution === 'valid'
-                  ? 'border-green-500 bg-green-500/10'
-                  : isDark
-                    ? 'border-gray-600 hover:border-gray-500'
-                    : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              Mark as Valid
-            </button>
-          </div>
+          {decisionType !== 'hold' && (
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setResolution('fraudulent')}
+                className={`p-3 border-2 rounded-lg transition-all ${
+                  resolution === 'fraudulent'
+                    ? 'border-red-500 bg-red-500/10'
+                    : isDark
+                      ? 'border-gray-600 hover:border-gray-500'
+                      : 'border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                Mark as Fraudulent
+              </button>
+              <button
+                onClick={() => setResolution('valid')}
+                className={`p-3 border-2 rounded-lg transition-all ${
+                  resolution === 'valid'
+                    ? 'border-green-500 bg-green-500/10'
+                    : isDark
+                      ? 'border-gray-600 hover:border-gray-500'
+                      : 'border-gray-300 hover:border-gray-400'
+                }`}
+              >
+                Mark as Valid
+              </button>
+            </div>
+          )}
 
           {/* Admin Note */}
           <div>
@@ -123,7 +127,7 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
 
           <button
             onClick={handleSubmit}
-            disabled={!resolution || isSubmitting}
+            disabled={(decisionType !== 'hold' && !resolution) || isSubmitting}
             className={`w-full flex items-center justify-center px-4 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               isDark 
                 ? 'bg-blue-600 hover:bg-blue-700 text-white' 

@@ -326,7 +326,8 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                 // Only show actions if not submitted
                 application.status !== "submitted" && (
                   <>
-                    <button
+                    {
+                      application.status !== "approved" &&  application.status === "lowRisk" && (<button
                       title="Accept application"
                       onClick={handleAcceptApplication}
                       disabled={isUpdating}
@@ -339,7 +340,8 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                       }`}
                     >
                       {isUpdating ? "Approving..." : "Accept"}
-                    </button>
+                    </button>)
+                    }
                     <button
                       title="Place application on hold"
                       onClick={() => {
@@ -354,7 +356,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                     >
                       Hold
                     </button>
-                    <button
+                    { <button
                       title="Reject application"
                       onClick={() => {
                         setDecisionType("reject");
@@ -367,7 +369,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                       }`}
                     >
                       Reject
-                    </button>
+                    </button>}
                   </>
                 )
               )}
@@ -1156,7 +1158,16 @@ const CaseReview: React.FC<CaseReviewProps> = ({
             <div className="flex-1 overflow-hidden rounded-b-lg">
               <ChatAgent 
                 applicationId={application.studentId} 
-                userName={application.name?.split(' ')[0] || 'User'} 
+                userName={application.name?.split(' ')[0] || 'User'}
+                onOpenCaseFullScreen={(id) => {
+                  // Close current case view and open the new one
+                  onClose();
+                  setTimeout(() => {
+                    // Find the application in the context and navigate to it
+                    // This timeout is to ensure the current case is closed first
+                    window.dispatchEvent(new CustomEvent('openCaseFullScreen', { detail: { id } }));
+                  }, 100);
+                }}
               />
             </div>
           </div>
@@ -1176,6 +1187,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
         {/* Decision Modal */}
         {showDecisionModal && (
           <DecisionDocumentationModal
+            decisionType={decisionType}
             case={{
               id: detail?.application_id || fraudCase.id || "",
               studentId: application.studentId,

@@ -5,13 +5,16 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { ApplicationProvider } from './contexts/ApplicationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
+import { ChatProvider } from './contexts/ChatContext';
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider>
     <NotificationProvider>
       <ApplicationProvider>
         <NavigationProvider>
-          <App />
+          <ChatProvider>
+            <App />
+          </ChatProvider>
         </NavigationProvider>
       </ApplicationProvider>
     </NotificationProvider>

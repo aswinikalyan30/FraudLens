@@ -242,7 +242,7 @@ function normalize(raw: RawApplication[]): {
       if (statusRaw === "approved") mappedStatus = "approved";
       else if (statusRaw === "rejected") mappedStatus = "rejected";
       else if (statusRaw === "high_suspicious") mappedStatus = "escalated";
-      else if (statusRaw === "low_suspicious") mappedStatus = "low_risk";
+      else if (statusRaw === "low_suspicious") mappedStatus = "lowRisk";
       else if (statusRaw === '"in_review"') mappedStatus = "in_review";
       processed.push({
         ...base,

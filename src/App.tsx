@@ -24,6 +24,21 @@ function AppContent() {
   const [reviewingApplicationId, setReviewingApplicationId] = useState<string | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
+  
+  // Add event listener for custom case navigation event
+  useEffect(() => {
+    const handleCaseNavigation = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && customEvent.detail.id) {
+        setReviewingApplicationId(customEvent.detail.id);
+      }
+    };
+    
+    window.addEventListener('openCaseFullScreen', handleCaseNavigation);
+    return () => {
+      window.removeEventListener('openCaseFullScreen', handleCaseNavigation);
+    };
+  }, []);
   // Use local lists only to map UI id -> API id (no merging)
   const { processedApplications, queueApplications } = useApplications();
   const [detailedApplication, setDetailedApplication] = useState<Application | null>(null);
@@ -412,7 +427,11 @@ function AppContent() {
                       <FlagsChart onNavigateToReporting={() => setActiveTab('reporting')} compact={true} />
                     </div>
                     <div className="flex-[3] border-t border-gray-200">
-                      <ChatAgent applicationId="home" userName="Robert" />
+                      <ChatAgent 
+                        applicationId="home" 
+                        userName="Robert" 
+                        onOpenCaseFullScreen={(id) => setReviewingApplicationId(id)}
+                      />
                     </div>
                   </aside>
                 )}
