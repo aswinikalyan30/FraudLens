@@ -66,7 +66,10 @@ const CaseReview: React.FC<CaseReviewProps> = ({
     message: string;
   } | null>(null);
   const [isUpdating, setIsUpdating] = React.useState(false);
-  console.log("CaseReview rendered with fraudCase:", fraudCase);
+  // Track last document request timestamp
+  const [lastDocRequestAt, setLastDocRequestAt] = React.useState<string | null>(null);
+  const [isOverride, setIsOverride] = React.useState(false);
+
   // auto-dismiss toast
   React.useEffect(() => {
     if (!toast) return;
@@ -181,6 +184,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
     template?: string;
   }) => {
     console.log("Document request sent:", requestData);
+    setLastDocRequestAt(new Date().toISOString());
     setToast({ type: "success", message: "Document request sent." });
   };
 
@@ -234,6 +238,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
     console.log("Decision submitted:", { type: decisionType, ...decision });
     setShowDecisionModal(false);
     setDecisionType(null);
+    setIsOverride(false);
     onClose();
   };
 
@@ -298,7 +303,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                       isDark ? "text-gray-400" : "text-gray-600"
                     }`}
                   >
-                    Risk Score:{" "}
+                    Risk Score: {" "}
                     <span className="text-red-500 font-semibold">
                       {application.riskScore}
                     </span>{" "}
@@ -313,7 +318,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
               {application.status === "rejected" ? (
                 <button
                   title="Override"
-                  onClick={() => setShowDecisionModal(true)}
+                  onClick={() => { setIsOverride(true); setShowDecisionModal(true); }}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border ${
                     isDark
                       ? "border-blue-500 text-blue-300 hover:bg-blue-900/20 hover:border-blue-400"
@@ -326,22 +331,22 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                 // Only show actions if not submitted
                 application.status !== "submitted" && (
                   <>
-                    {
-                      application.status === "lowRisk" && (<button
-                      title="Accept application"
-                      onClick={handleAcceptApplication}
-                      disabled={isUpdating}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                        isUpdating
-                          ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                          : isDark
-                          ? "bg-green-600 text-white hover:bg-green-700 border border-green-600 hover:border-green-700"
-                          : "bg-green-600 text-white hover:bg-green-700 border border-green-600 hover:border-green-700"
-                      }`}
-                    >
-                      {isUpdating ? "Approving..." : "Accept"}
-                    </button>)
-                    }
+                    {application.status === "lowRisk" && (
+                      <button
+                        title="Accept application"
+                        onClick={handleAcceptApplication}
+                        disabled={isUpdating}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                          isUpdating
+                            ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+                            : isDark
+                            ? "bg-green-600 text-white hover:bg-green-700 border border-green-600 hover:border-green-700"
+                            : "bg-green-600 text-white hover:bg-green-700 border border-green-600 hover:border-green-700"
+                        }`}
+                      >
+                        {isUpdating ? "Approving..." : "Accept"}
+                      </button>
+                    )}
                     <button
                       title="Place application on hold"
                       onClick={() => {
@@ -356,31 +361,22 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                     >
                       Hold
                     </button>
-                    <button
-                      title="Request documents"
-                      onClick={() => setShowDocumentWizard(true)}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border ${
-                        isDark
-                          ? "border-yellow-500 text-yellow-300 hover:bg-yellow-900/20 hover:border-yellow-400"
-                          : "border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
-                      }`}
-                    >
-                      Request Documents
-                    </button>
-                    { <button
-                      title="Reject application"
-                      onClick={() => {
-                        setDecisionType("reject");
-                        setShowDecisionModal(true);
-                      }}
-                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border ${
-                        isDark
-                          ? "border-red-600 text-red-400 hover:bg-red-900/20 hover:border-red-500"
-                          : "border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
-                      }`}
-                    >
-                      Reject
-                    </button>}
+                    {
+                      <button
+                        title="Reject application"
+                        onClick={() => {
+                          setDecisionType("reject");
+                          setShowDecisionModal(true);
+                        }}
+                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border ${
+                          isDark
+                            ? "border-red-600 text-red-400 hover:bg-red-900/20 hover:border-red-500"
+                            : "border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+                        }`}
+                      >
+                        Reject
+                      </button>
+                    }
                   </>
                 )
               )}
@@ -1105,7 +1101,7 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                   >
                     Admin Notes
                   </h3>
-                  <NotesList isDark={isDark} onToast={(t) => setToast(t)} />
+                  <NotesList isDark={isDark} onToast={(t) => setToast(t)} lastDocRequestAt={lastDocRequestAt} />
                 </div>
               </div>
             )}
@@ -1199,6 +1195,8 @@ const CaseReview: React.FC<CaseReviewProps> = ({
         {showDecisionModal && (
           <DecisionDocumentationModal
             decisionType={decisionType}
+            isOverride={isOverride}
+            onRequestDocuments={() => setShowDocumentWizard(true)}
             case={{
               id: detail?.application_id || fraudCase.id || "",
               studentId: application.studentId,
@@ -1208,11 +1206,13 @@ const CaseReview: React.FC<CaseReviewProps> = ({
             onClose={() => {
               setShowDecisionModal(false);
               setDecisionType(null);
+              setIsOverride(false);
             }}
             onSubmit={(decision) => {
               setShowDecisionModal(false);
               handleDecisionSubmit(decision);
               setDecisionType(null);
+              setIsOverride(false);
               onClose();
             }}
           />
@@ -1243,19 +1243,28 @@ const CaseReview: React.FC<CaseReviewProps> = ({
 const NotesList: React.FC<{
   isDark: boolean;
   onToast?: (t: { type: "success" | "error"; message: string }) => void;
-}> = ({ isDark, onToast }) => {
+  lastDocRequestAt?: string | null;
+}> = ({ isDark, onToast, lastDocRequestAt }) => {
   const [notes, setNotes] = React.useState<
     Array<{ id: string; author: string; timestamp: string; content: string }>
-  >([
-    {
-      id: "n1",
-      author: "Admin",
-      timestamp: new Date(Date.now() - 3600_000).toISOString(),
-      content: "Initial review completed. Awaiting additional documents.",
-    },
-  ]);
+  >([]);
   const [text, setText] = React.useState("");
   const [saving, setSaving] = React.useState(false);
+
+  // Seed a note only when a document request has been sent
+  React.useEffect(() => {
+    if (lastDocRequestAt) {
+      setNotes((prev) => [
+        {
+          id: "docreq-" + lastDocRequestAt,
+          author: "System",
+          timestamp: lastDocRequestAt,
+          content: `Admin review completed, request sent to applicant for additional documents`,
+        },
+        ...prev,
+      ]);
+    }
+  }, [lastDocRequestAt]);
 
   const handleSave = async () => {
     if (!text.trim()) {

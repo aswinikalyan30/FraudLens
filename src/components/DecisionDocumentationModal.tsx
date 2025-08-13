@@ -12,6 +12,10 @@ interface DecisionDocumentationModalProps {
   onClose: () => void;
   onSubmit: (decision: DecisionData) => void;
   decisionType: 'approve' | 'reject' | 'hold' | null;
+  // New: When true, this is an Admin Override flow
+  isOverride?: boolean;
+  // New: Open document request wizard from within the modal
+  onRequestDocuments?: () => void;
 }
 
 export interface DecisionData {
@@ -23,15 +27,19 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
   case: fraudCase, 
   onClose, 
   onSubmit,
-  decisionType
+  decisionType,
+  isOverride = false,
+  onRequestDocuments,
 }) => {
   const { isDark } = useTheme();
   const [resolution, setResolution] = useState<'fraudulent' | 'valid' | null>(null);
   const [adminNote, setAdminNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const isHoldFlow = decisionType === 'hold' || isOverride;
+
   const handleSubmit = async () => {
-    if (decisionType !== 'hold' && !resolution) return;
+    if (!isHoldFlow && !resolution) return;
 
     setIsSubmitting(true);
 
@@ -60,7 +68,7 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
         }`}>
           <div>
             <h2 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Application Decision
+              {isOverride ? 'Admin Override' : 'Application Decision'}
             </h2>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               ID: {fraudCase.studentId}
@@ -78,7 +86,7 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
 
         <div className="p-4 space-y-4">
           {/* Decision Options */}
-          {decisionType !== 'hold' && (
+          {!isHoldFlow && (
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setResolution('fraudulent')}
@@ -116,7 +124,7 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
               value={adminNote}
               onChange={(e) => setAdminNote(e.target.value)}
               rows={3}
-              placeholder="Add a note about your decision..."
+              placeholder={isHoldFlow ? 'Explain why this is being placed on hold or what documents are required…' : 'Add a note about your decision...'}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none ${
                 isDark 
                   ? 'bg-gray-900 border-gray-700 text-white placeholder-gray-400' 
@@ -125,21 +133,57 @@ const DecisionDocumentationModal: React.FC<DecisionDocumentationModalProps> = ({
             />
           </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={(decisionType !== 'hold' && !resolution) || isSubmitting}
-            className={`w-full flex items-center justify-center px-4 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
-              isDark 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'bg-blue-600 hover:bg-blue-700 text-white'
-            }`}
-          >
-            {isSubmitting ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <span>Submit Decision</span>
-            )}
-          </button>
+          {/* Hold/Override auxiliary actions */}
+          {isHoldFlow && (
+            <div className="flex items-center justify-between gap-3">
+                <button
+                type="button"
+                onClick={() => {
+                  if (onRequestDocuments) onRequestDocuments();
+                  onClose();
+                }}
+                className={`flex-1 px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                  isDark ? 'border-blue-500 text-blue-300 hover:bg-blue-900/20' : 'border-blue-300 text-blue-700 hover:bg-blue-50'
+                }`}
+                >
+                Request Documents
+                </button>
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                  isDark 
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                }`}
+              >
+                {isSubmitting ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <span>Place on Hold</span>
+                )}
+              </button>
+            </div>
+          )}
+
+          {/* Submit button (non-hold flows) */}
+          {!isHoldFlow && (
+            <button
+              onClick={handleSubmit}
+              disabled={!resolution || isSubmitting}
+              className={`w-full flex items-center justify-center px-4 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                isDark 
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
+              {isSubmitting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <span>Submit Decision</span>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

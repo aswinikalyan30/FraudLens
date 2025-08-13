@@ -298,10 +298,10 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
                           }}
                           className={`px-2 py-1 rounded-md text-xs font-medium transition-colors border ${
                             app.type === 'admissions'
-                              ? isDark ? 'bg-purple-900/30 border-purple-600/30 text-purple-300 hover:bg-purple-800/40' 
-                                      : 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100'
-                              : isDark ? 'bg-blue-900/30 border-blue-600/30 text-blue-300 hover:bg-blue-800/40'
-                                      : 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100'
+                              ? isDark ? 'text-purple-300 hover:bg-purple-800/40' 
+                                      : ' text-purple-700 hover:bg-purple-100'
+                              : isDark ? 'text-blue-300 hover:bg-blue-800/40'
+                                      : 'text-blue-700 hover:bg-blue-100'
                           }`}
                         >
                           {app.name} ({app.type === 'admissions' ? 'Admissions' : 'Financial Aid'})
