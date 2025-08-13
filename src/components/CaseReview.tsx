@@ -356,6 +356,17 @@ const CaseReview: React.FC<CaseReviewProps> = ({
                     >
                       Hold
                     </button>
+                    <button
+                      title="Request documents"
+                      onClick={() => setShowDocumentWizard(true)}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 border ${
+                        isDark
+                          ? "border-yellow-500 text-yellow-300 hover:bg-yellow-900/20 hover:border-yellow-400"
+                          : "border-yellow-300 text-yellow-700 hover:bg-yellow-50 hover:border-yellow-400"
+                      }`}
+                    >
+                      Request Documents
+                    </button>
                     { <button
                       title="Reject application"
                       onClick={() => {

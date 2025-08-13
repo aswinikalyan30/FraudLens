@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApplications } from '../contexts/ApplicationContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface UserProfileProps {
   isOpen: boolean;
@@ -41,6 +42,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
   const { isDark } = useTheme();
   const { processedApplications } = useApplications();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { signOut } = useAuth();
   
   const [activeTab, setActiveTab] = useState<'analytics' | 'profile'>('analytics');
   const [isEditing, setIsEditing] = useState(false);
@@ -146,14 +148,24 @@ const UserProfile: React.FC<UserProfileProps> = ({ isOpen, onClose }) => {
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className={`p-2 rounded-lg transition-colors ${
-              isDark ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
-            }`}
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { signOut(); onClose(); }}
+              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                isDark ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-red-600 text-white hover:bg-red-700'
+              }`}
+            >
+              Sign out
+            </button>
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-lg transition-colors ${
+                isDark ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'
+              }`}
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}

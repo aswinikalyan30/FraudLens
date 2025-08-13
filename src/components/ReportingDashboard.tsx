@@ -24,7 +24,7 @@ const ReportingDashboard: React.FC = () => {
       byComplexity: { simple: 8.2, medium: 16.5, complex: 32.1 },
       trend: '-12%'
     },
-    roiMetrics: { fraudPrevented: 485000, operationalCost: 125000, roi: 288, costBenefit: 3.88 }
+    roiMetrics: { fraudPrevented: 48500, operationalCost: 12500, roi: 75, costBenefit: 3.88 }
   };
 
   return (

@@ -8,13 +8,21 @@ import MobileBottomNav from './components/MobileBottomNav';
 import ProcessedApplications from './components/ProcessedApplications';
 import ReportingDashboard from './components/ReportingDashboard';
 import UserProfile from './components/UserProfile';
-import { ThemeProvider, useTheme } from './contexts/ThemeContext';
-import { NotificationProvider } from './contexts/NotificationContext';
-import { ApplicationProvider, Application, useApplications } from './contexts/ApplicationContext';
-import { NavigationProvider } from './contexts/NavigationContext';
+import { useTheme } from './contexts/ThemeContext';
+import { Application, useApplications } from './contexts/ApplicationContext';
 import ChatAgent from './components/ChatAgent';
 import FlagsChart from './components/FlagsChart';
 import { fetchApplicationById, fetchApplicationDetailById, type ApplicationDetail } from './api/applications';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import SignIn from './pages/SignIn';
+
+function AppShell() {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <SignIn />;
+  }
+  return <AppContent />;
+}
 
 function AppContent() {
   const [activeTab, setActiveTab] = useState('home');
@@ -316,20 +324,6 @@ function AppContent() {
               );
             })}
           </nav>
-
-          {/* AI Agent Status - Compact */}
-          <div className="absolute bottom-4 left-2 right-2">
-            <div className={`border rounded-lg p-2 text-center ${
-              isDark 
-                ? 'bg-gray-900/50 border-gray-700' 
-                : 'bg-gray-50 border-gray-200'
-            }`}>
-              <div className="flex items-center justify-center mb-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              </div>
-              <div className="text-xs text-green-500 font-medium">AI</div>
-            </div>
-          </div>
         </div>
 
         {/* Main Content Area - Unified for all pages */}
@@ -400,7 +394,7 @@ function AppContent() {
                     onClick={() => setIsProfileOpen(true)}
                     className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-500 rounded-full flex items-center justify-center transition-transform hover:scale-105 cursor-pointer"
                   >
-                    <span className="text-xs font-bold text-white">AI</span>
+                    <span className="text-xs font-bold text-white">RW</span>
                   </button>
                   <div className="text-sm">
                     <div className={isDark ? 'text-white' : 'text-gray-900'}>Robert Wesley</div>
@@ -422,11 +416,11 @@ function AppContent() {
                 </main>
                 {/* Hide FlagsChart and ChatAgent when a case is open from Home */}
                 {!reviewingApplicationId && (
-                  <aside className={`hidden xl:flex flex-[3] min-w-0 flex-col`}>
-                    <div className="flex-[2]">
+                  <aside className={`hidden xl:flex flex-[3] min-w-0 flex-col overflow-hidden`}>
+                    <div className="flex-[2] min-h-0">
                       <FlagsChart onNavigateToReporting={() => setActiveTab('reporting')} compact={true} />
                     </div>
-                    <div className="flex-[3] border-t border-gray-200">
+                    <div className="flex-[3] border-t border-gray-200 min-h-0">
                       <ChatAgent 
                         applicationId="home" 
                         userName="Robert" 
@@ -442,6 +436,15 @@ function AppContent() {
               </main>
             )}
           </div>
+
+          {/* Global Footer (desktop) */}
+          <footer className={`px-4 py-2 border-t hidden lg:block ${
+            isDark 
+              ? 'bg-gray-800 border-gray-700 text-gray-400' 
+              : 'bg-white border-gray-200 text-gray-600'
+          }`}>
+            <div className="text-xs text-center">Powered by Ellucian</div>
+          </footer>
         </div>
       </div>
 
@@ -474,15 +477,9 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <NotificationProvider>
-        <ApplicationProvider>
-          <NavigationProvider>
-            <AppContent />
-          </NavigationProvider>
-        </ApplicationProvider>
-      </NotificationProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <AppShell />
+    </AuthProvider>
   );
 }
 

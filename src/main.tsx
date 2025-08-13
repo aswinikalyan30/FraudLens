@@ -6,6 +6,7 @@ import { NotificationProvider } from './contexts/NotificationContext';
 import { ApplicationProvider } from './contexts/ApplicationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { ChatProvider } from './contexts/ChatContext';
+import { AuthProvider } from './contexts/AuthContext';
 
 createRoot(document.getElementById('root')!).render(
   <ThemeProvider>
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <ApplicationProvider>
         <NavigationProvider>
           <ChatProvider>
-            <App />
+            <AuthProvider>
+              <App />
+            </AuthProvider>
           </ChatProvider>
         </NavigationProvider>
       </ApplicationProvider>

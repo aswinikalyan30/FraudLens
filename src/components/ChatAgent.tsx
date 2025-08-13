@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Send, Bot, User } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useApplications } from '../contexts/ApplicationContext';
@@ -10,119 +10,38 @@ interface ChatAgentProps {
   onOpenCaseFullScreen?: (id: string) => void;
 }
 
-// Session management utilities
-const SESSION_STORAGE_KEY = 'fraudlens_chat_session';
-// const SESSION_DURATION = 4 * 60 * 60 * 1000; // 4 hours in milliseconds
-
-interface ChatSession {
-  sessionId: string;
-  createdAt: number;
-}
-
-// const generateSessionId = (): string => {
-//   return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-// };
-
-// const getOrCreateSession = (): string => {
-//   const stored = localStorage.getItem(SESSION_STORAGE_KEY);
-  
-//   if (stored) {
-//     try {
-//       const session: ChatSession = JSON.parse(stored);
-//       const now = Date.now();
-      
-//       // Check if session is still valid (within 4 hours)
-//       if (now - session.createdAt < SESSION_DURATION) {
-//         return session.sessionId;
-//       }
-//     } catch {
-//       // Invalid session data, create new one
-//       console.warn('Invalid session data, creating new session');
-//     }
-//   }
-  
-//   // Create new session
-//   const newSessionId = generateSessionId();
-//   const newSession: ChatSession = {
-//     sessionId: newSessionId,
-//     createdAt: Date.now()
-//   };
-  
-//   localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newSession));
-//   return newSessionId;
-// };
-
 const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert', onOpenCaseFullScreen }) => {
   const { isDark } = useTheme();
-  const { 
-    queueApplications, 
-    processedApplications 
-  } = useApplications();
-  const { messages, setMessages, isTyping, setIsTyping } = useChat();
-  
-  const isHomePage = applicationId === 'home';
-//   const [sessionId] = useState(() => getOrCreateSession());
-  
-  // Calculate statistics for the initial message
+  const { queueApplications, processedApplications, applicationsLoading } = useApplications();
+  const { chats, addMessage, setMessages, isTyping, setIsTyping } = useChat();
+
+  const messages = useMemo(() => chats[applicationId] || [], [chats, applicationId]);
+  const currentIsTyping = isTyping[applicationId] || false;
+
   const rejectedCount = processedApplications.filter(app => app.status === 'rejected').length;
   const highRiskCount = processedApplications.filter(app => app.riskScore && app.riskScore >= 80).length;
   const moderateRiskCount = processedApplications.filter(app => app.riskScore && app.riskScore >= 50 && app.riskScore < 80).length;
   const lowRiskCount = processedApplications.filter(app => app.riskScore && app.riskScore < 50).length;
   const processedCount = processedApplications.length;
   const queuedCount = queueApplications.length;
-  
-  const initialMessageText = isHomePage 
-    ? `Hi ${userName}, Here's what you have to look at today.\nRejected Applications - ${rejectedCount}\nHigh Risk - ${highRiskCount}\nModerate Risk - ${moderateRiskCount}\nLow Risk - ${lowRiskCount}\nProcessed - ${processedCount}\nQueued - ${queuedCount}`
-    : 'Hello! I\'m your AI assistant. I can help explain why this application was flagged, provide additional context, or assist with document requests. What would you like to know?';
-  
+
+  const getInitialMessageText = useCallback(() => {
+    return applicationId === 'home'
+      ? `Hi ${userName}, Here's what you have to look at today.\nRejected Applications - ${rejectedCount}\nHigh Risk - ${highRiskCount}\nModerate Risk - ${moderateRiskCount}\nLow Risk - ${lowRiskCount}\nProcessed - ${processedCount}\nQueued - ${queuedCount}`
+      : 'Hello! I\'m your AI assistant. I can help explain why this application was flagged, provide additional context, or assist with document requests. What would you like to know?';
+  }, [applicationId, userName, rejectedCount, highRiskCount, moderateRiskCount, lowRiskCount, processedCount, queuedCount]);
+
   useEffect(() => {
-    if (messages.length === 0 && isHomePage) {
-      const sessionInfo = localStorage.getItem(SESSION_STORAGE_KEY);
-      let sessionMessage = '';
-      
-      try {
-        if (sessionInfo) {
-          const session: ChatSession = JSON.parse(sessionInfo);
-          const now = Date.now();
-          const isNewSession = now - session.createdAt < 60000; // If created within last minute, it's new
-          
-          if (isNewSession) {
-            sessionMessage = ' (New session started)';
-          } else {
-            const hoursAgo = Math.floor((now - session.createdAt) / (1000 * 60 * 60));
-            if (hoursAgo > 0) {
-              sessionMessage = ` (Session resumed - ${hoursAgo}h ago)`;
-            }
-          }
-        }
-      } catch {
-        // Ignore session info parsing errors
-      }
-      
-      setMessages([
-        {
-          id: '1',
-          type: 'agent',
-          message: initialMessageText + sessionMessage,
-          timestamp: new Date()
-        }
-      ]);
-    } else if (!isHomePage) {
-      // For case view, we can decide if we want to clear chat or show a specific message
-      // For now, let's just show a case-specific initial message if there are no messages
-      const caseMessageExists = messages.some(m => m.message.includes('flagged'));
-      if (!caseMessageExists) {
-        const initialMessage = {
-          id: 'case-intro',
-          type: 'agent' as const,
-          message: 'Hello! I\'m your AI assistant. I can help explain why this application was flagged, provide additional context, or assist with document requests. What would you like to know?',
-          timestamp: new Date()
-        };
-        // Add to existing messages without clearing them
-        setMessages(prev => [...prev, initialMessage]);
-      }
+    if (messages.length === 0 && !applicationsLoading) {
+      const initialMessage: ChatMessage = {
+        id: `${applicationId}-init`,
+        type: 'agent',
+        message: getInitialMessageText(),
+        timestamp: new Date()
+      };
+      setMessages(applicationId, [initialMessage]);
     }
-  }, [isHomePage, messages.length, setMessages, initialMessageText]);
+  }, [applicationId, messages.length, setMessages, getInitialMessageText, applicationsLoading]);
 
   const [inputMessage, setInputMessage] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<'online' | 'offline' | 'error'>('online');
@@ -136,16 +55,20 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
     scrollToBottom();
   }, [messages]);
 
-  // Function to parse application list from API response
-  const parseApplicationList = (responseText: string): Array<{name: string, type: string}> => {
+  const parseApplicationList = (responseText: string): Array<{name: string, type: string, id: string}> => {
     try {
       // Extract lines that match the pattern "Name : type"
       const lines = responseText.split('\n');
       return lines
-        .filter(line => line.includes(' : '))
+        .filter(line => line.includes(' : ') && line.includes(' - '))
         .map(line => {
-          const [name, type] = line.split(' : ').map(part => part.trim());
-          return { name, type };
+          const namePart = line.substring(0, line.indexOf(' : ')).trim();
+          const rest = line.substring(line.indexOf(' : ') + 3).trim();
+          
+          const idPart = rest.substring(rest.lastIndexOf(' - ') + 3).trim();
+          const typePart = rest.substring(0, rest.lastIndexOf(' - ')).trim();
+
+          return { name: namePart, type: typePart, id: idPart };
         });
     } catch (error) {
       console.error('Error parsing application list:', error);
@@ -160,7 +83,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
         method: 'POST',
         body: JSON.stringify({
           session_id: '123',
-          message: `Query the DB and ${message}, provide the output in the following format: Name : Application Type`,
+          message: `Query the DB and ${message}, provide the output in the following format: Name : Application Type - Application ID`,
         }),
       });
 
@@ -170,14 +93,10 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
       }
 
       const data = await response.json();
-      console.log('API response:', data);
       setConnectionStatus('online');
       
-      // For application listings, we'll maintain the raw response to parse into chips
-      const responseText = data.response || data.body || data.message || 
-        'I apologize, but I\'m having trouble processing your request right now.';
+      const responseText = data.response || data.body || data.message || 'I apologize, but I\'m having trouble processing your request right now.';
       
-      // Check if the response is a JSON string that contains application details
       try {
         if (typeof responseText === 'string' && responseText.startsWith('{"response":')) {
           const parsedJson = JSON.parse(responseText);
@@ -186,7 +105,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
           }
         }
       } catch {
-        console.log('Not a JSON response');
+        // Not a JSON response
       }
       
       return responseText;
@@ -194,8 +113,6 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
     } catch (error) {
       console.error('Chat API error:', error);
       setConnectionStatus('offline');
-      
-      // Fallback to local responses on API failure
       return getFallbackResponse(message);
     }
   };
@@ -220,7 +137,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
       'default': 'I can help explain risk factors, assist with document requests, provide case analysis, or answer questions about the review process. What specific aspect would you like to explore?'
     };
     
-    const responses = isHomePage ? homeResponses : caseResponses;
+    const responses = applicationId === 'home' ? homeResponses : caseResponses;
     const lowerMessage = message.toLowerCase();
     let response = responses.default;
 
@@ -233,24 +150,25 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
     return response;
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (messageContent?: string) => {
+    const messageText = messageContent || inputMessage;
+    if (!messageText.trim()) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
-      message: inputMessage,
+      message: messageText,
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    const messageToSend = inputMessage;
-    setInputMessage('');
-    setIsTyping(true);
+    addMessage(applicationId, userMessage);
+    if (!messageContent) {
+      setInputMessage('');
+    }
+    setIsTyping(applicationId, true);
 
     try {
-      // Call the API
-      const aiResponse = await sendMessageToAPI(messageToSend);
+      const aiResponse = await sendMessageToAPI(messageText);
       
       const agentMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -259,11 +177,10 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, agentMessage]);
+      addMessage(applicationId, agentMessage);
     } catch (error) {
       console.error('Failed to get AI response:', error);
       
-      // Fallback message on error
       const agentMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         type: 'agent',
@@ -271,9 +188,9 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, agentMessage]);
+      addMessage(applicationId, agentMessage);
     } finally {
-      setIsTyping(false);
+      setIsTyping(applicationId, false);
     }
   };
 
@@ -285,13 +202,9 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
   };
 
   return (
-    <div className={`h-full flex flex-col ${
-      isDark ? 'bg-gray-800' : 'bg-white'
-    }`}>
+    <div className={`h-full flex flex-col ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
       {/* Header */}
-      <div className={`p-3 border-b ${
-        isDark ? 'border-gray-700' : 'border-gray-200'
-      }`}>
+      <div className={`p-3 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="flex items-center space-x-2">
           <div className="w-6 h-6 bg-gradient-to-br from-blue-900 to-blue-500 rounded-full flex items-center justify-center">
             <Bot className="w-3 h-3 text-white" />
@@ -309,11 +222,9 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
       </div>
 
       {/* Quick Questions */}
-      <div className={`p-2 border-b ${
-        isDark ? 'border-gray-700' : 'border-gray-200'
-      }`}>
+      <div className={`p-2 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="flex flex-wrap gap-1">
-          {(isHomePage ? [
+          {(applicationId === 'home' ? [
             'Give me the high risk and rejected application details',
             'Show application statistics',
             'Tips for fraud detection',
@@ -326,45 +237,7 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
           ]).map((question, idx) => (
             <button
               key={idx}
-              onClick={async () => {
-                setInputMessage('');
-                // Send immediately
-                const userMessage = {
-                  id: Date.now().toString(),
-                  type: 'user' as const,
-                  message: question,
-                  timestamp: new Date()
-                };
-                setMessages(prev => [...prev, userMessage]);
-                setIsTyping(true);
-                
-                try {
-                  // Call the API
-                  const aiResponse = await sendMessageToAPI(question);
-                  
-                  const agentMessage = {
-                    id: (Date.now() + 1).toString(),
-                    type: 'agent' as const,
-                    message: aiResponse,
-                    timestamp: new Date()
-                  };
-                  setMessages(prev => [...prev, agentMessage]);
-                } catch (error) {
-                  console.error('Failed to get AI response for quick action:', error);
-                  
-                  // Fallback to local responses on error
-                  const fallbackResponse = getFallbackResponse(question);
-                  const agentMessage = {
-                    id: (Date.now() + 1).toString(),
-                    type: 'agent' as const,
-                    message: fallbackResponse,
-                    timestamp: new Date()
-                  };
-                  setMessages(prev => [...prev, agentMessage]);
-                } finally {
-                  setIsTyping(false);
-                }
-              }}
+              onClick={() => handleSendMessage(question)}
               className={`px-2 py-1 rounded-full text-xs font-medium transition-colors border shadow-sm ${
                 isDark
                   ? 'bg-gray-700 hover:bg-blue-700 text-gray-200 border-gray-600'
@@ -417,13 +290,8 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
                         <button 
                           key={index}
                           onClick={() => {
-                            // Find the student ID from the application name
-                            const student = [...queueApplications, ...processedApplications].find(
-                              s => s.name.includes(app.name.split(' ')[0])
-                            );
-                            
-                            if (student && onOpenCaseFullScreen) {
-                              onOpenCaseFullScreen(student.studentId);
+                            if (app.id && onOpenCaseFullScreen) {
+                              onOpenCaseFullScreen(app.id);
                             } else {
                               console.warn('Could not find student ID for', app.name);
                             }
@@ -452,15 +320,13 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
           </div>
         ))}
         
-        {isTyping && (
+        {currentIsTyping && (
           <div className="flex justify-start">
             <div className="flex items-start space-x-2">
               <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-500 to-blue-500 flex items-center justify-center">
                 <Bot className="w-2.5 h-2.5 text-white" />
               </div>
-              <div className={`px-2.5 py-1.5 rounded-lg ${
-                isDark ? 'bg-gray-700' : 'bg-gray-100'
-              }`}>
+              <div className={`px-2.5 py-1.5 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
                 <div className="thinking-dots flex space-x-1">
                   <div className={`dot w-1 h-1 rounded-full animate-pulse ${isDark ? 'bg-gray-400' : 'bg-gray-600'}`}></div>
                   <div className={`dot w-1 h-1 rounded-full animate-pulse ${isDark ? 'bg-gray-400' : 'bg-gray-600'}`} style={{animationDelay: '0.2s'}}></div>
@@ -474,17 +340,15 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
       </div>
 
       {/* Input */}
-      <div className={`p-3 border-t ${
-        isDark ? 'border-gray-700' : 'border-gray-200'
-      }`}>
+      <div className={`p-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="flex space-x-2">
           <textarea
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={isTyping ? "AI is thinking..." : "Ask about this case..."}
+            placeholder={currentIsTyping ? "AI is thinking..." : "Ask about this case..."}
             rows={1}
-            disabled={isTyping}
+            disabled={currentIsTyping}
             className={`flex-1 px-2 py-1.5 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 text-sm ${
               isDark 
                 ? 'bg-gray-900 border-gray-700 text-white placeholder-gray-400' 
@@ -492,8 +356,8 @@ const ChatAgent: React.FC<ChatAgentProps> = ({ applicationId, userName = 'Robert
             }`}
           />
           <button
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || isTyping}
+            onClick={() => handleSendMessage()}
+            disabled={!inputMessage.trim() || currentIsTyping}
             className="px-2 py-1.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md transition-all"
           >
             <Send className="w-3 h-3" />

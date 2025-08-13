@@ -78,7 +78,7 @@ const HomeContent: React.FC<HomeContentProps> = ({ onNavigateToProcessed, onOpen
   const roiMetrics = {
     fraudPrevented: 4850,
     operationalCost: 1250,
-    roi: 2
+    roi: 75
   };
 
   const getRiskLevel = (score: number) => {

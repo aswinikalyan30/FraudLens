@@ -53,6 +53,9 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, onTabChang
           );
         })}
       </div>
+      <div className={`text-[10px] text-center pb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+        Powered by Ellucian
+      </div>
     </div>
   );
 };

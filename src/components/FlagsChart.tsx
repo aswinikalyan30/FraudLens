@@ -20,8 +20,7 @@ const FlagsChart: React.FC<{ onNavigateToReporting?: () => void; compact?: boole
 
   // Simulate real-time updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      setData(prev => prev.map(item => {
+          setData(prev => prev.map(item => {
         const newApplications = Math.max(10, item.applications + Math.floor(Math.random() * 10 - 5));
         const newFlags = Math.max(0, item.flags + Math.floor(Math.random() * 6 - 3));
         return {
@@ -31,9 +30,8 @@ const FlagsChart: React.FC<{ onNavigateToReporting?: () => void; compact?: boole
           flagRate: newApplications > 0 ? (newFlags / newApplications) * 100 : 0
         };
       }));
-    }, 8000);
 
-    return () => clearInterval(interval);
+
   }, []);
 
   const maxApplications = Math.max(...data.map(d => d.applications));

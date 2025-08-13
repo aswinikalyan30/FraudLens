@@ -8,30 +8,48 @@ export interface ChatMessage {
 }
 
 interface ChatContextType {
-  messages: ChatMessage[];
-  addMessage: (message: ChatMessage) => void;
-  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  isTyping: boolean;
-  setIsTyping: React.Dispatch<React.SetStateAction<boolean>>;
-  clearChat: () => void;
+  chats: { [key: string]: ChatMessage[] };
+  addMessage: (chatId: string, message: ChatMessage) => void;
+  setMessages: (chatId: string, messages: ChatMessage[]) => void;
+  isTyping: { [key: string]: boolean };
+  setIsTyping: (chatId: string, isTyping: boolean) => void;
+  clearChat: (chatId: string) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isTyping, setIsTyping] = useState(false);
+  const [chats, setChats] = useState<{ [key: string]: ChatMessage[] }>({});
+  const [isTyping, setIsTypingState] = useState<{ [key: string]: boolean }>({});
 
-  const addMessage = useCallback((message: ChatMessage) => {
-    setMessages(prevMessages => [...prevMessages, message]);
+  const addMessage = useCallback((chatId: string, message: ChatMessage) => {
+    setChats(prevChats => ({
+      ...prevChats,
+      [chatId]: [...(prevChats[chatId] || []), message]
+    }));
   }, []);
 
-  const clearChat = useCallback(() => {
-    setMessages([]);
+  const setMessages = useCallback((chatId: string, messages: ChatMessage[]) => {
+    setChats(prevChats => ({
+      ...prevChats,
+      [chatId]: messages
+    }));
+  }, []);
+
+  const clearChat = useCallback((chatId: string) => {
+    setChats(prevChats => {
+      const newChats = { ...prevChats };
+      delete newChats[chatId];
+      return newChats;
+    });
+  }, []);
+
+  const setIsTyping = useCallback((chatId: string, typing: boolean) => {
+    setIsTypingState(prev => ({ ...prev, [chatId]: typing }));
   }, []);
 
   return (
-    <ChatContext.Provider value={{ messages, addMessage, setMessages, isTyping, setIsTyping, clearChat }}>
+    <ChatContext.Provider value={{ chats, addMessage, setMessages, isTyping, setIsTyping, clearChat }}>
       {children}
     </ChatContext.Provider>
   );
